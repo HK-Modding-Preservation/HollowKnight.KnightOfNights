@@ -30,6 +30,9 @@
     <Compile Include="Unity\Assets\Scripts\SharedLib\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CSharpier.Core" Version="1.2.6" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Unity\Assets\AssetBundles\**" />
     <EmbeddedResource Include="Unity\Assets\Resources\**\*.json" />
     <EmbeddedResource Remove="Unity\**\*.manifest" />

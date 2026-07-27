@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CSharpier.Core.CSharp;
+using KnightOfNights.Scripts.SharedLib;
+using PurenailCore.CollectionUtil;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -6,8 +9,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
-using KnightOfNights.Scripts.SharedLib;
-using PurenailCore.CollectionUtil;
 using UnityEngine;
 using JsonUtil = PurenailCore.SystemUtil.JsonUtil<KnightOfNights.KnightOfNightsMod>;
 
@@ -392,7 +393,8 @@ internal static class SummitSceneNames
         if (!Directory.Exists(dir))
             Directory.CreateDirectory(dir);
 
-        File.WriteAllText(path, content.Replace("\r\n", "\n"));
+        var unix = content.Replace("\r\n", "\n");
+        File.WriteAllText(path, CSharpFormatter.Format(unix).Code);
     }
 
     private static string Pad(string src, int indent)
