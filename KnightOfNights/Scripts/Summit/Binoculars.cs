@@ -190,21 +190,40 @@ internal class Binoculars : MonoBehaviour
         return closest;
     }
 
-    private static Binoculars? ActiveBinoculars;
-
-    private static bool ApplyBinoculars(Vector3 pos, out Vector3 newPos)
+    private static Binoculars? ActiveBinoculars
     {
-        newPos = pos;
-        if (ActiveBinoculars == null)
-            return false;
+        get;
+        set
+        {
+            if (field == value)
+                return;
 
-        newPos.x = ActiveBinoculars.activeCameraPos.x;
-        newPos.y = ActiveBinoculars.activeCameraPos.y;
-        return true;
+            if (field == null)
+                CameraPositionModifier.AddModifier(
+                    CameraModifierPhase.FINAL_POSITON,
+                    CameraPriorities.BINOCULARS,
+                    ApplyBinoculars
+                );
+            if (value == null)
+                CameraPositionModifier.RemoveModifier(
+                    CameraModifierPhase.FINAL_POSITON,
+                    CameraPriorities.BINOCULARS,
+                    ApplyBinoculars
+                );
+
+            field = value;
+        }
     }
 
-    static Binoculars() =>
-        CameraPositionModifier.AddModifier(CameraModifierPhase.FINAL_POSITON, 1f, ApplyBinoculars);
+    private static void ApplyBinoculars(ref Vector3 pos)
+    {
+        if (ActiveBinoculars == null)
+            return;
+
+        var t = ActiveBinoculars.activeCameraPos;
+        pos.x = t.x;
+        pos.y = t.y;
+    }
 }
 
 [Shim]

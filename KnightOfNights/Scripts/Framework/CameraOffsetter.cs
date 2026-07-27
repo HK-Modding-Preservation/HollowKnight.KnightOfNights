@@ -1,6 +1,5 @@
 ﻿using KnightOfNights.Scripts.Proxy;
 using KnightOfNights.Scripts.SharedLib;
-using PurenailCore.ModUtil;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Framework;
@@ -31,14 +30,12 @@ internal class CameraOffsetter : MonoBehaviour
     private void Update() =>
         dist.AdvanceFloatAbs(Time.deltaTime * OffsetSpeed, detected > 0 ? Offset.magnitude : 0);
 
-    private bool ModifyCameraPosition(Vector3 pos, out Vector3 updatedPos)
+    private void ModifyCameraPosition(ref Vector3 pos)
     {
-        updatedPos = pos;
         if (!enabled || dist <= 0f)
-            return false;
+            return;
 
-        updatedPos += Offset.To3d().normalized * dist;
-        return true;
+        pos += Offset.To3d().normalized * dist;
     }
 
     private void OnEnable() =>
