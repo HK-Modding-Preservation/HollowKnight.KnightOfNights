@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using ItemChanger;
-using KnightOfNights.Scripts.SharedLib;
+﻿using ItemChanger;
 
 namespace KnightOfNights.IC;
 

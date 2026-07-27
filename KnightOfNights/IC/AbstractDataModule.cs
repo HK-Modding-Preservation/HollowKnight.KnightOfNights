@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using KnightOfNights.Build;
 
 namespace KnightOfNights.IC;
