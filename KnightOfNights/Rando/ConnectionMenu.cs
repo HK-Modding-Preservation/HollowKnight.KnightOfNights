@@ -1,9 +1,9 @@
-﻿using MenuChanger;
+﻿using System.Linq;
+using MenuChanger;
 using MenuChanger.Extensions;
 using MenuChanger.MenuElements;
 using MenuChanger.MenuPanels;
 using RandomizerMod.Menu;
-using System.Linq;
 
 namespace KnightOfNights.Rando;
 
@@ -35,16 +35,26 @@ internal class ConnectionMenu
         entryButton.AddHideAndShowEvent(mainPage);
 
         factory = new(mainPage, KnightOfNightsMod.RS);
-        foreach (var menuItem in factory.Elements.OfType<MenuItem>()) menuItem.SelfChanged += _ => SetEnabledColor();
+        foreach (var menuItem in factory.Elements.OfType<MenuItem>())
+            menuItem.SelfChanged += _ => SetEnabledColor();
 
         MenuLabel header = new(mainPage, "Knight of Nights");
         header.MoveTo(SpaceParameters.TOP_CENTER);
-        new VerticalItemPanel(mainPage, SpaceParameters.TOP_CENTER_UNDER_TITLE, SpaceParameters.VSPACE_MEDIUM, true, [.. factory.Elements]);
+        new VerticalItemPanel(
+            mainPage,
+            SpaceParameters.TOP_CENTER_UNDER_TITLE,
+            SpaceParameters.VSPACE_MEDIUM,
+            true,
+            [.. factory.Elements]
+        );
 
         SetEnabledColor();
     }
 
     internal void ApplySettings(RandomizationSettings settings) => factory.SetMenuValues(settings);
 
-    private void SetEnabledColor() => entryButton.Text.color = KnightOfNightsMod.RS.IsEnabled ? Colors.TRUE_COLOR : Colors.DEFAULT_COLOR;
+    private void SetEnabledColor() =>
+        entryButton.Text.color = KnightOfNightsMod.RS.IsEnabled
+            ? Colors.TRUE_COLOR
+            : Colors.DEFAULT_COLOR;
 }

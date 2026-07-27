@@ -5,6 +5,5 @@ namespace KnightOfNights.Scripts.Framework
         Sum = 0,
         Average = 1,
         MaxMagnitude = 2,
-        
     }
 }

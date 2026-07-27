@@ -18,5 +18,6 @@ internal static class TallWave
         return obj;
     }
 
-    public static List<GameObject> SpawnTwo(Vector3 pos, float speed) => [SpawnOne(pos, false, speed), SpawnOne(pos, true, speed)];
+    public static List<GameObject> SpawnTwo(Vector3 pos, float speed) =>
+        [SpawnOne(pos, false, speed), SpawnOne(pos, true, speed)];
 }

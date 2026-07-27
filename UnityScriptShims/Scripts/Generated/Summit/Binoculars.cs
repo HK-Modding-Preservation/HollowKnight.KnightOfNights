@@ -7,6 +7,5 @@ namespace KnightOfNights.Scripts.Summit
         public UnityEngine.GameObject CollidersParent;
         public UnityEngine.Transform CameraStart;
         public float CameraSpeed;
-        
     }
 }

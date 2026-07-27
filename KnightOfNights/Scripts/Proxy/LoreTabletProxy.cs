@@ -8,7 +8,9 @@ namespace KnightOfNights.Scripts.Proxy;
 [Shim]
 internal class LoreTabletProxy : MonoBehaviour
 {
-    [TextArea(3, 12)] [ShimField] public string Text = "";
+    [TextArea(3, 12)]
+    [ShimField]
+    public string Text = "";
 
     private void Awake()
     {
@@ -17,7 +19,7 @@ internal class LoreTabletProxy : MonoBehaviour
             SceneName = GameManager.instance.sceneName,
             X = transform.position.x,
             Y = transform.position.y,
-            Text = new BoxedString(Text.Replace("\n", "<br>"))
+            Text = new BoxedString(Text.Replace("\n", "<br>")),
         };
 
         var obj = deployer.Deploy();

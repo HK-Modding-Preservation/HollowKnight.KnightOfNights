@@ -6,10 +6,17 @@ namespace KnightOfNights.Scripts.InternalLib;
 [Shim]
 internal class Fader : MonoBehaviour
 {
-    [ShimField] public Color StartColor;
-    [ShimField] public Color EndColor;
-    [ShimField] public float Delay;
-    [ShimField] public float Duration;
+    [ShimField]
+    public Color StartColor;
+
+    [ShimField]
+    public Color EndColor;
+
+    [ShimField]
+    public float Delay;
+
+    [ShimField]
+    public float Duration;
 
     private SpriteRenderer? renderer;
     private float timer;

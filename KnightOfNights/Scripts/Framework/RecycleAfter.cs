@@ -6,7 +6,8 @@ namespace KnightOfNights.Scripts.Framework;
 [Shim]
 internal class RecycleAfter : MonoBehaviour
 {
-    [ShimField] public float Seconds;
+    [ShimField]
+    public float Seconds;
 
     private float timer;
 
@@ -15,6 +16,7 @@ internal class RecycleAfter : MonoBehaviour
     private void Update()
     {
         timer += Time.deltaTime;
-        if (timer >= Seconds) gameObject.Recycle();
+        if (timer >= Seconds)
+            gameObject.Recycle();
     }
 }

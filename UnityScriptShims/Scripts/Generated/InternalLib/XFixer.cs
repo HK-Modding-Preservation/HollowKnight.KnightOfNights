@@ -1,7 +1,4 @@
 namespace KnightOfNights.Scripts.InternalLib
 {
-    public class XFixer : UnityEngine.MonoBehaviour
-    {
-        
-    }
+    public class XFixer : UnityEngine.MonoBehaviour { }
 }

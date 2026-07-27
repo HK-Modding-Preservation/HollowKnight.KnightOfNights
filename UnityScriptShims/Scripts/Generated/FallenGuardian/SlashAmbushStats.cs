@@ -9,6 +9,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float SlashSpeed;
         public float SlashDeceleration;
         public float TelegraphStagger;
-        
     }
 }

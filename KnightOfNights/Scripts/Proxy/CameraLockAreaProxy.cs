@@ -1,10 +1,10 @@
-﻿using KnightOfNights.Scripts.InternalLib;
+﻿using System.Collections.Generic;
+using System.Linq;
 using GlobalEnums;
 using ItemChanger.Extensions;
+using KnightOfNights.Scripts.InternalLib;
 using KnightOfNights.Scripts.SharedLib;
 using PurenailCore.CollectionUtil;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -13,10 +13,17 @@ namespace KnightOfNights.Scripts.Proxy;
 [Shim]
 internal class CameraLockAreaProxy : MonoBehaviour
 {
-    [ShimField] public bool preventLookUp;
-    [ShimField] public bool preventLookDown;
-    [ShimField] public bool maxPriority;
-    [ShimField("true")] public bool Snap;
+    [ShimField]
+    public bool preventLookUp;
+
+    [ShimField]
+    public bool preventLookDown;
+
+    [ShimField]
+    public bool maxPriority;
+
+    [ShimField("true")]
+    public bool Snap;
 
     internal Deferred<List<CameraLockArea>> LockAreas = new();
 
@@ -39,7 +46,8 @@ internal class CameraLockAreaProxy : MonoBehaviour
         List<CameraLockArea> areas = [];
         foreach (var go in siblings)
         {
-            if (go == gameObject) continue;
+            if (go == gameObject)
+                continue;
 
             GameObject triggerObj = new($"{parentName}.Trigger{++i}");
             triggerObj.SetActive(false);

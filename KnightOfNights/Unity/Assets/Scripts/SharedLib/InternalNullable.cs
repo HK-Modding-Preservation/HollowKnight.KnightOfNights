@@ -14,7 +14,8 @@ namespace KnightOfNights.Scripts.SharedLib
         {
             get
             {
-                if (isNull) throw new NullReferenceException();
+                if (isNull)
+                    throw new NullReferenceException();
                 return _value;
             }
             set
@@ -40,10 +41,13 @@ namespace KnightOfNights.Scripts.SharedLib
 
         public override bool Equals(object obj)
         {
-            if (!(obj is InternalNullable<T> other)) return false;
+            if (!(obj is InternalNullable<T> other))
+                return false;
 
-            if (other.isNull && isNull) return true;
-            if (other.isNull || isNull) return false;
+            if (other.isNull && isNull)
+                return true;
+            if (other.isNull || isNull)
+                return false;
             return other.Value.Equals(Value);
         }
 

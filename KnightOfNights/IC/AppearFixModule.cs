@@ -18,13 +18,16 @@ internal class AppearFixModule : AbstractModule<AppearFixModule>
     {
         var inertState = fsm.GetState("Inert");
         inertState.AddTransition("REACTIVATE", "Away");
-        inertState.AddLastAction(new LambdaEveryFrame(() =>
-        {
-            var pd = PlayerData.instance;
-            if (!pd.GetBool(nameof(pd.hasDreamNail))) return;
+        inertState.AddLastAction(
+            new LambdaEveryFrame(() =>
+            {
+                var pd = PlayerData.instance;
+                if (!pd.GetBool(nameof(pd.hasDreamNail)))
+                    return;
 
-            fsm.FsmVariables.GetFsmGameObject("Dreamnail Hit").Value.SetActive(true);
-            fsm.SendEvent("REACTIVATE");
-        }));
+                fsm.FsmVariables.GetFsmGameObject("Dreamnail Hit").Value.SetActive(true);
+                fsm.SendEvent("REACTIVATE");
+            })
+        );
     }
 }

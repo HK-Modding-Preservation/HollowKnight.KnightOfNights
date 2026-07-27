@@ -9,6 +9,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float NextAttackDelay;
         public float OscillationPeriod;
         public float OscillationRadius;
-        
     }
 }

@@ -9,6 +9,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public UnityEngine.Vector2 TargetOffset;
         public float XBuffer;
         public float Deceleration;
-        
     }
 }

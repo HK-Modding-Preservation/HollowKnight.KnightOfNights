@@ -27,6 +27,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float WaitBetweenDaggerSpawns;
         public float WaitBetweenShieldWaves;
         public float WaitLastDaggerSpawnToShieldTeleport;
-        
     }
 }

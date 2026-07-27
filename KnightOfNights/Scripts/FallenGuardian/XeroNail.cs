@@ -28,7 +28,11 @@ internal class XeroNail(PlayMakerFSM fsm)
 
     internal static XeroNail Spawn(GameObject home, XeroNailSpec spec)
     {
-        var obj = Object.Instantiate(KnightOfNightsPreloader.Instance.XeroNail!, home.transform.position, Quaternion.Euler(0, 0, -90));
+        var obj = Object.Instantiate(
+            KnightOfNightsPreloader.Instance.XeroNail!,
+            home.transform.position,
+            Quaternion.Euler(0, 0, -90)
+        );
         obj.SetActive(true);
 
         var fsm = obj.LocateMyFSM("xero_nail");
@@ -55,7 +59,8 @@ internal class XeroNail(PlayMakerFSM fsm)
 
         var returnPauseState = fsm.GetState("Return Pause");
         returnPauseState.GetFirstActionOfType<Wait>().time = spec.returnPauseTime;
-        returnPauseState.GetFirstActionOfType<DecelerateV2>().deceleration = spec.returnPauseDeceleration;
+        returnPauseState.GetFirstActionOfType<DecelerateV2>().deceleration =
+            spec.returnPauseDeceleration;
 
         fsm.GetState("Returning").GetFirstActionOfType<FloatCompare>().float2 = spec.maxY;
 
@@ -64,7 +69,8 @@ internal class XeroNail(PlayMakerFSM fsm)
 
     internal bool Attack()
     {
-        if (fsm.FsmVariables.GetFsmBool("Attacking").Value) return false;
+        if (fsm.FsmVariables.GetFsmBool("Attacking").Value)
+            return false;
 
         fsm.SendEvent("ATTACK");
         return true;
@@ -72,7 +78,8 @@ internal class XeroNail(PlayMakerFSM fsm)
 
     internal void Despawn()
     {
-        if (despawned) return;
+        if (despawned)
+            return;
         despawned = true;
 
         fsm.SendEvent("GHOST DEAD");

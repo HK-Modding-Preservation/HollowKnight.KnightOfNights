@@ -1,6 +1,6 @@
-﻿using ItemChanger.Extensions;
-using System;
+﻿using System;
 using System.Collections;
+using ItemChanger.Extensions;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -28,7 +28,9 @@ internal static class DelayHelperExtensions
         self.GetOrAddComponent<DelayHelper>().StartCoroutine(Routine());
     }
 
-    internal static void DestroyAfter(this GameObject self, float delay) => self.DoAfter(() => UnityEngine.Object.Destroy(self), delay);
+    internal static void DestroyAfter(this GameObject self, float delay) =>
+        self.DoAfter(() => UnityEngine.Object.Destroy(self), delay);
 
-    internal static void DoAfter(this MonoBehaviour self, Action action, float delay) => self.gameObject.DoAfter(action, delay);
+    internal static void DoAfter(this MonoBehaviour self, Action action, float delay) =>
+        self.gameObject.DoAfter(action, delay);
 }

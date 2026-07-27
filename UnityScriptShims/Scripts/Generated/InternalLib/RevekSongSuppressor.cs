@@ -1,7 +1,4 @@
 namespace KnightOfNights.Scripts.InternalLib
 {
-    public class RevekSongSuppressor : UnityEngine.MonoBehaviour
-    {
-        
-    }
+    public class RevekSongSuppressor : UnityEngine.MonoBehaviour { }
 }

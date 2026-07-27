@@ -1,5 +1,5 @@
-﻿using KnightOfNights.Scripts.SharedLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.SharedLib;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Framework;
@@ -10,11 +10,13 @@ public class BlurPlaneProxy : MonoBehaviour
 {
     private static readonly Dictionary<float, Material> materials = [];
 
-    [ShimField("53.7f")] public float blurSize = 53.7f;
+    [ShimField("53.7f")]
+    public float blurSize = 53.7f;
 
     private static Material GetBluePlaneMaterial(float size)
     {
-        if (materials.TryGetValue(size, out var mat)) return mat;
+        if (materials.TryGetValue(size, out var mat))
+            return mat;
 
         mat = new(Shader.Find("UI/Blur/UIBlur"));
         mat.SetColor(Shader.PropertyToID("_TintColor"), new Color(1.0f, 1.0f, 1.0f, 0.0f));

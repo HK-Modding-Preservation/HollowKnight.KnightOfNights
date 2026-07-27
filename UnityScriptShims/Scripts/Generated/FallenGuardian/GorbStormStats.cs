@@ -27,6 +27,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float WaitFirst;
         public float WaitSpikeFinale;
         public float WaitSpikeSmall;
-        
     }
 }

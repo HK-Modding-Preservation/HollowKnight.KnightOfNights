@@ -31,7 +31,8 @@ internal class CustomSpriteFlash : MonoBehaviour
     {
         flashTimer += time;
         float flashAmount = 0;
-        if (flashTimer < flashDuration) flashAmount = Mathf.Lerp(flashBase, 0, flashTimer / flashDuration);
+        if (flashTimer < flashDuration)
+            flashAmount = Mathf.Lerp(flashBase, 0, flashTimer / flashDuration);
 
         MaterialPropertyBlock block = new();
         spriteRenderer?.GetPropertyBlock(block);

@@ -16,10 +16,13 @@ namespace KnightOfNights.Scripts.Proxy
 
         [Header("Geo Drops")]
         public int TotalGeo;
+
         [Tooltip("1 geo")]
         public int smallGeoDrops;
+
         [Tooltip("5 geo")]
         public int mediumGeoDrops;
+
         [Tooltip("25 geo")]
         public int largeGeoDrops;
     }

@@ -7,5 +7,5 @@ public enum AttackTypes
     Splatter,
     RuinsWater,
     SharpShadow,
-    NailBeam
+    NailBeam,
 }

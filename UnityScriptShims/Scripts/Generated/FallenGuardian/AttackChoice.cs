@@ -11,6 +11,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         XeroArmada = 6,
         SlashAmbush = 7,
         BigSlash = 8,
-        
     }
 }

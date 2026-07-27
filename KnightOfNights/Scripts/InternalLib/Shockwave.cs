@@ -20,5 +20,6 @@ internal static class Shockwave
         return obj;
     }
 
-    public static List<GameObject> SpawnTwo(Vector2 pos, Vector2 scale, float speed) => [SpawnOne(pos, scale, false, speed), SpawnOne(pos, scale, true, speed)];
+    public static List<GameObject> SpawnTwo(Vector2 pos, Vector2 scale, float speed) =>
+        [SpawnOne(pos, scale, false, speed), SpawnOne(pos, scale, true, speed)];
 }

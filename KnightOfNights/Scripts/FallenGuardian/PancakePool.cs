@@ -1,10 +1,10 @@
-﻿using HutongGames.PlayMaker;
+﻿using System.Collections.Generic;
+using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using ItemChanger.Extensions;
 using ItemChanger.FsmStateActions;
 using KnightOfNights.Scripts.InternalLib;
 using KnightOfNights.Scripts.SharedLib;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.FallenGuardian;
@@ -50,34 +50,55 @@ internal class PancakePool : MonoBehaviour
         var fire = fsm.AddFsmBool("Fire", false);
         var playSound = fsm.AddFsmBool("PlaySound", true);
         var hasSnowPrefab = fsm.AddFsmBool("HasSnowPrefab", false);
-        antic2State.AddLastAction(new LambdaEveryFrame(() =>
-        {
-            if (!fire.Value) return;
-
-            fire.Value = false;
-            fsm.SendEvent("FIRE");
-        }));
-
-        fsm.GetState("Land").AddFirstAction(new Lambda(() =>
-        {
-            if (hasSnowPrefab.Value)
+        antic2State.AddLastAction(
+            new LambdaEveryFrame(() =>
             {
-                Vector3 snowPos = new(fsm.gameObject.transform.position.x, minY);
-                fsm.FsmVariables.GetFsmGameObject("SnowPrefab").Value.Spawn(snowPos);
-            }
+                if (!fire.Value)
+                    return;
 
-            if (playSound.Value)
-                KnightOfNightsPreloader.Instance.ElderHuImpactClip?.PlayAtPosition(new(HeroController.instance.transform.position.x, fsm.gameObject.transform.position.y));
-        }));
+                fire.Value = false;
+                fsm.SendEvent("FIRE");
+            })
+        );
+
+        fsm.GetState("Land")
+            .AddFirstAction(
+                new Lambda(() =>
+                {
+                    if (hasSnowPrefab.Value)
+                    {
+                        Vector3 snowPos = new(fsm.gameObject.transform.position.x, minY);
+                        fsm.FsmVariables.GetFsmGameObject("SnowPrefab").Value.Spawn(snowPos);
+                    }
+
+                    if (playSound.Value)
+                        KnightOfNightsPreloader.Instance.ElderHuImpactClip?.PlayAtPosition(
+                            new(
+                                HeroController.instance.transform.position.x,
+                                fsm.gameObject.transform.position.y
+                            )
+                        );
+                })
+            );
 
         return obj;
     }
 
     // Invoke the returned action to fire the pancake.
-    public Pancake SpawnPancake(Vector3 pos, float launchPitch, float speed, float minY, bool playSound, GameObject? snowPrefab)
+    public Pancake SpawnPancake(
+        Vector3 pos,
+        float launchPitch,
+        float speed,
+        float minY,
+        bool playSound,
+        GameObject? snowPrefab
+    )
     {
         if (playSound)
-            KnightOfNightsPreloader.Instance.MageShotClip?.PlayAtPosition(new(HeroController.instance.transform.position.x, pos.y), launchPitch);
+            KnightOfNightsPreloader.Instance.MageShotClip?.PlayAtPosition(
+                new(HeroController.instance.transform.position.x, pos.y),
+                launchPitch
+            );
 
         var obj = inactive.Count > 0 ? inactive.Dequeue() : SpawnNew(pos, minY);
 
@@ -105,10 +126,14 @@ internal class PancakePool : MonoBehaviour
 
     private void Update()
     {
-        foreach (var obj in inactiveOneFrame) inactive.Enqueue(obj);
+        foreach (var obj in inactiveOneFrame)
+            inactive.Enqueue(obj);
         inactiveOneFrame.Clear();
 
-        foreach (var obj in active) if (!obj.activeSelf) inactiveOneFrame.Add(obj);
-        foreach (var obj in inactiveOneFrame) active.Remove(obj);
+        foreach (var obj in active)
+            if (!obj.activeSelf)
+                inactiveOneFrame.Add(obj);
+        foreach (var obj in inactiveOneFrame)
+            active.Remove(obj);
     }
 }

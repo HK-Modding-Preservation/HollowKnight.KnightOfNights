@@ -1,7 +1,7 @@
-﻿using KnightOfNights.Scripts.InternalLib;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.InternalLib;
 using KnightOfNights.Scripts.SharedLib;
 using SFCore.Utils;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Proxy;
@@ -16,15 +16,29 @@ internal class BreakableProxy : Breakable
         "breakAudioEvent",
         "nailHitEffectPrefab",
         "spellHitEffectPrefab",
-        "strikeEffectPrefab");
+        "strikeEffectPrefab"
+    );
 
-    [ShimField] public List<GameObject> WholeParts = [];
-    [ShimField] public List<GameObject> RemnantParts = [];
-    [ShimField] public List<GameObject> DebrisParts = [];
-    [ShimField("-60")] public float AngleOffset;
-    [ShimField] public Vector3 EffectOffset;
-    [ShimField] public float FlingSpeedMin;
-    [ShimField] public float FlingSpeedMax;
+    [ShimField]
+    public List<GameObject> WholeParts = [];
+
+    [ShimField]
+    public List<GameObject> RemnantParts = [];
+
+    [ShimField]
+    public List<GameObject> DebrisParts = [];
+
+    [ShimField("-60")]
+    public float AngleOffset;
+
+    [ShimField]
+    public Vector3 EffectOffset;
+
+    [ShimField]
+    public float FlingSpeedMin;
+
+    [ShimField]
+    public float FlingSpeedMax;
 
     public new void Awake()
     {

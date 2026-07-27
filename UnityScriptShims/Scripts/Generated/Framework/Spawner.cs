@@ -4,6 +4,5 @@ namespace KnightOfNights.Scripts.Framework
     {
         public UnityEngine.GameObject Prefab;
         public UnityEngine.Vector3 Offset;
-        
     }
 }

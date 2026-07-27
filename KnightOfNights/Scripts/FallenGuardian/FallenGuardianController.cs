@@ -1,4 +1,6 @@
-﻿using GlobalEnums;
+﻿using System.Collections.Generic;
+using System.Linq;
+using GlobalEnums;
 using HutongGames.PlayMaker.Actions;
 using ItemChanger.Extensions;
 using ItemChanger.FsmStateActions;
@@ -9,8 +11,6 @@ using KnightOfNights.Util;
 using PurenailCore.CollectionUtil;
 using PurenailCore.GOUtil;
 using PurenailCore.SystemUtil;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.FallenGuardian;
@@ -26,59 +26,129 @@ internal enum AttackChoice : int
     ShieldCyclone = 4,
     SlashAmbush = 7,
     UltraInstinct = 5,
-    XeroArmada = 6
+    XeroArmada = 6,
 }
 
 [Shim]
 internal class FallenGuardianAttack : MonoBehaviour
 {
-    [ShimField] public AttackChoice Choice;
-    [ShimField] public float Weight;
-    [ShimField] public int Cooldown;
-    [ShimField] public int InitialCooldown;
-    [ShimField] public float WeightIncrease;
-    [ShimField] public List<AttackChoice> ForbiddenPredecessors = [];
+    [ShimField]
+    public AttackChoice Choice;
+
+    [ShimField]
+    public float Weight;
+
+    [ShimField]
+    public int Cooldown;
+
+    [ShimField]
+    public int InitialCooldown;
+
+    [ShimField]
+    public float WeightIncrease;
+
+    [ShimField]
+    public List<AttackChoice> ForbiddenPredecessors = [];
 }
 
 [Shim]
 internal class FallenGuardianController : MonoBehaviour, IParryResponder
 {
-    [ShimField] public FallenGuardianContainer? Container;
+    [ShimField]
+    public FallenGuardianContainer? Container;
 
-    [ShimField] public float SequenceDelay;
-    [ShimField] public float Telegraph;
-    [ShimField] public float Deceleration;
-    [ShimField] public float LongWait;
-    [ShimField] public float ShortWait;
-    [ShimField] public float SplitOffset;
-    [ShimField] public float EscalationPause;
-    [ShimField] public int StaggerCount;
-    [ShimField] public float StaggerDistance;
+    [ShimField]
+    public float SequenceDelay;
 
-    [ShimField] public GameObject? StaggerBurst;
-    [ShimField] public GameObject? TeleportBurst;
-    [ShimField] public GameObject? DeathAnim;
+    [ShimField]
+    public float Telegraph;
 
-    [ShimField] public RuntimeAnimatorController? BigSlashController;
-    [ShimField] public RuntimeAnimatorController? DiveAnticLoopController;
-    [ShimField] public RuntimeAnimatorController? DiveAnticToDiveLoopController;
-    [ShimField] public RuntimeAnimatorController? DiveImpactController;
-    [ShimField] public RuntimeAnimatorController? DiveLoopController;
-    [ShimField] public RuntimeAnimatorController? SpellCastToEndController;
-    [ShimField] public RuntimeAnimatorController? SpellCastToLoopController;
-    [ShimField] public RuntimeAnimatorController? SpellLoopController;
-    [ShimField] public RuntimeAnimatorController? SpellLoopToSwordController;
-    [ShimField] public RuntimeAnimatorController? SpellStartToLoopController;
-    [ShimField] public RuntimeAnimatorController? StaggerController;
-    [ShimField] public RuntimeAnimatorController? StaggerToRecoverController;
-    [ShimField] public RuntimeAnimatorController? SwordToDiveAnticController;
-    [ShimField] public RuntimeAnimatorController? SwordToDiveAnticNoLoopController;
-    [ShimField] public RuntimeAnimatorController? SwordToSpellController;
-    [ShimField] public RuntimeAnimatorController? TeleportInController;
-    [ShimField] public RuntimeAnimatorController? TeleportOutController;
-    [ShimField] public RuntimeAnimatorController? ToSlashAnticLoopController;
+    [ShimField]
+    public float Deceleration;
 
-    [ShimField] public List<FallenGuardianPhaseStats> PhaseStats = [];
+    [ShimField]
+    public float LongWait;
+
+    [ShimField]
+    public float ShortWait;
+
+    [ShimField]
+    public float SplitOffset;
+
+    [ShimField]
+    public float EscalationPause;
+
+    [ShimField]
+    public int StaggerCount;
+
+    [ShimField]
+    public float StaggerDistance;
+
+    [ShimField]
+    public GameObject? StaggerBurst;
+
+    [ShimField]
+    public GameObject? TeleportBurst;
+
+    [ShimField]
+    public GameObject? DeathAnim;
+
+    [ShimField]
+    public RuntimeAnimatorController? BigSlashController;
+
+    [ShimField]
+    public RuntimeAnimatorController? DiveAnticLoopController;
+
+    [ShimField]
+    public RuntimeAnimatorController? DiveAnticToDiveLoopController;
+
+    [ShimField]
+    public RuntimeAnimatorController? DiveImpactController;
+
+    [ShimField]
+    public RuntimeAnimatorController? DiveLoopController;
+
+    [ShimField]
+    public RuntimeAnimatorController? SpellCastToEndController;
+
+    [ShimField]
+    public RuntimeAnimatorController? SpellCastToLoopController;
+
+    [ShimField]
+    public RuntimeAnimatorController? SpellLoopController;
+
+    [ShimField]
+    public RuntimeAnimatorController? SpellLoopToSwordController;
+
+    [ShimField]
+    public RuntimeAnimatorController? SpellStartToLoopController;
+
+    [ShimField]
+    public RuntimeAnimatorController? StaggerController;
+
+    [ShimField]
+    public RuntimeAnimatorController? StaggerToRecoverController;
+
+    [ShimField]
+    public RuntimeAnimatorController? SwordToDiveAnticController;
+
+    [ShimField]
+    public RuntimeAnimatorController? SwordToDiveAnticNoLoopController;
+
+    [ShimField]
+    public RuntimeAnimatorController? SwordToSpellController;
+
+    [ShimField]
+    public RuntimeAnimatorController? TeleportInController;
+
+    [ShimField]
+    public RuntimeAnimatorController? TeleportOutController;
+
+    [ShimField]
+    public RuntimeAnimatorController? ToSlashAnticLoopController;
+
+    [ShimField]
+    public List<FallenGuardianPhaseStats> PhaseStats = [];
 
     private HealthManager? healthManager;
     private Rigidbody2D? rigidbody;
@@ -98,7 +168,9 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
     private void InitParticles()
     {
-        GameObject particles = Instantiate(KnightOfNightsPreloader.Instance.Revek!.FindChild("Idle Pt")!);
+        GameObject particles = Instantiate(
+            KnightOfNightsPreloader.Instance.Revek!.FindChild("Idle Pt")!
+        );
         particles.SetActive(true);
         particles.SetParent(gameObject);
         particles.transform.localPosition = Vector3.zero;
@@ -141,7 +213,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
     private void OnDestroy()
     {
-        foreach (var go in recyclables) go.Recycle();
+        foreach (var go in recyclables)
+            go.Recycle();
         HeroController.instance.cState.invulnerable = false;
     }
 
@@ -155,25 +228,31 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
     private void UpdateFacePlayer()
     {
         flipTimer -= Time.deltaTime;
-        if (flipTimer > 0) return;
+        if (flipTimer > 0)
+            return;
         flipTimer = 0;
 
-        if (!stayFacing) return;
-        if (FacePlayer(reverseFacing)) flipTimer = FLIP_COOLDOWN;
+        if (!stayFacing)
+            return;
+        if (FacePlayer(reverseFacing))
+            flipTimer = FLIP_COOLDOWN;
     }
 
     private bool makeHeroInvuln = false;
 
     private void Update()
     {
-        if (makeHeroInvuln) HeroController.instance.cState.invulnerable = true;
+        if (makeHeroInvuln)
+            HeroController.instance.cState.invulnerable = true;
 
-        if (healthManager!.hp <= 0) return;
+        if (healthManager!.hp <= 0)
+            return;
 
         stats = PhaseStats.Where(s => healthManager!.hp >= s.MinHP).First();
 
         var pos = transform.position;
-        if (pos.x > 0 && pos.y > 0) lastPos = pos;
+        if (pos.x > 0 && pos.y > 0)
+            lastPos = pos;
 
         UpdateFacePlayer();
     }
@@ -205,32 +284,44 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         yield return new FlippableSlashAttackSequence([
             (0f, SlashAttackSpec.LEFT.WithTelegraph(Telegraph)),
             (LongWait, SlashAttackSpec.RIGHT.WithTelegraph(Telegraph)),
-            (LongWait, SlashAttackSpec.LEFT.WithTelegraph(Telegraph))
+            (LongWait, SlashAttackSpec.LEFT.WithTelegraph(Telegraph)),
         ]);
 
-        yield return new FlippableSlashAttackSequence([
-            (0f, SlashAttackSpec.LEFT.Up(SplitOffset).WithTelegraph(Telegraph)),
-            (LongWait, SlashAttackSpec.LEFT.Down(SplitOffset).WithTelegraph(Telegraph)),
-            (LongWait, SlashAttackSpec.RIGHT.Up(SplitOffset).WithTelegraph(Telegraph)),
-            (0f, SlashAttackSpec.RIGHT.Down(SplitOffset).WithTelegraph(Telegraph + ShortWait))
-        ], ShortWait);
+        yield return new FlippableSlashAttackSequence(
+            [
+                (0f, SlashAttackSpec.LEFT.Up(SplitOffset).WithTelegraph(Telegraph)),
+                (LongWait, SlashAttackSpec.LEFT.Down(SplitOffset).WithTelegraph(Telegraph)),
+                (LongWait, SlashAttackSpec.RIGHT.Up(SplitOffset).WithTelegraph(Telegraph)),
+                (0f, SlashAttackSpec.RIGHT.Down(SplitOffset).WithTelegraph(Telegraph + ShortWait)),
+            ],
+            ShortWait
+        );
 
-        yield return new FlippableSlashAttackSequence([
-            (0f, SlashAttackSpec.RIGHT.WithTelegraph(Telegraph)),
-            (LongWait, SlashAttackSpec.LEFT.Up(SplitOffset).WithTelegraph(Telegraph)),
-            (0f, SlashAttackSpec.LEFT.Down(SplitOffset).WithTelegraph(Telegraph + ShortWait)),
-            (LongWait + ShortWait, SlashAttackSpec.RIGHT.Down(SplitOffset).WithTelegraph(Telegraph)),
-            (0f, SlashAttackSpec.RIGHT.Up(SplitOffset).WithTelegraph(Telegraph + ShortWait))
-        ], ShortWait);
+        yield return new FlippableSlashAttackSequence(
+            [
+                (0f, SlashAttackSpec.RIGHT.WithTelegraph(Telegraph)),
+                (LongWait, SlashAttackSpec.LEFT.Up(SplitOffset).WithTelegraph(Telegraph)),
+                (0f, SlashAttackSpec.LEFT.Down(SplitOffset).WithTelegraph(Telegraph + ShortWait)),
+                (
+                    LongWait + ShortWait,
+                    SlashAttackSpec.RIGHT.Down(SplitOffset).WithTelegraph(Telegraph)
+                ),
+                (0f, SlashAttackSpec.RIGHT.Up(SplitOffset).WithTelegraph(Telegraph + ShortWait)),
+            ],
+            ShortWait
+        );
 
-        yield return new FlippableSlashAttackSequence([
-            (0f, SlashAttackSpec.LEFT.WithTelegraph(Telegraph)),
-            (0f, SlashAttackSpec.RIGHT.WithTelegraph(Telegraph + ShortWait)),
-            (LongWait + ShortWait, SlashAttackSpec.RIGHT.WithTelegraph(Telegraph)),
-            (0f, SlashAttackSpec.LEFT.WithTelegraph(Telegraph + ShortWait)),
-            (3 * ShortWait, SlashAttackSpec.HIGH_LEFT.WithTelegraph(Telegraph)),
-            (0f, SlashAttackSpec.HIGH_RIGHT.WithTelegraph(Telegraph + ShortWait))
-        ], ShortWait);
+        yield return new FlippableSlashAttackSequence(
+            [
+                (0f, SlashAttackSpec.LEFT.WithTelegraph(Telegraph)),
+                (0f, SlashAttackSpec.RIGHT.WithTelegraph(Telegraph + ShortWait)),
+                (LongWait + ShortWait, SlashAttackSpec.RIGHT.WithTelegraph(Telegraph)),
+                (0f, SlashAttackSpec.LEFT.WithTelegraph(Telegraph + ShortWait)),
+                (3 * ShortWait, SlashAttackSpec.HIGH_LEFT.WithTelegraph(Telegraph)),
+                (0f, SlashAttackSpec.HIGH_RIGHT.WithTelegraph(Telegraph + ShortWait)),
+            ],
+            ShortWait
+        );
     }
 
     private IEnumerator<CoroutineElement> RunBoss()
@@ -254,8 +345,10 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
                 sequence.Play(this, r => result.Value = r);
 
                 yield return Coroutines.SleepUntil(() => result.Value.HasValue);
-                if (result.Value == SlashAttackResult.NOT_PARRIED) continue;
-                else break;
+                if (result.Value == SlashAttackResult.NOT_PARRIED)
+                    continue;
+                else
+                    break;
             }
         }
 
@@ -268,23 +361,32 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         GameObject musicObj = new();
 
         var music = musicObj.AddComponent<AudioSource>();
-        music.clip = KnightOfNightsPreloader.Instance.DreamFightMusicClip ?? throw new System.ArgumentException("WHEREISTHEMUSIC");
+        music.clip =
+            KnightOfNightsPreloader.Instance.DreamFightMusicClip
+            ?? throw new System.ArgumentException("WHEREISTHEMUSIC");
         music.loop = true;
         music.outputAudioMixerGroup = AudioMixerGroups.Music();
         music.volume = 1;
         musicObj.SetActive(true);
         music.Play();
 
-        var dreamArea = Instantiate(KnightOfNightsPreloader.Instance.DreamAreaEffect!, Vector3.zero, Quaternion.identity);
+        var dreamArea = Instantiate(
+            KnightOfNightsPreloader.Instance.DreamAreaEffect!,
+            Vector3.zero,
+            Quaternion.identity
+        );
         dreamArea.SetActive(true);
 
         AreaTitleUtil.Spawn(FallenGuardianModule.REVEK_KEY);
 
         yield return Coroutines.SleepSeconds(1);
 
-        if (CharmIds.HeavyBlow.IsEquipped()) --StaggerCount;
+        if (CharmIds.HeavyBlow.IsEquipped())
+            --StaggerCount;
 
-        yield return Coroutines.SleepUntil(() => healthManager!.hp <= 0).WithDisposable(Coroutines.Sequence(LoopAttacks()));
+        yield return Coroutines
+            .SleepUntil(() => healthManager!.hp <= 0)
+            .WithDisposable(Coroutines.Sequence(LoopAttacks()));
 
         makeHeroInvuln = true;
         yFixer?.enabled = false;
@@ -306,10 +408,12 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             RecordChoice(attack);
             var oneof = Coroutines.OneOf(
                 ExecuteAttack(attack),
-                Coroutines.SleepUntil(() => staggerParams != null));
+                Coroutines.SleepUntil(() => staggerParams != null)
+            );
             yield return oneof;
 
-            if (oneof.Choice == 1) yield return Coroutines.Sequence(ExecuteStagger(false));
+            if (oneof.Choice == 1)
+                yield return Coroutines.Sequence(ExecuteStagger(false));
 
             // Continue to next attack.
         }
@@ -324,16 +428,18 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         internal float? DamageDirection;
         internal float? MagnitudeMultiplier;
     }
+
     private StaggerParams? staggerParams;
     private HitInstance? lastHit;
 
-    private static StaggerParams MakeStaggerParams(SlashAttack attack) => new()
-    {
-        Pos = attack.ParryPos,
-        FacingLeft = attack.Spec.SpawnOffset.x > 0,
-        DamageDirection = attack.DamageDirection,
-        MagnitudeMultiplier = attack.MagnitudeMultiplier
-    };
+    private static StaggerParams MakeStaggerParams(SlashAttack attack) =>
+        new()
+        {
+            Pos = attack.ParryPos,
+            FacingLeft = attack.Spec.SpawnOffset.x > 0,
+            DamageDirection = attack.DamageDirection,
+            MagnitudeMultiplier = attack.MagnitudeMultiplier,
+        };
 
     private bool MaybeStagger(SlashAttack attack) => MaybeStagger(MakeStaggerParams(attack));
 
@@ -342,7 +448,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         RevekAddons.SpawnSoul(staggerParams.Pos);
         RevekAddons.GetHurtClip().PlayAtPosition(staggerParams.Pos);
 
-        if (++multiParries < StaggerCount) return false;
+        if (++multiParries < StaggerCount)
+            return false;
 
         multiParries = 0;
         this.staggerParams = staggerParams;
@@ -375,7 +482,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
         // Force hero distance.
         Vector2 kPos = HeroController.instance.transform.position;
-        if ((pos - kPos).magnitude < StaggerDistance) pos = kPos + (pos - kPos).normalized * StaggerDistance;
+        if ((pos - kPos).magnitude < StaggerDistance)
+            pos = kPos + (pos - kPos).normalized * StaggerDistance;
 
         // Force above grounds.
         if (pos.y <= Container!.Arena!.bounds.min.y + 1)
@@ -390,14 +498,29 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         }
 
         transform.position = pos;
-        transform.localScale = new((prevParams?.FacingLeft ?? transform.localScale.x > 0) ? 1 : -1, 1, 1);
+        transform.localScale = new(
+            (prevParams?.FacingLeft ?? transform.localScale.x > 0) ? 1 : -1,
+            1,
+            1
+        );
         StaggerBurst?.Spawn(pos);
         KnightOfNightsPreloader.Instance.StunEffect!.Spawn(pos);
 
-        if (prevParams != null && !recoil!.IsRecoiling && prevParams.DamageDirection.HasValue && prevParams.MagnitudeMultiplier.HasValue)
-            recoil.RecoilByDirection(DirectionUtils.GetCardinalDirection(prevParams.DamageDirection.Value), prevParams.MagnitudeMultiplier.Value);
+        if (
+            prevParams != null
+            && !recoil!.IsRecoiling
+            && prevParams.DamageDirection.HasValue
+            && prevParams.MagnitudeMultiplier.HasValue
+        )
+            recoil.RecoilByDirection(
+                DirectionUtils.GetCardinalDirection(prevParams.DamageDirection.Value),
+                prevParams.MagnitudeMultiplier.Value
+            );
         else if (lastHit != null && !recoil!.IsRecoiling)
-            recoil.RecoilByDirection(DirectionUtils.GetCardinalDirection(lastHit.Value.Direction), lastHit.Value.MagnitudeMultiplier);
+            recoil.RecoilByDirection(
+                DirectionUtils.GetCardinalDirection(lastHit.Value.Direction),
+                lastHit.Value.MagnitudeMultiplier
+            );
 
         SetTangible(false);
         animator!.runtimeAnimatorController = StaggerController!;
@@ -415,13 +538,15 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         bobber?.ResetRandom(stats.OscillationRadius, stats.OscillationPeriod);
         SetTangible(true);
 
-        if (deathStagger) yield return Coroutines.Never();
+        if (deathStagger)
+            yield return Coroutines.Never();
 
         yield return Coroutines.SleepSeconds(stats.GracePeriod);
 
         yield return Coroutines.OneOf(
             OnTakeDamage().Then(Coroutines.SleepSeconds(stats.HitWait)),
-            Coroutines.SleepSeconds(stats.MaxWait));
+            Coroutines.SleepSeconds(stats.MaxWait)
+        );
 
         bobber!.enabled = false;
         animator.runtimeAnimatorController = StaggerToRecoverController!;
@@ -436,8 +561,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         yield return Coroutines.SleepSeconds(stats.NextAttackDelay);
     }
 
-    internal event System.Action? OnDeath;  // Invoked once.
-    private event System.Action? OnStagger;  // Cleared after use.
+    internal event System.Action? OnDeath; // Invoked once.
+    private event System.Action? OnStagger; // Cleared after use.
 
     private readonly HashMultiset<AttackChoice> Cooldowns = new();
     private readonly HashMultiset<AttackChoice> WeightAdditions = new();
@@ -453,24 +578,30 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
                 WeightAdditions.RemoveAll(c.Choice);
                 Cooldowns.Add(c.Choice, c.Cooldown);
             }
-            else if (!Cooldowns.Remove(c.Choice)) WeightAdditions.Add(c.Choice);
+            else if (!Cooldowns.Remove(c.Choice))
+                WeightAdditions.Add(c.Choice);
         }
     }
 
     private AttackChoice ChooseAttack(AttackChoice previous)
     {
-        if (ForceAttack.HasValue) return ForceAttack.Value;
+        if (ForceAttack.HasValue)
+            return ForceAttack.Value;
         if (!stats!.DidFirstAttack)
         {
-            foreach (var attack in stats.Attacks) if (attack.InitialCooldown > 0) Cooldowns.Add(attack.Choice, attack.InitialCooldown);
+            foreach (var attack in stats.Attacks)
+                if (attack.InitialCooldown > 0)
+                    Cooldowns.Add(attack.Choice, attack.InitialCooldown);
             return stats.FirstAttack;
         }
 
         IndexedWeightedSet<AttackChoice> choices = new();
         foreach (var c in stats!.Attacks)
         {
-            if (Cooldowns.CountOf(c.Choice) > 0) continue;
-            if (c.ForbiddenPredecessors.Contains(previous)) continue;
+            if (Cooldowns.CountOf(c.Choice) > 0)
+                continue;
+            if (c.ForbiddenPredecessors.Contains(previous))
+                continue;
 
             choices.Add(c.Choice, c.Weight + c.WeightIncrease * WeightAdditions.CountOf(c.Choice));
         }
@@ -519,7 +650,10 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         {
             while (true)
             {
-                float x = Random.Range(Bounds().min.x + stats.SpawnXBuffer, Bounds().max.x - stats.SpawnXBuffer);
+                float x = Random.Range(
+                    Bounds().min.x + stats.SpawnXBuffer,
+                    Bounds().max.x - stats.SpawnXBuffer
+                );
                 var kX = HeroController.instance.transform.position.x;
 
                 if (Mathf.Abs(kX - x) >= stats.SpawnXDistance)
@@ -531,7 +665,12 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
         transform.position = pos;
         FacePlayer();
-        this.StartLibCoroutine(Coroutines.PlayAnimations(animator!, [TeleportInController!, SwordToSpellController!, SpellStartToLoopController!]));
+        this.StartLibCoroutine(
+            Coroutines.PlayAnimations(
+                animator!,
+                [TeleportInController!, SwordToSpellController!, SpellStartToLoopController!]
+            )
+        );
 
         bobber?.ResetRandom(stats.BobRadius, stats.BobPeriod);
         xFixer?.Reset(pos.x, 1.5f);
@@ -542,12 +681,15 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         FacePlayer();
         animator!.runtimeAnimatorController = SpellCastToLoopController!;
 
-        List<float> xs = [
+        List<float> xs =
+        [
             pos.x - stats.AxeSpawnXSpaceInner - stats.AxeSpawnXSpaceOuter,
             pos.x - stats.AxeSpawnXSpaceInner,
             pos.x + stats.AxeSpawnXSpaceInner,
-            pos.x + stats.AxeSpawnXSpaceInner + stats.AxeSpawnXSpaceOuter];
-        if (MathExt.CoinFlip()) xs.Reverse();
+            pos.x + stats.AxeSpawnXSpaceInner + stats.AxeSpawnXSpaceOuter,
+        ];
+        if (MathExt.CoinFlip())
+            xs.Reverse();
 
         Wrapped<int> despawns = new(0);
         List<GalienAxe> axes = [];
@@ -557,7 +699,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
         for (int i = 0; i < xs.Count; i++)
         {
-            if (i != 0) yield return Coroutines.SleepSeconds(stats.WaitBetweenAxeSpawns);
+            if (i != 0)
+                yield return Coroutines.SleepSeconds(stats.WaitBetweenAxeSpawns);
 
             var axe = GalienAxe.Spawn(stats, Container!.Arena!, new(xs[i], pos.y));
             axe.OnDespawn += p =>
@@ -574,7 +717,12 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         yFixer!.enabled = false;
 
         yield return Coroutines.SleepSeconds(stats.WaitAfterLastSpawnToTeleportOut);
-        this.StartLibCoroutine(Coroutines.PlayAnimations(animator!, [SpellLoopToSwordController!, TeleportOutController!]));
+        this.StartLibCoroutine(
+            Coroutines.PlayAnimations(
+                animator!,
+                [SpellLoopToSwordController!, TeleportOutController!]
+            )
+        );
 
         yield return Coroutines.SleepSeconds(stats.WaitAfterTeleportToSlashAttack);
 
@@ -583,18 +731,24 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         Wrapped<SlashAttack?> lastAttack = new(null);
         for (int i = 0; i < stats.NumSlashAttacks; i++)
         {
-            if (i != 0) yield return Coroutines.SleepSeconds(stats.WaitBetweenSlashAttacks);
+            if (i != 0)
+                yield return Coroutines.SleepSeconds(stats.WaitBetweenSlashAttacks);
 
-            var attack = SlashAttack.Spawn(this, MathExt.CoinFlip() ? SlashAttackSpec.LEFT : SlashAttackSpec.RIGHT);
+            var attack = SlashAttack.Spawn(
+                this,
+                MathExt.CoinFlip() ? SlashAttackSpec.LEFT : SlashAttackSpec.RIGHT
+            );
             attack.OnResult += result =>
             {
-                if (result != SlashAttackResult.PARRIED) return;
-                
+                if (result != SlashAttackResult.PARRIED)
+                    return;
+
                 lastPos = attack.ParryPos;
                 lastAttack.Value = attack;
                 healthManager!.hp -= attack.DamageDealt;
 
-                if (++parries.Value == stats.NumSlashAttacks && MaybeStagger(attack)) DespawnAxes();
+                if (++parries.Value == stats.NumSlashAttacks && MaybeStagger(attack))
+                    DespawnAxes();
             };
 
             attacks.Add(attack);
@@ -608,7 +762,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
     }
 
     [ShimMethod]
-    public void BigSlashFollowup() => KnightOfNightsPreloader.Instance.SlashAttackClip?.PlayAtPosition(transform.position, 0.9f);
+    public void BigSlashFollowup() =>
+        KnightOfNightsPreloader.Instance.SlashAttackClip?.PlayAtPosition(transform.position, 0.9f);
 
     private bool didBigSlashMove = false;
 
@@ -626,22 +781,32 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
         float angle = FacingLeft ? 180 : 0;
         if (FacingLeft == kPos.x < pos.x)
-            angle = MathExt.ClampAngle((kPos - pos).ToAngle(), angle - stats.AngleRange, angle + stats.AngleRange);
+            angle = MathExt.ClampAngle(
+                (kPos - pos).ToAngle(),
+                angle - stats.AngleRange,
+                angle + stats.AngleRange
+            );
 
         bigSlashVelocity = Quaternion.Euler(0, 0, angle) * new Vector3(stats.Speed, 0, 0);
         bigSlashDeceleration = stats.Deceleration;
     }
 
     [ShimMethod]
-    public void BigSlashPrepare() => KnightOfNightsPreloader.Instance.HornetParryClip?.PlayAtPosition(transform.position);
+    public void BigSlashPrepare() =>
+        KnightOfNightsPreloader.Instance.HornetParryClip?.PlayAtPosition(transform.position);
 
     private IEnumerator<CoroutineElement> DoBigSlash()
     {
         var stats = this.stats!.BigSlashStats!;
         var kPos = HeroController.instance.transform.position;
-        bool attackLeft = kPos.x > Bounds().max.x - stats.XBuffer || (kPos.x > Bounds().min.x + stats.XBuffer && MathExt.CoinFlip());
+        bool attackLeft =
+            kPos.x > Bounds().max.x - stats.XBuffer
+            || (kPos.x > Bounds().min.x + stats.XBuffer && MathExt.CoinFlip());
 
-        Vector2 pos = new(kPos.x + stats.SpawnOffset.x * (attackLeft ? 1 : -1), kPos.y + stats.SpawnOffset.y);
+        Vector2 pos = new(
+            kPos.x + stats.SpawnOffset.x * (attackLeft ? 1 : -1),
+            kPos.y + stats.SpawnOffset.y
+        );
 
         transform.position = pos;
         FacePlayer();
@@ -651,14 +816,19 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
         // Attack can be interrupted if hit before slash.
         didBigSlashMove = false;
-        yield return Coroutines.OneOf(Coroutines.PlayAnimation(animator!, BigSlashController!), Coroutines.SleepUntil(() => !didBigSlashMove && healthManager!.hp < prev));
+        yield return Coroutines.OneOf(
+            Coroutines.PlayAnimation(animator!, BigSlashController!),
+            Coroutines.SleepUntil(() => !didBigSlashMove && healthManager!.hp < prev)
+        );
 
         yield return Coroutines.PlayAnimation(animator!, TeleportOutController!);
     }
 
     private IEnumerator<CoroutineElement> BigSlash()
     {
-        yield return Coroutines.SleepSeconds(stats!.BigSlashStats!.AttackDuration).WithDisposable(Coroutines.Sequence(DoBigSlash()));
+        yield return Coroutines
+            .SleepSeconds(stats!.BigSlashStats!.AttackDuration)
+            .WithDisposable(Coroutines.Sequence(DoBigSlash()));
     }
 
     private IEnumerator<CoroutineElement> EmptyTeleport()
@@ -670,41 +840,65 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             Vector2 kPos = HeroController.instance.transform.position;
             for (int i = 0; i < 100; i++)
             {
-                var x = Random.Range(Bounds().min.x + stats.XBuffer, Bounds().max.x - stats.XBuffer);
+                var x = Random.Range(
+                    Bounds().min.x + stats.XBuffer,
+                    Bounds().max.x - stats.XBuffer
+                );
                 var y = Bounds().min.y + Random.Range(stats.HeightMin, stats.HeightMax);
                 Vector2 pos = new(x, y);
 
                 var dist = (pos - kPos).magnitude;
-                if (dist < stats.DistanceMin || dist > stats.DistanceMax) continue;
+                if (dist < stats.DistanceMin || dist > stats.DistanceMax)
+                    continue;
 
                 return pos;
             }
 
             List<float> xs = [];
             var x1 = kPos.x - (stats.DistanceMin + stats.DistanceMax) / 2;
-            if (x1 > Bounds().min.x + stats.XBuffer) xs.Add(x1);
+            if (x1 > Bounds().min.x + stats.XBuffer)
+                xs.Add(x1);
             var x2 = kPos.x + (stats.DistanceMin + stats.DistanceMax) / 2;
-            if (x2 < Bounds().max.x - stats.XBuffer) xs.Add(x2);
+            if (x2 < Bounds().max.x - stats.XBuffer)
+                xs.Add(x2);
 
-            return new(xs.Choose(), Bounds().min.y + Random.Range(stats.HeightMin, stats.HeightMax));
+            return new(
+                xs.Choose(),
+                Bounds().min.y + Random.Range(stats.HeightMin, stats.HeightMax)
+            );
         }
 
         var pos = ChoosePos();
 
         transform.position = pos;
         FacePlayer();
-        this.StartLibCoroutine(Coroutines.PlayAnimations(animator!, [TeleportInController!, ToSlashAnticLoopController!]));
+        this.StartLibCoroutine(
+            Coroutines.PlayAnimations(
+                animator!,
+                [TeleportInController!, ToSlashAnticLoopController!]
+            )
+        );
 
         stayFacing = true;
         reverseFacing = false;
-        yield return Coroutines.OneOf(Coroutines.SleepSeconds(Random.Range(stats.WaitToTeleOutMin, stats.WaitToTeleOutMax)), OnTakeDamage());
+        yield return Coroutines.OneOf(
+            Coroutines.SleepSeconds(Random.Range(stats.WaitToTeleOutMin, stats.WaitToTeleOutMax)),
+            OnTakeDamage()
+        );
         stayFacing = false;
 
         animator!.runtimeAnimatorController = TeleportOutController!;
         yield return Coroutines.SleepSeconds(stats.GracePeriod);
     }
 
-    private IEnumerator<CoroutineElement> LaunchGorbSpikes(HashSet<GameObject> sink, int count, float offset, int numBursts, float wait, float pitchIncrement)
+    private IEnumerator<CoroutineElement> LaunchGorbSpikes(
+        HashSet<GameObject> sink,
+        int count,
+        float offset,
+        int numBursts,
+        float wait,
+        float pitchIncrement
+    )
     {
         var prefab = KnightOfNightsPreloader.Instance.GorbSpear!;
         prefab.FixSpawnBug();
@@ -714,7 +908,10 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         for (int i = 0; i < numBursts; i++)
         {
             var pos = transform.position;
-            KnightOfNightsPreloader.Instance.MageShotClip!.PlayAtPosition(pos, 1f + i * pitchIncrement);
+            KnightOfNightsPreloader.Instance.MageShotClip!.PlayAtPosition(
+                pos,
+                1f + i * pitchIncrement
+            );
             for (int j = 0; j < count; j++)
             {
                 var obj = prefab.Spawn(pos, Quaternion.Euler(0, 0, angle));
@@ -726,24 +923,34 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
                 var control = obj.LocateMyFSM("Control");
                 var poke = control.GetState("Poke Out");
                 poke.GetFirstActionOfType<SetVelocityAsAngle>().speed = 30 * accel;
-                poke.GetFirstActionOfType<DecelerateV2>().deceleration = 0.88f * Mathf.Pow(accel, 0.02f);
+                poke.GetFirstActionOfType<DecelerateV2>().deceleration =
+                    0.88f * Mathf.Pow(accel, 0.02f);
                 poke.GetFirstActionOfType<Wait>().time = 0.5f / accel;
-                control.GetState("Fire").GetFirstActionOfType<SetVelocityAsAngle>().speed = 25 * accel;
+                control.GetState("Fire").GetFirstActionOfType<SetVelocityAsAngle>().speed =
+                    25 * accel;
 
-                control.GetState("Recycle").AddFirstAction(new Lambda(() =>
-                {
-                    poke.GetFirstActionOfType<SetVelocityAsAngle>().speed = 30;
-                    poke.GetFirstActionOfType<DecelerateV2>().deceleration = 0.88f;
-                    poke.GetFirstActionOfType<Wait>().time = 0.5f;
-                    control.GetState("Fire").GetFirstActionOfType<SetVelocityAsAngle>().speed = 25;
-                }));
+                control
+                    .GetState("Recycle")
+                    .AddFirstAction(
+                        new Lambda(() =>
+                        {
+                            poke.GetFirstActionOfType<SetVelocityAsAngle>().speed = 30;
+                            poke.GetFirstActionOfType<DecelerateV2>().deceleration = 0.88f;
+                            poke.GetFirstActionOfType<Wait>().time = 0.5f;
+                            control
+                                .GetState("Fire")
+                                .GetFirstActionOfType<SetVelocityAsAngle>()
+                                .speed = 25;
+                        })
+                    );
 
                 obj.SetActive(true);
                 sink.Add(obj);
             }
 
             angle += off;
-            if (i != numBursts - 1) yield return Coroutines.SleepSeconds(wait);
+            if (i != numBursts - 1)
+                yield return Coroutines.SleepSeconds(wait);
         }
     }
 
@@ -757,7 +964,10 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             var xMax = left ? -stats.SmallXMin : stats.SmallXMax;
 
             var kPos = HeroController.instance.transform.position;
-            return new(kPos.x + Random.Range(xMin, xMax), Container!.Arena!.bounds.min.y + Random.Range(stats.SmallYMin, stats.SmallYMax));
+            return new(
+                kPos.x + Random.Range(xMin, xMax),
+                Container!.Arena!.bounds.min.y + Random.Range(stats.SmallYMin, stats.SmallYMax)
+            );
         }
 
         HashSet<GameObject> spears = [];
@@ -780,7 +990,16 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
                 FacePlayer();
                 bobber?.ResetRandom(stats.BobRadius, stats.BobPeriod);
 
-                this.StartLibCoroutine(Coroutines.PlayAnimations(animator!, [TeleportInController!, SwordToSpellController!, SpellStartToLoopController!]));
+                this.StartLibCoroutine(
+                    Coroutines.PlayAnimations(
+                        animator!,
+                        [
+                            TeleportInController!,
+                            SwordToSpellController!,
+                            SpellStartToLoopController!,
+                        ]
+                    )
+                );
                 yield return Coroutines.SleepSeconds(stats.WaitFirst);
             }
             else
@@ -790,7 +1009,16 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
                 yield return Coroutines.SleepSeconds(stats.WaitAfterTeleport);
             }
 
-            yield return Coroutines.Sequence(LaunchGorbSpikes(spears, stats.SpokeCountSmall, stats.SpokeRotationSmall, stats.BurstCountSmall, stats.WaitSpikeSmall, stats.PitchIncrementSmall));
+            yield return Coroutines.Sequence(
+                LaunchGorbSpikes(
+                    spears,
+                    stats.SpokeCountSmall,
+                    stats.SpokeRotationSmall,
+                    stats.BurstCountSmall,
+                    stats.WaitSpikeSmall,
+                    stats.PitchIncrementSmall
+                )
+            );
             yield return Coroutines.SleepSeconds(stats.WaitBeforeTeleport);
         }
 
@@ -801,7 +1029,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             for (int i = 0; i < 100; i++)
             {
                 var p = bounds.Random();
-                if ((kPos - p).magnitude >= stats.FinaleMinDist) return p;
+                if ((kPos - p).magnitude >= stats.FinaleMinDist)
+                    return p;
             }
 
             return bounds.center;
@@ -817,12 +1046,26 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         OnCastSpell += () => spell.Value = true;
         yield return Coroutines.SleepUntil(() => spell.Value = true);
 
-        yield return Coroutines.Sequence(LaunchGorbSpikes(spears, stats.SpokeCountFinale, stats.SpokeRotationFinale, stats.BurstCountFinale, stats.WaitSpikeFinale, stats.PitchIncrementFinale));
+        yield return Coroutines.Sequence(
+            LaunchGorbSpikes(
+                spears,
+                stats.SpokeCountFinale,
+                stats.SpokeRotationFinale,
+                stats.BurstCountFinale,
+                stats.WaitSpikeFinale,
+                stats.PitchIncrementFinale
+            )
+        );
         yield return Coroutines.SleepSeconds(stats.WaitAfterFinale);
 
         Wrapped<bool> teleport = new(false);
         OnTeleportOut += () => teleport.Value = true;
-        this.StartLibCoroutine(Coroutines.PlayAnimations(animator, [SpellLoopToSwordController!, TeleportOutController!]));
+        this.StartLibCoroutine(
+            Coroutines.PlayAnimations(
+                animator,
+                [SpellLoopToSwordController!, TeleportOutController!]
+            )
+        );
         yield return Coroutines.SleepUntil(() => teleport.Value = true);
 
         yield return Coroutines.SleepSeconds(stats.GracePeriod);
@@ -833,6 +1076,7 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
     private const int NUM_PANCAKES = 17;
 
     private static readonly List<List<int>> HOLE_PERMUTATIONS = GenerateHolePermutations();
+
     private static List<List<int>> GenerateHolePermutations()
     {
         List<int> input = [3, 3, 3, 4, 4];
@@ -844,11 +1088,13 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
     private static List<bool> UpdatePancakeSpawns(List<bool> prev)
     {
         List<bool> ret = [];
-        for (int i = 0; i < NUM_PANCAKES; i++) ret.Add(true);
+        for (int i = 0; i < NUM_PANCAKES; i++)
+            ret.Add(true);
 
         for (int i = 0; i < NUM_PANCAKES; i++)
         {
-            if (prev[i]) continue;
+            if (prev[i])
+                continue;
 
             if (i + 1 < NUM_PANCAKES && !prev[i + 1])
             {
@@ -871,7 +1117,11 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             }
             else
             {
-                List<int> choices = [i == 0 ? 1 : (i - 1), i == NUM_PANCAKES - 1 ? (NUM_PANCAKES - 2) : i + 1];
+                List<int> choices =
+                [
+                    i == 0 ? 1 : (i - 1),
+                    i == NUM_PANCAKES - 1 ? (NUM_PANCAKES - 2) : i + 1,
+                ];
                 ret[choices.Choose()] = false;
             }
         }
@@ -882,7 +1132,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
     private static List<List<bool>> GeneratePancakeSpawns(int count)
     {
         List<bool> spawns = [];
-        for (int i = 0; i < NUM_PANCAKES; i++) spawns.Add(true);
+        for (int i = 0; i < NUM_PANCAKES; i++)
+            spawns.Add(true);
 
         int idx = 0;
         foreach (int span in HOLE_PERMUTATIONS.Choose())
@@ -894,12 +1145,14 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         List<List<bool>> valid = [];
         for (int i = 0; i < NUM_PANCAKES; i++)
         {
-            if (spawns[0] && spawns[NUM_PANCAKES - 1]) valid.Add([.. spawns]);
+            if (spawns[0] && spawns[NUM_PANCAKES - 1])
+                valid.Add([.. spawns]);
             spawns.Rotate(1);
         }
 
         List<List<bool>> ret = [valid.Choose()];
-        while (ret.Count < count) ret.Add(UpdatePancakeSpawns(ret.Last()));
+        while (ret.Count < count)
+            ret.Add(UpdatePancakeSpawns(ret.Last()));
         return ret;
     }
 
@@ -918,11 +1171,21 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         for (int i = -extra; i < NUM_PANCAKES + extra; i++)
         {
             bool mainPlatform = i >= 0 && i < NUM_PANCAKES;
-            if (mainPlatform && !spawns[i]) continue;
+            if (mainPlatform && !spawns[i])
+                continue;
 
             var minY = Bounds().min.y - (mainPlatform ? 0 : 8);
             bool playSound = mainPlatform && !playedSound;
-            ret.Add(pancakePool!.SpawnPancake(new(X(i), y, z), launchPitch, stats.PancakeSpeed, minY, playSound, mainPlatform ? stats.SnowLandPrefab : null));
+            ret.Add(
+                pancakePool!.SpawnPancake(
+                    new(X(i), y, z),
+                    launchPitch,
+                    stats.PancakeSpeed,
+                    minY,
+                    playSound,
+                    mainPlatform ? stats.SnowLandPrefab : null
+                )
+            );
             playedSound |= playSound;
         }
         return ret;
@@ -937,7 +1200,10 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             var b = Container!.Arena!.bounds;
             var kX = MathExt.Clamp(HeroController.instance.transform.position.x, b.min.x, b.max.x);
 
-            return Random.Range(Mathf.Max(b.min.x + stats.DiveXBuffer, kX - stats.DiveXRange), Mathf.Min(b.max.x - stats.DiveXBuffer, kX + stats.DiveXRange));
+            return Random.Range(
+                Mathf.Max(b.min.x + stats.DiveXBuffer, kX - stats.DiveXRange),
+                Mathf.Min(b.max.x - stats.DiveXBuffer, kX + stats.DiveXRange)
+            );
         }
 
         for (int i = 0; i < stats.WaveCounts.Count; i++)
@@ -957,42 +1223,58 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
                 y -= stats.PancakeYIncrement;
                 z -= 0.01f;
                 pitch += stats.PancakePitchIncrement;
-                if (j != numWaves - 1) yield return Coroutines.SleepSeconds(stats.WaitBetweenWaveSpawns);
+                if (j != numWaves - 1)
+                    yield return Coroutines.SleepSeconds(stats.WaitBetweenWaveSpawns);
             }
             waves.Reverse();
 
-            gameObject.DoAfter(() =>
-            {
-                Vector3 pos = Vector3.zero;
-                for (int i = 0; i < 10; i++)
+            gameObject.DoAfter(
+                () =>
                 {
-                    pos = new(ChooseX(), Bounds().min.y + Random.Range(stats.DiveHeightMin, stats.DiveHeightMax));
-                    if ((pos - HeroController.instance.transform.position).magnitude >= 4) break;
-                }
+                    Vector3 pos = Vector3.zero;
+                    for (int i = 0; i < 10; i++)
+                    {
+                        pos = new(
+                            ChooseX(),
+                            Bounds().min.y + Random.Range(stats.DiveHeightMin, stats.DiveHeightMax)
+                        );
+                        if ((pos - HeroController.instance.transform.position).magnitude >= 4)
+                            break;
+                    }
 
-                if ((pos - HeroController.instance.transform.position).magnitude < 4)
-                {
-                    var kX = HeroController.instance.transform.position.x;
-                    List<float> xs = [];
-                    if (kX - 4 >= Bounds().min.x) xs.Add(kX - 4);
-                    if (kX + 4 <= Bounds().max.x) xs.Add(kX + 4);
-                    pos = new(xs.Choose(), pos.y);
-                }
+                    if ((pos - HeroController.instance.transform.position).magnitude < 4)
+                    {
+                        var kX = HeroController.instance.transform.position.x;
+                        List<float> xs = [];
+                        if (kX - 4 >= Bounds().min.x)
+                            xs.Add(kX - 4);
+                        if (kX + 4 <= Bounds().max.x)
+                            xs.Add(kX + 4);
+                        pos = new(xs.Choose(), pos.y);
+                    }
 
-                transform.position = pos;
-                FacePlayer(true);
-                this.StartLibCoroutine(Coroutines.PlayAnimations(animator!, [TeleportInController!, SwordToDiveAnticController!]));
+                    transform.position = pos;
+                    FacePlayer(true);
+                    this.StartLibCoroutine(
+                        Coroutines.PlayAnimations(
+                            animator!,
+                            [TeleportInController!, SwordToDiveAnticController!]
+                        )
+                    );
 
-                stayFacing = true;
-                reverseFacing = true;
-                flipTimer = 0.5f;
-            }, stats.WaitAfterSpawnForTeleport);
+                    stayFacing = true;
+                    reverseFacing = true;
+                    flipTimer = 0.5f;
+                },
+                stats.WaitAfterSpawnForTeleport
+            );
 
             yield return Coroutines.SleepSeconds(stats.WaitAfterLastWaveSpawn);
             for (int j = 0; j < waves.Count; j++)
             {
                 waves[j].ForEach(p => p.Fire());
-                if (j != waves.Count - 1) yield return Coroutines.SleepSeconds(stats.WaitBetweenWaveDrops);
+                if (j != waves.Count - 1)
+                    yield return Coroutines.SleepSeconds(stats.WaitBetweenWaveDrops);
             }
 
             yield return Coroutines.SleepSeconds(stats.WaitFromLastDropToDive);
@@ -1001,7 +1283,9 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             bool last = i == stats.WaveCounts.Count - 1;
             yield return Coroutines.Sequence(Dive(tallWave: last));
 
-            yield return Coroutines.SleepSeconds(last ? stats.WaitFinal : stats.WaitFromDiveToNextSpawn);
+            yield return Coroutines.SleepSeconds(
+                last ? stats.WaitFinal : stats.WaitFromDiveToNextSpawn
+            );
         }
     }
 
@@ -1016,7 +1300,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
         for (int i = 0; i < stats.NumDaggerSpawns; i++)
         {
-            if (i != 0) yield return Coroutines.SleepSeconds(stats.WaitBetweenDaggerSpawns);
+            if (i != 0)
+                yield return Coroutines.SleepSeconds(stats.WaitBetweenDaggerSpawns);
             nails.Add(MarkothNail.Spawn(stats, Container!.DaggerBox!));
         }
 
@@ -1032,19 +1317,29 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             options.Add(new(cx + stats.CenterXRange, y));
 
             var kPos = HeroController.instance.transform.position.To2d();
-            return options.Where(p => (kPos - p).magnitude > stats.CycloneMinDistance).OrderBy(p => (kPos - p).magnitude).First();
+            return options
+                .Where(p => (kPos - p).magnitude > stats.CycloneMinDistance)
+                .OrderBy(p => (kPos - p).magnitude)
+                .First();
         }
 
         var centerPos = ChooseSpawn();
         transform.position = centerPos;
-        this.StartLibCoroutine(Coroutines.PlayAnimations(animator!, [TeleportInController!, SwordToSpellController!, SpellStartToLoopController!]));
+        this.StartLibCoroutine(
+            Coroutines.PlayAnimations(
+                animator!,
+                [TeleportInController!, SwordToSpellController!, SpellStartToLoopController!]
+            )
+        );
 
         bobber?.ResetRandom(stats.BobRadius, stats.BobPeriod);
         xFixer?.Reset(centerPos.x, 1.5f);
         yFixer?.Reset(centerPos.y, 1.5f);
 
         yield return Coroutines.SleepSeconds(stats.WaitAfterShieldTeleport);
-        KnightOfNightsPreloader.Instance.RevekAttackClips.Choose().PlayAtPosition(transform.position);
+        KnightOfNightsPreloader
+            .Instance.RevekAttackClips.Choose()
+            .PlayAtPosition(transform.position);
 
         List<MarkothShieldWave> waves = [];
         void DespawnWaves() => waves.ForEach(w => w.Despawn());
@@ -1055,13 +1350,18 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         bool flipped = MathExt.CoinFlip();
         for (int i = 0; i < stats.NumShieldWaves; i++)
         {
-            if (i != 0) yield return Coroutines.SleepSeconds(stats.WaitBetweenShieldWaves);
+            if (i != 0)
+                yield return Coroutines.SleepSeconds(stats.WaitBetweenShieldWaves);
 
             SpawnTeleportBurst(0.75f);
-            waves.Add(MarkothShieldWave.Spawn(stats, flipped ? offset : flipOffset, centerPos, flipped));
+            waves.Add(
+                MarkothShieldWave.Spawn(stats, flipped ? offset : flipOffset, centerPos, flipped)
+            );
 
-            if (flipped) flipOffset -= stats.RotationOffsetPerWave;
-            else offset += stats.RotationOffsetPerWave;
+            if (flipped)
+                flipOffset -= stats.RotationOffsetPerWave;
+            else
+                offset += stats.RotationOffsetPerWave;
             flipped = !flipped;
         }
 
@@ -1070,7 +1370,12 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         bobber!.enabled = false;
         xFixer!.enabled = false;
         yFixer!.enabled = false;
-        this.StartLibCoroutine(Coroutines.PlayAnimations(animator!, [SpellLoopToSwordController!, TeleportOutController!]));
+        this.StartLibCoroutine(
+            Coroutines.PlayAnimations(
+                animator!,
+                [SpellLoopToSwordController!, TeleportOutController!]
+            )
+        );
 
         yield return Coroutines.SleepSeconds(stats.GracePeriod);
 
@@ -1084,8 +1389,10 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         List<List<int>> ret = [];
         template.ForEachPermutation(p =>
         {
-            if (p.IndexOf(1) < p.IndexOf(0) || p.IndexOf(2) < p.IndexOf(1)) return;
-            if (p.Pairs().Any(pair => pair.Item1 == pair.Item2)) return;
+            if (p.IndexOf(1) < p.IndexOf(0) || p.IndexOf(2) < p.IndexOf(1))
+                return;
+            if (p.Pairs().Any(pair => pair.Item1 == pair.Item2))
+                return;
             ret.Add([.. p]);
         });
         return ret;
@@ -1096,16 +1403,12 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
     private List<SlashAttackSpec> GenSlashAmbushSpecs()
     {
         var stats = this.stats!.SlashAmbushStats!;
-        List<List<SlashAttackSpec>> pools = [[
-            SlashAttackSpec.LEFT.Down(1.25f),
-            SlashAttackSpec.LEFT.Up(1.25f)
-        ], [
-            SlashAttackSpec.RIGHT.Down(1.25f),
-            SlashAttackSpec.RIGHT.Up(1.25f)
-        ], [
-            SlashAttackSpec.HIGH_LEFT,
-            SlashAttackSpec.HIGH_RIGHT
-        ]];
+        List<List<SlashAttackSpec>> pools =
+        [
+            [SlashAttackSpec.LEFT.Down(1.25f), SlashAttackSpec.LEFT.Up(1.25f)],
+            [SlashAttackSpec.RIGHT.Down(1.25f), SlashAttackSpec.RIGHT.Up(1.25f)],
+            [SlashAttackSpec.HIGH_LEFT, SlashAttackSpec.HIGH_RIGHT],
+        ];
 
         System.Random r = new();
         pools.ForEach(l => l.Shuffle(r));
@@ -1116,7 +1419,13 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         float telegraph = stats.FirstTelegraph;
         foreach (var group in SlashAmbushGroupings.Choose())
         {
-            ret.Add(pools[group][indices[group]].WithTelegraph(telegraph).WithSpeed(stats.SlashSpeed).WithDeceleration(stats.SlashDeceleration));
+            ret.Add(
+                pools[group]
+                    [indices[group]]
+                    .WithTelegraph(telegraph)
+                    .WithSpeed(stats.SlashSpeed)
+                    .WithDeceleration(stats.SlashDeceleration)
+            );
             indices[group] = (indices[group] + 1) % pools[group].Count;
             telegraph += stats.TelegraphStagger;
         }
@@ -1124,6 +1433,7 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
     }
 
     private bool parried = false;
+
     public void Parried(float direction) => parried = true;
 
     private IEnumerator<CoroutineElement> SlashAmbush()
@@ -1131,12 +1441,16 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         var stats = this.stats!.SlashAmbushStats!;
 
         Wrapped<int> parries = new(0);
-        List<SlashAttack> attacks = [.. GenSlashAmbushSpecs().Select(a => SlashAttack.Spawn(this, a))];
+        List<SlashAttack> attacks =
+        [
+            .. GenSlashAmbushSpecs().Select(a => SlashAttack.Spawn(this, a)),
+        ];
         attacks.ForEach(a =>
         {
             a.OnResult += result =>
             {
-                if (result != SlashAttackResult.PARRIED) return;
+                if (result != SlashAttackResult.PARRIED)
+                    return;
 
                 lastPos = a.ParryPos;
                 healthManager!.hp -= a.DamageDealt;
@@ -1147,12 +1461,20 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
         IEnumerator<CoroutineElement> MaybeDoBigSlash()
         {
-            yield return parries.Value == attacks.Count ? Coroutines.Never() : Coroutines.AllOf(Coroutines.Sequence(DoBigSlash()), Coroutines.SleepSeconds(stats.GracePeriod));
+            yield return parries.Value == attacks.Count
+                ? Coroutines.Never()
+                : Coroutines.AllOf(
+                    Coroutines.Sequence(DoBigSlash()),
+                    Coroutines.SleepSeconds(stats.GracePeriod)
+                );
         }
 
         yield return Coroutines.OneOf(
-            Coroutines.SleepUntil(() => parries.Value == attacks.Count).Then(Coroutines.SleepSeconds(stats.HitGracePeriod)),
-            Coroutines.SleepSeconds(stats.BigSlashDelay).Then(MaybeDoBigSlash()));
+            Coroutines
+                .SleepUntil(() => parries.Value == attacks.Count)
+                .Then(Coroutines.SleepSeconds(stats.HitGracePeriod)),
+            Coroutines.SleepSeconds(stats.BigSlashDelay).Then(MaybeDoBigSlash())
+        );
     }
 
     private static List<List<int>> GenUltraInstinctGroupings()
@@ -1161,8 +1483,10 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         List<List<int>> ret = [];
         template.ForEachPermutation(p =>
         {
-            if (p.IndexOf(1) < p.IndexOf(0)) return;
-            if (p.Pairs().Any(pair => pair.Item1 == pair.Item2)) return;
+            if (p.IndexOf(1) < p.IndexOf(0))
+                return;
+            if (p.Pairs().Any(pair => pair.Item1 == pair.Item2))
+                return;
             ret.Add([.. p]);
         });
         return ret;
@@ -1173,16 +1497,12 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
     private List<SlashAttackSpec> GenUltraInstinctSpecs()
     {
         var stats = this.stats!.UltraInstinctStats!;
-        List<List<SlashAttackSpec>> pools = [[
-            SlashAttackSpec.LEFT.Down(1.25f),
-            SlashAttackSpec.LEFT.Up(1.25f)
-        ], [
-            SlashAttackSpec.RIGHT.Down(1.25f),
-            SlashAttackSpec.RIGHT.Up(1.25f)
-        ], [
-            SlashAttackSpec.HIGH_LEFT,
-            SlashAttackSpec.HIGH_RIGHT
-        ]];
+        List<List<SlashAttackSpec>> pools =
+        [
+            [SlashAttackSpec.LEFT.Down(1.25f), SlashAttackSpec.LEFT.Up(1.25f)],
+            [SlashAttackSpec.RIGHT.Down(1.25f), SlashAttackSpec.RIGHT.Up(1.25f)],
+            [SlashAttackSpec.HIGH_LEFT, SlashAttackSpec.HIGH_RIGHT],
+        ];
 
         System.Random r = new();
         pools.ForEach(l => l.Shuffle(r));
@@ -1192,7 +1512,13 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         List<SlashAttackSpec> ret = [];
         foreach (var group in UltraInstinctGroupings.Choose())
         {
-            ret.Add(pools[group][indices[group]].WithTelegraph(stats.Telegraph).WithSpeed(stats.Speed).WithDeceleration(stats.Deceleration));
+            ret.Add(
+                pools[group]
+                    [indices[group]]
+                    .WithTelegraph(stats.Telegraph)
+                    .WithSpeed(stats.Speed)
+                    .WithDeceleration(stats.Deceleration)
+            );
             indices[group] = (indices[group] + 1) % pools[group].Count;
         }
         return ret;
@@ -1274,15 +1600,20 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             float max = kX + (left ? -stats.XRangeMin : stats.XRangeMax);
             max = Mathf.Min(max, Bounds().max.x - stats.XBuffer);
 
-            if (min >= max) return false;
+            if (min >= max)
+                return false;
 
-            pos = new(Random.Range(min, max), Bounds().min.y + Random.Range(stats.HeightMin, stats.HeightMax));
+            pos = new(
+                Random.Range(min, max),
+                Bounds().min.y + Random.Range(stats.HeightMin, stats.HeightMax)
+            );
             return true;
         }
         Vector2 ChoosePos()
         {
             bool left = MathExt.CoinFlip();
-            if (ChoosePosDirected(left, out var pos)) return pos;
+            if (ChoosePosDirected(left, out var pos))
+                return pos;
 
             ChoosePosDirected(!left, out pos);
             return pos;
@@ -1294,7 +1625,12 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         transform.position = pos;
         FacePlayer();
 
-        this.StartLibCoroutine(Coroutines.PlayAnimations(animator!, [TeleportInController!, SpellStartToLoopController!]));
+        this.StartLibCoroutine(
+            Coroutines.PlayAnimations(
+                animator!,
+                [TeleportInController!, SpellStartToLoopController!]
+            )
+        );
         yield return Coroutines.SleepSeconds(stats.WaitInitial);
 
         EnsureXeroNailSpawns();
@@ -1312,7 +1648,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         KnightOfNightsPreloader.Instance.DreamEnterClip?.PlayAtPosition(transform.position);
         for (int i = 0; i < stats.NumNailsPerWing; i++)
         {
-            if (i != 0) yield return Coroutines.SleepSeconds(stats.WaitBetweenNailSpawns);
+            if (i != 0)
+                yield return Coroutines.SleepSeconds(stats.WaitBetweenNailSpawns);
 
             XeroNailSpec specs = new()
             {
@@ -1326,7 +1663,7 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
                 pointTime = stats.ProjectilePointTime,
                 shootTime = stats.ProjectileShootTime,
                 speed = stats.ProjectileSpeed,
-                spinTime = stats.ProjectileSpinTime
+                spinTime = stats.ProjectileSpinTime,
             };
 
             left.Add(XeroNail.Spawn(xeroNailLeftSpawns[i], specs));
@@ -1335,15 +1672,18 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             SpawnTeleportBurst(0.5f, right.Last().Position);
         }
 
-        if (MathExt.CoinFlip()) left.Reverse();
-        else right.Reverse();
+        if (MathExt.CoinFlip())
+            left.Reverse();
+        else
+            right.Reverse();
 
         IEnumerator<CoroutineElement> FireRoutine()
         {
             yield return Coroutines.SleepSeconds(stats.WaitLastSpawnToFire);
 
             var (a, b) = (left, right);
-            if (MathExt.CoinFlip()) (a, b) = (b, a);
+            if (MathExt.CoinFlip())
+                (a, b) = (b, a);
 
             List<XeroNail> queue = [];
             for (int j = 0; j < 2; j++)
@@ -1351,8 +1691,10 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
                 for (int k = 0; k < a.Count; k++)
                 {
                     queue.RemoveWhere(n => n.Attack());
-                    if (!a[k].Attack()) queue.Add(a[k]);
-                    if (!b[k].Attack()) queue.Add(b[k]);
+                    if (!a[k].Attack())
+                        queue.Add(a[k]);
+                    if (!b[k].Attack())
+                        queue.Add(b[k]);
                     yield return Coroutines.SleepSeconds(stats.WaitBetweenNailFires);
                 }
             }
@@ -1364,16 +1706,27 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
         Wrapped<float> speed = new(0);
         PeriodicChooser<float> offset = new(0.75f, 1.5f, [-4, -2, 0, 2, 4]);
-        yield return Coroutines.SleepSecondsUpdateDelta(stats.XMoveDuration, delta =>
-        {
-            float x = transform.position.x;
-            var tx = MathExt.Clamp(HeroController.instance.transform.position.x, Bounds().min.x + stats.XBuffer, Bounds().max.x - stats.XBuffer) + offset.Update(delta);
+        yield return Coroutines.SleepSecondsUpdateDelta(
+            stats.XMoveDuration,
+            delta =>
+            {
+                float x = transform.position.x;
+                var tx =
+                    MathExt.Clamp(
+                        HeroController.instance.transform.position.x,
+                        Bounds().min.x + stats.XBuffer,
+                        Bounds().max.x - stats.XBuffer
+                    ) + offset.Update(delta);
 
-            speed.Value.AdvanceFloatAbs(delta * stats.XMoveAccel, x > tx ? -stats.XMoveSpeed : stats.XMoveSpeed);
-            transform.Translate(new(speed.Value * delta, 0), Space.World);
+                speed.Value.AdvanceFloatAbs(
+                    delta * stats.XMoveAccel,
+                    x > tx ? -stats.XMoveSpeed : stats.XMoveSpeed
+                );
+                transform.Translate(new(speed.Value * delta, 0), Space.World);
 
-            return false;
-        });
+                return false;
+            }
+        );
 
         IEnumerator<CoroutineElement> DespawnRoutine()
         {
@@ -1393,18 +1746,31 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
         if (!stats.Dive)
         {
-            this.StartLibCoroutine(Coroutines.PlayAnimations(animator!, [SpellLoopToSwordController!, TeleportOutController!]));
-            yield return Coroutines.SleepSecondsUpdateDelta(stats.GracePeriod, delta =>
-            {
-                speed.Value.AdvanceFloatAbs(delta * stats.XMoveAccel, 0);
-                rigidbody!.velocity = rigidbody.velocity with { x = speed.Value };
-                return false;
-            });
+            this.StartLibCoroutine(
+                Coroutines.PlayAnimations(
+                    animator!,
+                    [SpellLoopToSwordController!, TeleportOutController!]
+                )
+            );
+            yield return Coroutines.SleepSecondsUpdateDelta(
+                stats.GracePeriod,
+                delta =>
+                {
+                    speed.Value.AdvanceFloatAbs(delta * stats.XMoveAccel, 0);
+                    rigidbody!.velocity = rigidbody.velocity with { x = speed.Value };
+                    return false;
+                }
+            );
             yield break;
         }
 
-        yield return Coroutines.PlayAnimations(animator!, [SpellLoopToSwordController!, SwordToDiveAnticNoLoopController!]);
-        yield return Coroutines.SleepSeconds(stats.GracePeriod).WithDisposable(Coroutines.Sequence(Dive(true)));
+        yield return Coroutines.PlayAnimations(
+            animator!,
+            [SpellLoopToSwordController!, SwordToDiveAnticNoLoopController!]
+        );
+        yield return Coroutines
+            .SleepSeconds(stats.GracePeriod)
+            .WithDisposable(Coroutines.Sequence(Dive(true)));
 
         OnDeath -= DespawnInstant;
     }
@@ -1419,7 +1785,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         var pos = transform.position;
 
         bool left = pos.x >= kPos.x;
-        if (reverse) left = !left;
+        if (reverse)
+            left = !left;
 
         var prevX = transform.localScale.x;
         transform.localScale = new(left ? 1 : -1, 1, 1);
@@ -1435,7 +1802,11 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         obj.transform.localScale = new(scale, scale, 1);
     }
 
-    private void PlayTeleportSound(Vector3? pos = null) => KnightOfNightsPreloader.Instance.MageTeleportClip?.PlayAtPosition(pos ?? transform.position, 1.1f);
+    private void PlayTeleportSound(Vector3? pos = null) =>
+        KnightOfNightsPreloader.Instance.MageTeleportClip?.PlayAtPosition(
+            pos ?? transform.position,
+            1.1f
+        );
 
     private void TeleportInstant(Vector2 newPos)
     {
@@ -1465,7 +1836,9 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         OnDive += () => dive.Value = true;
         animator!.runtimeAnimatorController = DiveAnticToDiveLoopController;
         yield return Coroutines.SleepUntil(() => dive.Value);
-        KnightOfNightsPreloader.Instance.RevekAttackClips.Choose().PlayAtPosition(transform.position);
+        KnightOfNightsPreloader
+            .Instance.RevekAttackClips.Choose()
+            .PlayAtPosition(transform.position);
 
         dive.Value = false;
         Wrapped<Vector2> landing = new(Vector2.zero);
@@ -1475,7 +1848,9 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
             landing.Value = p;
             dive.Value = true;
         };
-        yield return Coroutines.SleepUntil(() => dive.Value || collider!.bounds.max.y + 4 < Bounds().min.y);
+        yield return Coroutines.SleepUntil(() =>
+            dive.Value || collider!.bounds.max.y + 4 < Bounds().min.y
+        );
 
         rigidbody!.velocity = Vector2.zero;
         SetTangible(false);
@@ -1491,8 +1866,11 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         stats.SnowDivePrefab?.Spawn(p);
 
         p.y -= 0.25f;
-        Shockwave.SpawnTwo(p, new(stats.ShockwaveXScale, stats.ShockwaveYScale), stats.ShockwaveSpeed).ForEach(o => recyclables.Add(o));
-        if (tallWave) TallWave.SpawnTwo(p, stats.TallShockwaveSpeed).ForEach(o => recyclables.Add(o));
+        Shockwave
+            .SpawnTwo(p, new(stats.ShockwaveXScale, stats.ShockwaveYScale), stats.ShockwaveSpeed)
+            .ForEach(o => recyclables.Add(o));
+        if (tallWave)
+            TallWave.SpawnTwo(p, stats.TallShockwaveSpeed).ForEach(o => recyclables.Add(o));
         KnightOfNightsPreloader.Instance.MageStrikeImpactClip?.PlayAtPosition(landing.Value);
 
         transform.position = landing.Value;
@@ -1536,8 +1914,10 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
         collider!.enabled = value;
         damageHero!.enabled = value;
 
-        if (value) idleParticles?.Play();
-        else idleParticles?.Stop();
+        if (value)
+            idleParticles?.Play();
+        else
+            idleParticles?.Stop();
     }
 
     private event System.Action? OnTeleportOut;
@@ -1554,7 +1934,8 @@ internal class FallenGuardianController : MonoBehaviour, IParryResponder
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.gameObject.layer != (int)PhysLayers.TERRAIN) return;
+        if (collision.collider.gameObject.layer != (int)PhysLayers.TERRAIN)
+            return;
 
         var b = collider!.bounds;
 

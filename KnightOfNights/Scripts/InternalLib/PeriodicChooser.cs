@@ -1,5 +1,5 @@
-﻿using KnightOfNights.Scripts.SharedLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.SharedLib;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;

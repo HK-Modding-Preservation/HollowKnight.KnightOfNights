@@ -1,6 +1,6 @@
-﻿using ItemChanger;
+﻿using System.Linq;
+using ItemChanger;
 using KnightOfNights.Scripts.SharedLib;
-using System.Linq;
 
 namespace KnightOfNights.IC;
 
@@ -8,7 +8,8 @@ internal class PlandoModule : AbstractModule<PlandoModule>
 {
     protected override PlandoModule Self() => this;
 
-    private void Add<T>() where T : AbstractModule<T>, new() => ItemChangerMod.Modules.GetOrAdd<T>();
+    private void Add<T>()
+        where T : AbstractModule<T>, new() => ItemChangerMod.Modules.GetOrAdd<T>();
 
     protected override void InitializeInternal()
     {

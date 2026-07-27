@@ -6,15 +6,21 @@ namespace KnightOfNights.Scripts.Proxy;
 [Shim]
 internal class PersistentBoolProxy : MonoBehaviour
 {
-    [ShimField] public string id = "";
-    [ShimField] public string sceneName = "";
-    [ShimField] public bool semiPersistent;
+    [ShimField]
+    public string id = "";
+
+    [ShimField]
+    public string sceneName = "";
+
+    [ShimField]
+    public bool semiPersistent;
 
     private bool awoken;
 
     public void Awake()
     {
-        if (awoken) return;
+        if (awoken)
+            return;
         awoken = true;
 
         static void Wrapper(On.PersistentBoolItem.orig_Awake orig, PersistentBoolItem self) { }
@@ -49,7 +55,9 @@ internal class PersistentBoolProxy : MonoBehaviour
 
 internal static class PersistentPoolExtensions
 {
-    public static bool HasPB(this GameObject obj) => obj.GetComponent<PersistentBoolItem>() != null || obj.GetComponent<PersistentBoolProxy>() != null;
+    public static bool HasPB(this GameObject obj) =>
+        obj.GetComponent<PersistentBoolItem>() != null
+        || obj.GetComponent<PersistentBoolProxy>() != null;
 
     public static bool IsPBActivated(this GameObject obj)
     {

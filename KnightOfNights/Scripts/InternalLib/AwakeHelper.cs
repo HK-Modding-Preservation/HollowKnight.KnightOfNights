@@ -1,5 +1,5 @@
-﻿using KnightOfNights.Scripts.SharedLib;
-using System;
+﻿using System;
+using KnightOfNights.Scripts.SharedLib;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -11,7 +11,9 @@ internal class AwakeHelper : LifecycleOnceHelper
 
 internal static class AwakeExtensions
 {
-    internal static void DoOnAwake(this GameObject self, Action action) => self.GetOrAddComponent<AwakeHelper>().OnEvent += action;
+    internal static void DoOnAwake(this GameObject self, Action action) =>
+        self.GetOrAddComponent<AwakeHelper>().OnEvent += action;
 
-    internal static void DoOnAwake(this MonoBehaviour self, Action action) => self.gameObject.DoOnAwake(action);
+    internal static void DoOnAwake(this MonoBehaviour self, Action action) =>
+        self.gameObject.DoOnAwake(action);
 }

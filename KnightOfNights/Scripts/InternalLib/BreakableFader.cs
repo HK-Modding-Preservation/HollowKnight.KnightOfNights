@@ -1,6 +1,6 @@
-﻿using KnightOfNights.Scripts.SharedLib;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.SharedLib;
 using PurenailCore.GOUtil;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -8,9 +8,14 @@ namespace KnightOfNights.Scripts.InternalLib;
 [Shim]
 internal class BreakableFader : MonoBehaviour
 {
-    [ShimField] public float MinDelay;
-    [ShimField] public float MaxDelay;
-    [ShimField] public float FadeTime;
+    [ShimField]
+    public float MinDelay;
+
+    [ShimField]
+    public float MaxDelay;
+
+    [ShimField]
+    public float FadeTime;
 
     private readonly List<SpriteRenderer> spriteRenderers = [];
     private float elapsed;
@@ -33,7 +38,8 @@ internal class BreakableFader : MonoBehaviour
             gameObject.SetActive(false);
             return;
         }
-        if (elapsed <= target) return;
+        if (elapsed <= target)
+            return;
 
         float progress = MathExt.Clamp((elapsed - target) / FadeTime, 0, 1);
         float alpha = 1 - progress;

@@ -13,12 +13,15 @@ namespace KnightOfNights.Scripts.SharedLib
             var name = src.name;
             var parent = src.transform.parent;
 
-            var newObj = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(Resources.Load(prefabPath));
-            if (newObj == null) return;
+            var newObj = (GameObject)
+                UnityEditor.PrefabUtility.InstantiatePrefab(Resources.Load(prefabPath));
+            if (newObj == null)
+                return;
 
             Object.DestroyImmediate(src);
             newObj.name = name;
-            if (parent != null) newObj.transform.SetParent(parent);
+            if (parent != null)
+                newObj.transform.SetParent(parent);
             newObj.transform.position = pos;
             newObj.transform.localRotation = rot;
             newObj.transform.localScale = scale;
@@ -33,16 +36,25 @@ namespace KnightOfNights.Scripts.SharedLib
         {
             if (UnityEditor.PrefabUtility.IsAnyPrefabInstanceRoot(src))
             {
-                var obj = UnityEditor.PrefabUtility.InstantiatePrefab(UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(src), parent);
-                UnityEditor.PrefabUtility.SetPropertyModifications(obj, UnityEditor.PrefabUtility.GetPropertyModifications(src));
+                var obj = UnityEditor.PrefabUtility.InstantiatePrefab(
+                    UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(src),
+                    parent
+                );
+                UnityEditor.PrefabUtility.SetPropertyModifications(
+                    obj,
+                    UnityEditor.PrefabUtility.GetPropertyModifications(src)
+                );
                 return (GameObject)obj;
             }
-            else return Object.Instantiate(src, parent);
+            else
+                return Object.Instantiate(src, parent);
         }
 
-        public static void DeleteAll<T>() where T : Component
+        public static void DeleteAll<T>()
+            where T : Component
         {
-            foreach (var t in Object.FindObjectsOfType<T>(true)) Object.DestroyImmediate(t);
+            foreach (var t in Object.FindObjectsOfType<T>(true))
+                Object.DestroyImmediate(t);
         }
 
         private static GameObject swapper;
@@ -62,25 +74,32 @@ namespace KnightOfNights.Scripts.SharedLib
         }
 
         [UnityEditor.MenuItem("GameObject/2D Object/Swap Names")]
-        public static void Swap(UnityEditor.MenuCommand command) => SwapImpl(command.context as GameObject);
+        public static void Swap(UnityEditor.MenuCommand command) =>
+            SwapImpl(command.context as GameObject);
 
         [UnityEditor.MenuItem("CONTEXT/BoxCollider2D/Snap1")]
-        public static void SnapBox(UnityEditor.MenuCommand command) => MathExt.Snap(command.context as BoxCollider2D, 1f);
+        public static void SnapBox(UnityEditor.MenuCommand command) =>
+            MathExt.Snap(command.context as BoxCollider2D, 1f);
 
         [UnityEditor.MenuItem("CONTEXT/PolygonCollider2D/Snap1")]
-        public static void SnapPolygon(UnityEditor.MenuCommand command) => MathExt.Snap(command.context as PolygonCollider2D, 1f);
+        public static void SnapPolygon(UnityEditor.MenuCommand command) =>
+            MathExt.Snap(command.context as PolygonCollider2D, 1f);
 
         [UnityEditor.MenuItem("CONTEXT/BoxCollider2D/Snap0.5")]
-        public static void SnapBoxHalf(UnityEditor.MenuCommand command) => MathExt.Snap(command.context as BoxCollider2D, 0.5f);
+        public static void SnapBoxHalf(UnityEditor.MenuCommand command) =>
+            MathExt.Snap(command.context as BoxCollider2D, 0.5f);
 
         [UnityEditor.MenuItem("CONTEXT/PolygonCollider2D/Snap0.5")]
-        public static void SnapPolygonHalf(UnityEditor.MenuCommand command) => MathExt.Snap(command.context as PolygonCollider2D, 0.5f);
+        public static void SnapPolygonHalf(UnityEditor.MenuCommand command) =>
+            MathExt.Snap(command.context as PolygonCollider2D, 0.5f);
 
         [UnityEditor.MenuItem("CONTEXT/Transform/Reset Zero")]
-        public static void ResetZero(UnityEditor.MenuCommand command) => MathExt.ResetZero(command.context as Transform);
+        public static void ResetZero(UnityEditor.MenuCommand command) =>
+            MathExt.ResetZero(command.context as Transform);
 
         [UnityEditor.MenuItem("CONTEXT/Transform/Reset Avg")]
-        public static void ResetAverage(UnityEditor.MenuCommand command) => MathExt.ResetAverage(command.context as Transform);
+        public static void ResetAverage(UnityEditor.MenuCommand command) =>
+            MathExt.ResetAverage(command.context as Transform);
 
         [UnityEditor.MenuItem("CONTEXT/Transform/Flip X")]
         public static void FlipX(UnityEditor.MenuCommand command)
@@ -104,7 +123,8 @@ namespace KnightOfNights.Scripts.SharedLib
         public static void SplitGeo(UnityEditor.MenuCommand command)
         {
             var health = command.context as Proxy.HealthManagerProxy;
-            if (health == null) return;
+            if (health == null)
+                return;
 
             var (s, m, l) = MathExt.SplitGeo(health.TotalGeo);
             health.smallGeoDrops = s;
@@ -145,7 +165,8 @@ namespace KnightOfNights.Scripts.SharedLib
 #endif
         }
 
-        public static T LoadAssetAtPath<T>(string path) where T : class
+        public static T LoadAssetAtPath<T>(string path)
+            where T : class
         {
 #if UNITY_EDITOR
             return UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(T)) as T;
@@ -157,7 +178,9 @@ namespace KnightOfNights.Scripts.SharedLib
         public static void MarkActiveSceneDirty()
         {
 #if UNITY_EDITOR
-            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene()
+            );
 #endif
         }
 

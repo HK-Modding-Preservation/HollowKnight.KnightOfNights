@@ -7,6 +7,5 @@ namespace KnightOfNights.Scripts.Framework
         public UnityEngine.GameObject SnowRunEffect;
         public UnityEngine.GameObject SnowSoftLandEffect;
         public UnityEngine.GameObject SnowHardLandEffect;
-        
     }
 }

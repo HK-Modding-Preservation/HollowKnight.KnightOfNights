@@ -3,7 +3,8 @@ using PurenailCore.CollectionUtil;
 
 namespace KnightOfNights.IC;
 
-internal abstract class AbstractModule<M> : Module where M : AbstractModule<M>
+internal abstract class AbstractModule<M> : Module
+    where M : AbstractModule<M>
 {
     private static Deferred<M> Instance = new();
 

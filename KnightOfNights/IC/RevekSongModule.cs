@@ -1,17 +1,17 @@
-﻿using ItemChanger;
+﻿using System.Collections.Generic;
+using ItemChanger;
 using ItemChanger.Extensions;
 using ItemChanger.FsmStateActions;
 using KnightOfNights.Scripts.InternalLib;
 using Modding;
 using SFCore;
-using System.Collections.Generic;
 
 namespace KnightOfNights.IC;
 
 internal enum FluteNote
 {
     Left,
-    Right
+    Right,
 }
 
 internal class RevekSongModule : AbstractModule<RevekSongModule>
@@ -33,9 +33,12 @@ internal class RevekSongModule : AbstractModule<RevekSongModule>
 
     private static void FillName(ref string value) => value = "Revek Song";
 
-    private static void FillDesc(ref string value) => value = "Press left or right three times while swinging the Dream Nail. Revek will answer the call until parried three times in a row.<br><br>Successful parries restore health and soul, and expedite the next strike. Directions given can be mixed and determine in which way Revek shall strike.<br><br>Go forth with the warrior's blessing. RandoMapMod is your friend.";
+    private static void FillDesc(ref string value) =>
+        value =
+            "Press left or right three times while swinging the Dream Nail. Revek will answer the call until parried three times in a row.<br><br>Successful parries restore health and soul, and expedite the next strike. Directions given can be mixed and determine in which way Revek shall strike.<br><br>Go forth with the warrior's blessing. RandoMapMod is your friend.";
 
-    private bool HookHasRevekSong(string name, bool orig) => name == nameof(HasRevekSong) ? HasRevekSong : orig;
+    private bool HookHasRevekSong(string name, bool orig) =>
+        name == nameof(HasRevekSong) ? HasRevekSong : orig;
 
     private void FixRevekSong(Transition t) => RevekSongSummon.revekActive = false;
 
@@ -76,7 +79,8 @@ internal class RevekSongModule : AbstractModule<RevekSongModule>
 
     private void StartSessopm()
     {
-        if (!HasRevekSong) return;
+        if (!HasRevekSong)
+            return;
 
         inSession = true;
     }
@@ -90,9 +94,11 @@ internal class RevekSongModule : AbstractModule<RevekSongModule>
 
     private void UpdateNote(InControl.PlayerAction input, FluteNote note)
     {
-        if (finishedNotes.Count >= 3) return;
+        if (finishedNotes.Count >= 3)
+            return;
 
-        if (input.WasPressed) activeNotes.Add(note);
+        if (input.WasPressed)
+            activeNotes.Add(note);
         else if (input.WasReleased && activeNotes.Contains(note))
         {
             activeNotes.Remove(note);
@@ -102,7 +108,8 @@ internal class RevekSongModule : AbstractModule<RevekSongModule>
 
     private void UpdateRevekSong()
     {
-        if (!inSession) return;
+        if (!inSession)
+            return;
 
         var actions = InputHandler.Instance.inputActions;
 

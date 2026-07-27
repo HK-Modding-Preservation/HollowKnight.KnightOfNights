@@ -8,7 +8,12 @@ namespace KnightOfNights.Scripts.Framework;
 [Shim]
 internal class DreamgateSetBlocker : MonoBehaviour
 {
-    [ShimField] public HeroDetectorProxy? Proxy;
+    [ShimField]
+    public HeroDetectorProxy? Proxy;
 
-    private void Awake() => Proxy?.Listen(() => DreamGateControllerModule.Get()?.AddSetBlocker(), () => DreamGateControllerModule.Get()?.RemoveSetBlocker());
+    private void Awake() =>
+        Proxy?.Listen(
+            () => DreamGateControllerModule.Get()?.AddSetBlocker(),
+            () => DreamGateControllerModule.Get()?.RemoveSetBlocker()
+        );
 }

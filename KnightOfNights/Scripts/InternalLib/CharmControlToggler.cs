@@ -1,6 +1,6 @@
-﻿using KnightOfNights.Scripts.SharedLib;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.SharedLib;
 using KnightOfNights.Util;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -8,7 +8,8 @@ namespace KnightOfNights.Scripts.InternalLib;
 [Shim]
 internal class CharmControlToggler : MonoBehaviour
 {
-    [ShimField] public bool EnableWithAnyCharms;
+    [ShimField]
+    public bool EnableWithAnyCharms;
 
     private readonly List<GameObject> children = [];
     private bool EnableChildren
@@ -16,7 +17,8 @@ internal class CharmControlToggler : MonoBehaviour
         get => field;
         set
         {
-            if (field == value) return;
+            if (field == value)
+                return;
 
             field = value;
             children.ForEach(o => o.SetActive(value));
@@ -30,5 +32,6 @@ internal class CharmControlToggler : MonoBehaviour
         children.ForEach(o => o.SetActive(EnableChildren));
     }
 
-    private void Update() => EnableChildren = EnableWithAnyCharms == CharmIds.EquippedAnyCharmsBesidesVoidHeart();
+    private void Update() =>
+        EnableChildren = EnableWithAnyCharms == CharmIds.EquippedAnyCharmsBesidesVoidHeart();
 }

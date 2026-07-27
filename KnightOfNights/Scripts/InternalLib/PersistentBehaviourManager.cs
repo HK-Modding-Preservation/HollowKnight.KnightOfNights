@@ -1,12 +1,14 @@
-﻿using KnightOfNights.Scripts.SharedLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using KnightOfNights.Scripts.SharedLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace KnightOfNights.Scripts.InternalLib;
 
-interface IPersistentBehaviour<B, M> where B : MonoBehaviour, IPersistentBehaviour<B, M> where M : PersistentBehaviourManager<B, M>
+interface IPersistentBehaviour<B, M>
+    where B : MonoBehaviour, IPersistentBehaviour<B, M>
+    where M : PersistentBehaviourManager<B, M>
 {
     void AwakeWithManager(M initManager);
 
@@ -15,10 +17,15 @@ interface IPersistentBehaviour<B, M> where B : MonoBehaviour, IPersistentBehavio
     void Stop();
 }
 
-internal abstract class PersistentBehaviourManager<B, M> : MonoBehaviour where B : MonoBehaviour, IPersistentBehaviour<B, M> where M : PersistentBehaviourManager<B, M>
+internal abstract class PersistentBehaviourManager<B, M> : MonoBehaviour
+    where B : MonoBehaviour, IPersistentBehaviour<B, M>
+    where M : PersistentBehaviourManager<B, M>
 {
-    [ShimField] public string Id = "";
-    [ShimField] public GameObject? Prefab;
+    [ShimField]
+    public string Id = "";
+
+    [ShimField]
+    public GameObject? Prefab;
 
     private static readonly Dictionary<string, B> existing = [];
 
@@ -39,7 +46,8 @@ internal abstract class PersistentBehaviourManager<B, M> : MonoBehaviour where B
     {
         current.Stop();
         current.DoAfter(() => Destroy(current.gameObject), 10f);
-        if (!TryGet(Id, out var prev) || prev != current) return;
+        if (!TryGet(Id, out var prev) || prev != current)
+            return;
 
         existing.Remove(Id);
     }
@@ -65,7 +73,9 @@ internal abstract class PersistentBehaviourManager<B, M> : MonoBehaviour where B
 
     private void OnNextScene(B current, Scene scene)
     {
-        if (scene.GetComponentsInChildren<M>(true).Any(m => m.Id == Id)) Util.Events.OnNextSceneChange += s => OnNextScene(current, s);
-        else Drop(current);
+        if (scene.GetComponentsInChildren<M>(true).Any(m => m.Id == Id))
+            Util.Events.OnNextSceneChange += s => OnNextScene(current, s);
+        else
+            Drop(current);
     }
 }

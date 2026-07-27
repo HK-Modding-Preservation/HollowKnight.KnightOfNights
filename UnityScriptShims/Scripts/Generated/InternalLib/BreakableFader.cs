@@ -5,6 +5,5 @@ namespace KnightOfNights.Scripts.InternalLib
         public float MinDelay;
         public float MaxDelay;
         public float FadeTime;
-        
     }
 }

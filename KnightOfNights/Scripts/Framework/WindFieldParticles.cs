@@ -1,6 +1,6 @@
-﻿using KnightOfNights.Scripts.InternalLib;
+﻿using System.Linq;
+using KnightOfNights.Scripts.InternalLib;
 using KnightOfNights.Scripts.SharedLib;
-using System.Linq;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Framework;
@@ -13,21 +13,25 @@ internal class WindFieldParticles : MonoBehaviour
     {
         public bool Initialized = false;
         public Vector2 WindSpeed;
-        
-        public ParticleData(Vector2 pos) => WindSpeed = WindField.ActiveWindEffects(pos, WindTargetType.Particle);
+
+        public ParticleData(Vector2 pos) =>
+            WindSpeed = WindField.ActiveWindEffects(pos, WindTargetType.Particle);
     }
 
     private PartileSystemExtension<ParticleData>? particleWindData;
 
     private void Awake()
     {
-        if (TryGetComponent<ParticleSystem>(out var system)) particleWindData = new(system);
+        if (TryGetComponent<ParticleSystem>(out var system))
+            particleWindData = new(system);
     }
 
     private void LateUpdate()
     {
-        if (particleWindData == null) return;
-        if (WindField.ActiveWindFields().Count() == 0) return;
+        if (particleWindData == null)
+            return;
+        if (WindField.ActiveWindFields().Count() == 0)
+            return;
 
         using var session = particleWindData.NewSession(p => new(p.position));
         for (int i = 0; i < session.Count; i++)

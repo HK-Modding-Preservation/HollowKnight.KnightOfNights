@@ -1,10 +1,10 @@
-﻿using HutongGames.PlayMaker.Actions;
+﻿using System.Collections.Generic;
+using HutongGames.PlayMaker.Actions;
 using ItemChanger.Extensions;
 using ItemChanger.FsmStateActions;
 using KnightOfNights.Scripts.InternalLib;
 using KnightOfNights.Scripts.SharedLib;
 using PurenailCore.ModUtil;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Summit;
@@ -14,7 +14,11 @@ internal class SuperSoulTotemProxy : MonoBehaviour
 {
     private void Awake()
     {
-        var totem = Instantiate(KnightOfNightsPreloader.Instance.SoulTotem!, transform.position, Quaternion.identity);
+        var totem = Instantiate(
+            KnightOfNightsPreloader.Instance.SoulTotem!,
+            transform.position,
+            Quaternion.identity
+        );
         totem.transform.localScale = transform.localScale;
         totem.AddComponent<SuperSoulTotem>();
         totem.SetActive(true);
@@ -39,7 +43,8 @@ internal class SuperSoulTotem : MonoBehaviour
         data.sceneName = "BrettasHouse";
 
         var fsm = gameObject.LocateMyFSM("soul_totem");
-        fsm.GetState("Close").AddFirstAction(new Lambda(() => fsm.FsmVariables.GetFsmInt("Value").Value = 3));
+        fsm.GetState("Close")
+            .AddFirstAction(new Lambda(() => fsm.FsmVariables.GetFsmInt("Value").Value = 3));
         var hit = fsm.GetState("Hit");
         hit.AddFirstAction(new Lambda(() => fsm.FsmVariables.GetFsmInt("Value").Value = 3));
 
@@ -47,7 +52,8 @@ internal class SuperSoulTotem : MonoBehaviour
         flinger.spawnMin.Value = 11;
         flinger.spawnMax.Value = 11;
 
-        if (buffedFlingers.Add(flinger)) this.DoOnDestroy(() => buffedFlingers.Remove(flinger));
+        if (buffedFlingers.Add(flinger))
+            this.DoOnDestroy(() => buffedFlingers.Remove(flinger));
 
         var particles = gameObject.FindChild("Soul Particles")!.GetComponent<ParticleSystem>();
         var main = particles.main;
@@ -63,7 +69,8 @@ internal class SuperSoulTotem : MonoBehaviour
 
     private static void OnFlingSoulOrb(FlingObjectsFromGlobalPool fsmAction, SoulOrb soulOrb)
     {
-        if (!buffedFlingers.Contains(fsmAction)) return;
+        if (!buffedFlingers.Contains(fsmAction))
+            return;
 
         buffedOrbs.Add(soulOrb);
         soulOrb.DoOnDestroy(() => buffedOrbs.Remove(soulOrb));
@@ -74,8 +81,8 @@ internal class SuperSoulTotem : MonoBehaviour
         if (!buffedOrbs.Remove(soulOrb))
             return;
 
-        HeroController.instance.AddMPCharge(16);  // (16 + 2) * 11 = 198 = max MP
-        HeroController.instance.AddHealth(1);  // 1 * 11 = max health
+        HeroController.instance.AddMPCharge(16); // (16 + 2) * 11 = 198 = max MP
+        HeroController.instance.AddHealth(1); // 1 * 11 = max health
     }
 
     static SuperSoulTotem()

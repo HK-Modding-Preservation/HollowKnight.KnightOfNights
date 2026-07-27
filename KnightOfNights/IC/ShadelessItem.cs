@@ -18,7 +18,8 @@ internal class ShadelessItem : AbstractItem
     public override void GiveImmediate(GiveInfo info)
     {
         var mod = ShadelessModule.Get();
-        if (mod == null) return;
+        if (mod == null)
+            return;
 
         mod.IsShadeless = true;
     }

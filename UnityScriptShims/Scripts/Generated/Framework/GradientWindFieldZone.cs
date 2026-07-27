@@ -8,6 +8,5 @@ namespace KnightOfNights.Scripts.Framework
         public UnityEngine.Transform PointB;
         public UnityEngine.Vector2 SpeedB;
         public int Priority;
-        
     }
 }

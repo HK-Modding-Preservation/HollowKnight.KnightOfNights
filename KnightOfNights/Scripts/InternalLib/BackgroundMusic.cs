@@ -5,15 +5,19 @@ using UnityEngine;
 namespace KnightOfNights.Scripts.InternalLib;
 
 [Shim]
-internal class BackgroundMusic : MonoBehaviour, IPersistentBehaviour<BackgroundMusic, BackgroundMusicManager>
+internal class BackgroundMusic
+    : MonoBehaviour,
+        IPersistentBehaviour<BackgroundMusic, BackgroundMusicManager>
 {
-    [ShimField] public AudioClip? Music;
+    [ShimField]
+    public AudioClip? Music;
 
     private AudioSource? audio;
 
     public void AwakeWithManager(BackgroundMusicManager initManager)
     {
-        if (Music == null) return;
+        if (Music == null)
+            return;
 
         audio = gameObject.GetOrAddComponent<AudioSource>();
         audio.clip = Music!;
@@ -32,21 +36,27 @@ internal class BackgroundMusic : MonoBehaviour, IPersistentBehaviour<BackgroundM
 
     private float fade = 1f;
 
-    private CoroutineElement FadeOut(float duration) => Coroutines.SleepSecondsUpdatePercent(duration, pct =>
-    {
-        fade = Mathf.Min(fade, 1 - pct);
-        return false;
-    });
+    private CoroutineElement FadeOut(float duration) =>
+        Coroutines.SleepSecondsUpdatePercent(
+            duration,
+            pct =>
+            {
+                fade = Mathf.Min(fade, 1 - pct);
+                return false;
+            }
+        );
 
     private void Update()
     {
-        if (audio == null) return;
+        if (audio == null)
+            return;
         audio.volume = fade;
     }
 }
 
 [Shim]
-internal class BackgroundMusicManager : PersistentBehaviourManager<BackgroundMusic, BackgroundMusicManager>
+internal class BackgroundMusicManager
+    : PersistentBehaviourManager<BackgroundMusic, BackgroundMusicManager>
 {
     public override BackgroundMusicManager Self() => this;
 }

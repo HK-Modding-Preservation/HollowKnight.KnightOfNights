@@ -5,6 +5,5 @@ namespace KnightOfNights.Scripts.Framework
         METAL = 4,
         SNOW = 12,
         ICE = 13,
-        
     }
 }

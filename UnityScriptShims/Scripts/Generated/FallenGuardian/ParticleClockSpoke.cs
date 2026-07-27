@@ -4,6 +4,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
     {
         public UnityEngine.Animator Animator;
         public UnityEngine.SpriteRenderer spriteRenderer;
-        
     }
 }

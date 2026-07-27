@@ -1,8 +1,8 @@
-﻿using GlobalEnums;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using GlobalEnums;
 using ItemChanger;
 using ItemChanger.Extensions;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace KnightOfNights.IC;
@@ -10,7 +10,11 @@ namespace KnightOfNights.IC;
 // Disables WCS (Wall-cling storage) glitch; easy to activate with wind, buggy.
 internal class GlitchRepairsModule : AbstractModule<GlitchRepairsModule>
 {
-    private static readonly List<FsmID> spellIds = [new("Fireball(Clone)", "Fireball Control"), new("Scr Heads 2", "FSM")];
+    private static readonly List<FsmID> spellIds =
+    [
+        new("Fireball(Clone)", "Fireball Control"),
+        new("Scr Heads 2", "FSM"),
+    ];
 
     protected override GlitchRepairsModule Self() => this;
 
@@ -26,26 +30,44 @@ internal class GlitchRepairsModule : AbstractModule<GlitchRepairsModule>
         spellIds.ForEach(id => Events.RemoveFsmEdit(id, DisableSpellPogos));
     }
 
-    private static readonly MethodInfo checkStillTouchingWall = typeof(HeroController).GetMethod("CheckStillTouchingWall", BindingFlags.Instance | BindingFlags.NonPublic);
+    private static readonly MethodInfo checkStillTouchingWall = typeof(HeroController).GetMethod(
+        "CheckStillTouchingWall",
+        BindingFlags.Instance | BindingFlags.NonPublic
+    );
 
-    private static bool CheckStillTouchingWall(HeroController self, CollisionSide collisionSide, bool checkTop = false) => (bool)checkStillTouchingWall.Invoke(self, [collisionSide, checkTop]);
+    private static bool CheckStillTouchingWall(
+        HeroController self,
+        CollisionSide collisionSide,
+        bool checkTop = false
+    ) => (bool)checkStillTouchingWall.Invoke(self, [collisionSide, checkTop]);
 
     internal static bool FixBugs() => GameManager.instance.sceneName.StartsWith("Summit_");
 
     // Fix WCS.
-    private static bool OverrideCanWallJump(On.HeroController.orig_CanWallJump orig, HeroController self)
+    private static bool OverrideCanWallJump(
+        On.HeroController.orig_CanWallJump orig,
+        HeroController self
+    )
     {
-        if (!FixBugs()) return orig(self);
+        if (!FixBugs())
+            return orig(self);
 
         var pd = PlayerData.instance;
         var cstate = self.cState;
-        if (pd.GetBool(nameof(pd.hasWalljump)) && !cstate.touchingNonSlider && (cstate.wallSliding || (cstate.touchingWall && !cstate.onGround)) && !CheckStillTouchingWall(self, CollisionSide.left) && !CheckStillTouchingWall(self, CollisionSide.right))
+        if (
+            pd.GetBool(nameof(pd.hasWalljump))
+            && !cstate.touchingNonSlider
+            && (cstate.wallSliding || (cstate.touchingWall && !cstate.onGround))
+            && !CheckStillTouchingWall(self, CollisionSide.left)
+            && !CheckStillTouchingWall(self, CollisionSide.right)
+        )
             return false;
 
         return orig(self);
     }
 
-    private static void DisableSpellPogos(PlayMakerFSM fsm) => fsm.gameObject.GetOrAddComponent<ConditionalNonBouncer>();
+    private static void DisableSpellPogos(PlayMakerFSM fsm) =>
+        fsm.gameObject.GetOrAddComponent<ConditionalNonBouncer>();
 }
 
 internal class ConditionalNonBouncer : MonoBehaviour

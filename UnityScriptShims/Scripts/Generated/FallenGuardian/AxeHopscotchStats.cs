@@ -30,6 +30,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float WaitBetweenAxeSpawns;
         public float WaitBetweenSlashAttacks;
         public float WaitInitial;
-        
     }
 }

@@ -7,6 +7,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float Speed;
         public float Tail;
         public float Telegraph;
-        
     }
 }

@@ -35,6 +35,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float XMoveSpeed;
         public float XRangeMin;
         public float XRangeMax;
-        
     }
 }

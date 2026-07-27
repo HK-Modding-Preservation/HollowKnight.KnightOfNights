@@ -18,7 +18,8 @@ internal class WarriorsNotesItem : AbstractItem
     public override void GiveImmediate(GiveInfo info)
     {
         var mod = WarriorsNotesModule.Get();
-        if (mod == null) return;
+        if (mod == null)
+            return;
 
         mod.HasWarriorsNotes = true;
     }

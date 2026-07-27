@@ -1,5 +1,5 @@
 ﻿public enum SpecialTypes
 {
     None,
-    Acid
+    Acid,
 }

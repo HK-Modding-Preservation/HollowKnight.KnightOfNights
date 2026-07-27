@@ -8,7 +8,8 @@ namespace KnightOfNights.Scripts.Lib
 
         public static float Range(this System.Random self, float max) => max * self.NextFloat();
 
-        public static float Range(this System.Random self, float min, float max) => min + (max - min) * self.NextFloat();
+        public static float Range(this System.Random self, float min, float max) =>
+            min + (max - min) * self.NextFloat();
 
         public static bool CoinFlip(this System.Random self) => self.Next(2) == 0;
 

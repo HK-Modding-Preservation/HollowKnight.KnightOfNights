@@ -1,7 +1,7 @@
-﻿using KnightOfNights.Scripts.Lib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using KnightOfNights.Scripts.Lib;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEditor.ShortcutManagement;
@@ -32,7 +32,8 @@ class AssetBrushTool : EditorTool
         HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Keyboard));
 
         var e = Event.current;
-        if (e.type == EventType.KeyDown && HandleKeyEvent(e.keyCode)) e.Use();
+        if (e.type == EventType.KeyDown && HandleKeyEvent(e.keyCode))
+            e.Use();
     }
 
     public override void OnActivated()
@@ -69,7 +70,8 @@ class AssetBrushTool : EditorTool
 
     private bool HandleKeyEvent(KeyCode code)
     {
-        if (code == KeyCode.Space) UpdateSelection(false);
+        if (code == KeyCode.Space)
+            UpdateSelection(false);
         else if (code == KeyCode.DownArrow)
         {
             scalePower--;
@@ -82,24 +84,28 @@ class AssetBrushTool : EditorTool
         }
         else if (code == KeyCode.W)
         {
-            if (++group == brush.Groups.Count) group = 0;
+            if (++group == brush.Groups.Count)
+                group = 0;
             UpdateSelection(true);
             LogGroup();
         }
         else if (code == KeyCode.S)
         {
-            if (--group == -1) group = brush.Groups.Count - 1;
+            if (--group == -1)
+                group = brush.Groups.Count - 1;
             UpdateSelection(true);
             LogGroup();
         }
         else if (code == KeyCode.Q)
         {
-            if (--instance == -1) instance = brush.Groups[group].Instances.Count - 1;
+            if (--instance == -1)
+                instance = brush.Groups[group].Instances.Count - 1;
             UpdateSelection(true);
         }
         else if (code == KeyCode.E)
         {
-            if (++instance == brush.Groups[group].Instances.Count) instance = 0;
+            if (++instance == brush.Groups[group].Instances.Count)
+                instance = 0;
             UpdateSelection(true);
         }
         else if (code == KeyCode.F)
@@ -117,7 +123,8 @@ class AssetBrushTool : EditorTool
         }
         else if (code == KeyCode.Z)
         {
-            if (history.Count > 0) DestroyImmediate(history.Pop());
+            if (history.Count > 0)
+                DestroyImmediate(history.Pop());
         }
         else if (code == KeyCode.X)
         {
@@ -128,10 +135,12 @@ class AssetBrushTool : EditorTool
         }
         else if (code == KeyCode.Escape)
         {
-            while (history.Count > 0) DestroyImmediate(history.Pop());
+            while (history.Count > 0)
+                DestroyImmediate(history.Pop());
             Deactivate();
         }
-        else return false;
+        else
+            return false;
 
         return true;
     }
@@ -147,64 +156,70 @@ class AssetBrushTool : EditorTool
         switch (e.type)
         {
             case EventType.KeyDown:
-                {
-                    if (HandleKeyEvent(e.keyCode)) e.Use();
-                    break;
-                }
+            {
+                if (HandleKeyEvent(e.keyCode))
+                    e.Use();
+                break;
+            }
             case EventType.MouseMove:
+            {
+                dragging = false;
+                if (isSceneView && !Tools.viewToolActive && GetPlanePointFromMouse(out mousePoint))
                 {
-                    dragging = false;
-                    if (isSceneView && !Tools.viewToolActive && GetPlanePointFromMouse(out mousePoint))
-                    {
-                        lastMouseMove = mousePoint;
-                        Vector3 pos = selection.transform.position;
-                        pos.x = mousePoint.x;
-                        pos.y = mousePoint.y;
-                        selection.transform.position = pos;
-                        EditorUtility.SetDirty(selection);
+                    lastMouseMove = mousePoint;
+                    Vector3 pos = selection.transform.position;
+                    pos.x = mousePoint.x;
+                    pos.y = mousePoint.y;
+                    selection.transform.position = pos;
+                    EditorUtility.SetDirty(selection);
 
-                        e.Use();
-                    }
-                    break;
+                    e.Use();
                 }
+                break;
+            }
             case EventType.MouseDrag:
+            {
+                if (
+                    isSceneView
+                    && !Tools.viewToolActive
+                    && GetPlanePointFromMouse(out mousePoint)
+                    && (mousePoint - lastMouseMove).magnitude >= 0.5f
+                )
                 {
-                    if (isSceneView && !Tools.viewToolActive && GetPlanePointFromMouse(out mousePoint) && (mousePoint - lastMouseMove).magnitude >= 0.5f)
+                    if (dragging)
                     {
-                        if (dragging)
-                        {
-                            var radius = (mousePoint - lastMouseMove).normalized;
-                            var angle1 = Mathf.Atan2(origRadius.y, origRadius.x);
-                            var angle2 = Mathf.Atan2(radius.y, radius.x);
+                        var radius = (mousePoint - lastMouseMove).normalized;
+                        var angle1 = Mathf.Atan2(origRadius.y, origRadius.x);
+                        var angle2 = Mathf.Atan2(radius.y, radius.x);
 
-                            Quaternion quat = origQuat;
-                            var euler = quat.eulerAngles;
-                            euler.z += (angle2 - angle1) * Mathf.Rad2Deg;
-                            quat.eulerAngles = euler;
-                            selection.transform.localRotation = quat;
-                            EditorUtility.SetDirty(selection);
-                        }
-                        else
-                        {
-                            dragging = true;
-                            origRadius = (mousePoint - lastMouseMove).normalized;
-                            origQuat = selection.transform.localRotation;
-                        }
-
-                        e.Use();
+                        Quaternion quat = origQuat;
+                        var euler = quat.eulerAngles;
+                        euler.z += (angle2 - angle1) * Mathf.Rad2Deg;
+                        quat.eulerAngles = euler;
+                        selection.transform.localRotation = quat;
+                        EditorUtility.SetDirty(selection);
                     }
-                    break;
+                    else
+                    {
+                        dragging = true;
+                        origRadius = (mousePoint - lastMouseMove).normalized;
+                        origQuat = selection.transform.localRotation;
+                    }
+
+                    e.Use();
                 }
+                break;
+            }
             case EventType.MouseUp:
+            {
+                if (isSceneView && !Tools.viewToolActive && !dragging)
                 {
-                    if (isSceneView && !Tools.viewToolActive && !dragging)
-                    {
-                        UpdateSelection(false);
-                        e.Use();
-                    }
-
-                    break;
+                    UpdateSelection(false);
+                    e.Use();
                 }
+
+                break;
+            }
             default:
                 break;
         }
@@ -230,20 +245,28 @@ class AssetBrushTool : EditorTool
         return false;
     }
 
-    private static bool GetPlanePointFromMouse(out Vector2 point) => GetPlanePoint(HandleUtility.GUIPointToWorldRay(Event.current.mousePosition), out point);
+    private static bool GetPlanePointFromMouse(out Vector2 point) =>
+        GetPlanePoint(HandleUtility.GUIPointToWorldRay(Event.current.mousePosition), out point);
 
     private static string UniqueName(string name, Transform parent)
     {
         var set = new HashSet<string>();
-        foreach (Transform t in parent) if (t.name.StartsWith(name)) set.Add(t.name);
+        foreach (Transform t in parent)
+            if (t.name.StartsWith(name))
+                set.Add(t.name);
 
         string baseName = name;
         int i = 0;
-        while (set.Contains(name)) name = $"{baseName} ({++i})";
+        while (set.Contains(name))
+            name = $"{baseName} ({++i})";
         return name;
     }
 
-    private static MethodInfo getDefaultParentObjectIfSet = typeof(SceneView).GetMethod("GetDefaultParentObjectIfSet", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+    private static MethodInfo getDefaultParentObjectIfSet = typeof(SceneView).GetMethod(
+        "GetDefaultParentObjectIfSet",
+        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static
+    );
+
     private static Transform GetDefaultParent()
     {
         Transform t = getDefaultParentObjectIfSet.Invoke(null, new object[] { }) as Transform;
@@ -261,8 +284,10 @@ class AssetBrushTool : EditorTool
             rotation = selection.transform.localRotation;
             scale = selection.transform.localScale;
 
-            if (destroy) DestroyImmediate(selection);
-            else history.Push(selection);
+            if (destroy)
+                DestroyImmediate(selection);
+            else
+                history.Push(selection);
         }
 
         var template = brush.Groups[group].Instances[instance];
@@ -270,7 +295,10 @@ class AssetBrushTool : EditorTool
         previousInstance = instance;
 
         var parent = GetDefaultParent();
-        selection = KnightOfNights.Scripts.SharedLib.UnityEditorShims.InstantiateMaybePrefab(template, parent);
+        selection = KnightOfNights.Scripts.SharedLib.UnityEditorShims.InstantiateMaybePrefab(
+            template,
+            parent
+        );
         origScale = template.transform.localScale;
 
         selection.name = UniqueName(template.name, parent);
@@ -288,15 +316,18 @@ class AssetBrushTool : EditorTool
     {
         EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
 
-        if (selection != null) DestroyImmediate(selection);
+        if (selection != null)
+            DestroyImmediate(selection);
     }
 
     private static System.Type previousToolType;
 
     private static void Deactivate()
     {
-        if (previousToolType != null) ToolManager.SetActiveTool(previousToolType);
-        else ToolManager.RestorePreviousPersistentTool();
+        if (previousToolType != null)
+            ToolManager.SetActiveTool(previousToolType);
+        else
+            ToolManager.RestorePreviousPersistentTool();
     }
 
     [Shortcut("Activate Asset Brush", KeyCode.A)]
@@ -308,7 +339,10 @@ class AssetBrushTool : EditorTool
             return;
         }
 
-        var filtered = Selection.gameObjects.Select(go => go.GetComponent<AssetBrush>()).Where(ab => ab != null).ToList();
+        var filtered = Selection
+            .gameObjects.Select(go => go.GetComponent<AssetBrush>())
+            .Where(ab => ab != null)
+            .ToList();
         if (filtered.Count == 1)
         {
             previousBrush = filtered[0];
@@ -317,8 +351,10 @@ class AssetBrushTool : EditorTool
 
             DoActivateAssetBrush();
         }
-        else if (previousBrush != null && previousBrush.gameObject != null) DoActivateAssetBrush();
-        else Debug.Log("Couldn't start AssetBrushTool");
+        else if (previousBrush != null && previousBrush.gameObject != null)
+            DoActivateAssetBrush();
+        else
+            Debug.Log("Couldn't start AssetBrushTool");
     }
 
     private static void DoActivateAssetBrush()

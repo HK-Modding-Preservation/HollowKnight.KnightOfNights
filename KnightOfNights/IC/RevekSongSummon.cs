@@ -1,4 +1,5 @@
-﻿using GlobalEnums;
+﻿using System.Collections.Generic;
+using GlobalEnums;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using ItemChanger.Extensions;
@@ -6,7 +7,6 @@ using ItemChanger.FsmStateActions;
 using KnightOfNights.Scripts;
 using KnightOfNights.Scripts.Framework;
 using PurenailCore.CollectionUtil;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.IC;
@@ -20,24 +20,37 @@ internal class RevekSongSummon
     internal static void MoveWithHero(FsmState state)
     {
         var t = state.Fsm.FsmComponent.transform;
-        state.AddFirstAction(new LambdaEveryFrame(() => t.Translate(WindField.HeroWindEffects() * Time.deltaTime, Space.World)));
+        state.AddFirstAction(
+            new LambdaEveryFrame(() =>
+                t.Translate(WindField.HeroWindEffects() * Time.deltaTime, Space.World)
+            )
+        );
     }
 
     private static readonly HashSet<InterceptRevekSummon> interceptors = [];
 
-    internal static void AddInterceptor(InterceptRevekSummon interceptor) => interceptors.Add(interceptor);
+    internal static void AddInterceptor(InterceptRevekSummon interceptor) =>
+        interceptors.Add(interceptor);
 
-    internal static void RemoveInterceptor(InterceptRevekSummon interceptor) => interceptors.Remove(interceptor);
+    internal static void RemoveInterceptor(InterceptRevekSummon interceptor) =>
+        interceptors.Remove(interceptor);
 
     internal static void Summon(List<FluteNote> notes)
     {
         var mapZone = GameManager.instance.GetCurrentMapZone();
-        if (mapZone == nameof(MapZone.DREAM_WORLD) || mapZone == nameof(MapZone.WHITE_PALACE) || mapZone == nameof(MapZone.GODS_GLORY)) return;
+        if (
+            mapZone == nameof(MapZone.DREAM_WORLD)
+            || mapZone == nameof(MapZone.WHITE_PALACE)
+            || mapZone == nameof(MapZone.GODS_GLORY)
+        )
+            return;
 
-        if (notes.Count < 3 || revekActive) return;
+        if (notes.Count < 3 || revekActive)
+            return;
 
         foreach (var interceptor in interceptors)
-            if (interceptor(notes)) return;
+            if (interceptor(notes))
+                return;
 
         revekActive = true;
 
@@ -50,19 +63,22 @@ internal class RevekSongSummon
 
         var fsm = revek.LocateMyFSM("Control");
         fsm.Fsm.GlobalTransitions = [];
-        foreach (var state in fsm.FsmStates) state.RemoveTransitionsOn("TAKE DAMAGE");
+        foreach (var state in fsm.FsmStates)
+            state.RemoveTransitionsOn("TAKE DAMAGE");
 
         fsm.GetState("Appear Pause").GetFirstActionOfType<Wait>().time.Value = 0.5f;
 
         Wrapped<int> consecutiveHits = new(0);
         var idleState = fsm.GetState("Slash Idle");
         var idleWait = idleState.GetFirstActionOfType<WaitRandom>();
-        idleState.AddFirstAction(new Lambda(() =>
-        {
-            var wait = consecutiveHits.Value > 0 ? 0.25f : 0.6f;
-            idleWait.timeMin.Value = wait;
-            idleWait.timeMax.Value = wait;
-        }));
+        idleState.AddFirstAction(
+            new Lambda(() =>
+            {
+                var wait = consecutiveHits.Value > 0 ? 0.25f : 0.6f;
+                idleWait.timeMin.Value = wait;
+                idleWait.timeMax.Value = wait;
+            })
+        );
 
         var attackPauseState = fsm.GetState("Attack Pause");
         var wait = attackPauseState.GetFirstActionOfType<WaitRandom>();
@@ -76,37 +92,44 @@ internal class RevekSongSummon
 
         GameObject audioSrc = new("RevekAudioSource");
         audioSrc.transform.parent = HeroController.instance.transform;
-        fsm.GetState("Slash Tele In").GetFirstActionOfType<AudioPlayerOneShotSingle>().spawnPoint = audioSrc;
+        fsm.GetState("Slash Tele In").GetFirstActionOfType<AudioPlayerOneShotSingle>().spawnPoint =
+            audioSrc;
 
         var damagedPauseState = fsm.GetState("Damaged Pause");
         var damagedWait = damagedPauseState.GetFirstActionOfType<WaitRandom>();
-        fsm.GetState("Damaged Pause").AddFirstAction(new Lambda(() =>
-        {
-            float wait = 0f;
-            if (++consecutiveHits.Value == 3)
-            {
-                wait = 4.5f;
-                revekActive = false;
-            }
+        fsm.GetState("Damaged Pause")
+            .AddFirstAction(
+                new Lambda(() =>
+                {
+                    float wait = 0f;
+                    if (++consecutiveHits.Value == 3)
+                    {
+                        wait = 4.5f;
+                        revekActive = false;
+                    }
 
-            damagedWait.timeMin.Value = wait;
-            damagedWait.timeMax.Value = wait;
-        }));
+                    damagedWait.timeMin.Value = wait;
+                    damagedWait.timeMax.Value = wait;
+                })
+            );
 
-        fsm.GetState("Set Angle").AddLastAction(new Lambda(() =>
-        {
-            if (consecutiveHits.Value == 3)
-            {
-                fsm.SendEvent("REVEK KILLED");
-                Object.Destroy(fsm.gameObject);
-                return;
-            }
+        fsm.GetState("Set Angle")
+            .AddLastAction(
+                new Lambda(() =>
+                {
+                    if (consecutiveHits.Value == 3)
+                    {
+                        fsm.SendEvent("REVEK KILLED");
+                        Object.Destroy(fsm.gameObject);
+                        return;
+                    }
 
-            bool flyRight = notes[consecutiveHits.Value] == FluteNote.Right;
-            audioSrc.transform.localPosition = new(flyRight ? -12 : 12, 0, 0);
-            fsm.FsmVariables.GetFsmFloat("X Distance").Value = flyRight ? -12f : 12f;
-            fsm.FsmVariables.GetFsmFloat("Y Distance").Value = 3f;
-        }));
+                    bool flyRight = notes[consecutiveHits.Value] == FluteNote.Right;
+                    audioSrc.transform.localPosition = new(flyRight ? -12 : 12, 0, 0);
+                    fsm.FsmVariables.GetFsmFloat("X Distance").Value = flyRight ? -12f : 12f;
+                    fsm.FsmVariables.GetFsmFloat("Y Distance").Value = 3f;
+                })
+            );
 
         MoveWithHero(fsm.GetState("Slash Antic"));
 

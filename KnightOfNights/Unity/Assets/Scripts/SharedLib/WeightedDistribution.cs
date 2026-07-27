@@ -15,7 +15,8 @@ namespace KnightOfNights.Scripts.SharedLib
 
             foreach (var (i, w) in elements)
             {
-                if (w <= 0) continue;
+                if (w <= 0)
+                    continue;
 
                 this.elements.Add(i);
                 sum += w;
@@ -28,7 +29,8 @@ namespace KnightOfNights.Scripts.SharedLib
 
         public T Choose(System.Random random)
         {
-            if (elements.Count == 0) return default;
+            if (elements.Count == 0)
+                return default;
 
             var w = (float)(random.NextDouble() * Sum);
 
@@ -38,8 +40,10 @@ namespace KnightOfNights.Scripts.SharedLib
             {
                 int mid = (lo + hi) / 2;
                 var v = thresholds[mid];
-                if (v < w) lo = mid;
-                else if (v > w) hi = mid;
+                if (v < w)
+                    lo = mid;
+                else if (v > w)
+                    hi = mid;
             }
 
             return elements[lo];

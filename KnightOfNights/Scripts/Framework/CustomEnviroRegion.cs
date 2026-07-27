@@ -1,5 +1,5 @@
-﻿using KnightOfNights.Scripts.SharedLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.SharedLib;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Framework;
@@ -7,7 +7,8 @@ namespace KnightOfNights.Scripts.Framework;
 [Shim]
 internal class CustomEnviroRegion : MonoBehaviour
 {
-    [ShimField] public CustomEnvironmentType EnvironmentType;
+    [ShimField]
+    public CustomEnvironmentType EnvironmentType;
 
     private static readonly HashSet<CustomEnviroRegion> active = [];
 
@@ -19,7 +20,8 @@ internal class CustomEnviroRegion : MonoBehaviour
 
     private void DoActivate()
     {
-        if (!active.Add(this)) return;
+        if (!active.Add(this))
+            return;
 
         var pd = PlayerData.instance;
         pd.SetInt(nameof(pd.environmentType), EnvironmentType.ToIntId());
@@ -29,7 +31,8 @@ internal class CustomEnviroRegion : MonoBehaviour
 
     private void DoDeactivate()
     {
-        if (!active.Remove(this) || active.Count > 0) return;
+        if (!active.Remove(this) || active.Count > 0)
+            return;
 
         var pd = PlayerData.instance;
         pd.SetInt(nameof(pd.environmentType), pd.GetInt(nameof(pd.environmentTypeDefault)));

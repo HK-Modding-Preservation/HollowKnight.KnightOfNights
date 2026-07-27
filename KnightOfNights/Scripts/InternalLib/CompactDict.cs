@@ -21,7 +21,8 @@ internal class CompactDict<T>
 
     public void Set(int index, T value)
     {
-        if (array == null) array = new T[index + 1];
+        if (array == null)
+            array = new T[index + 1];
         else if (index >= array.Length)
         {
             var prev = array;

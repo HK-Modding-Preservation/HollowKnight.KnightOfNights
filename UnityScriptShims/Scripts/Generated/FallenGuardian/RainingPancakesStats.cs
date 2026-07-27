@@ -25,6 +25,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float WaitFromLastDropToDive;
         public System.Collections.Generic.List<int> WaveCounts;
         public int WingCount;
-        
     }
 }

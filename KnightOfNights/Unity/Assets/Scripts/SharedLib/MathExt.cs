@@ -11,7 +11,12 @@ namespace KnightOfNights.Scripts.SharedLib
         public float Accel;
         public float Duration;
 
-        public (float, float) PosAndVelocity(float time) => (StartPos + StartVelocity * time + Accel * time * time / 2, StartVelocity + Accel * time);
+        public (float, float) PosAndVelocity(float time) =>
+            (
+                StartPos + StartVelocity * time + Accel * time * time / 2,
+                StartVelocity + Accel * time
+            );
+
         public (float, float) EndPosAndVelocity() => PosAndVelocity(Duration);
     }
 
@@ -19,7 +24,8 @@ namespace KnightOfNights.Scripts.SharedLib
     {
         public const float DEFAULT_GRAVITY = 36;
 
-        public static float ILerp(float v, float start, float end) => Clamp((v - start) / (end - start), 0, 1);
+        public static float ILerp(float v, float start, float end) =>
+            Clamp((v - start) / (end - start), 0, 1);
 
         public static float ILerp(Vector2 v, Vector2 start, Vector2 end)
         {
@@ -27,11 +33,14 @@ namespace KnightOfNights.Scripts.SharedLib
             return Clamp((pos - start).magnitude / (end - start).magnitude, 0, 1);
         }
 
-        public static float Interpolate(this float self, float target, float pct) => self + (target - self) * pct;
+        public static float Interpolate(this float self, float target, float pct) =>
+            self + (target - self) * pct;
 
-        public static Vector2 Interpolate(this Vector2 self, Vector2 target, float pct) => self + (target - self) * pct;
+        public static Vector2 Interpolate(this Vector2 self, Vector2 target, float pct) =>
+            self + (target - self) * pct;
 
-        public static Vector3 Interpolate(this Vector3 self, Vector3 target, float pct) => self + (target - self) * pct;
+        public static Vector3 Interpolate(this Vector3 self, Vector3 target, float pct) =>
+            self + (target - self) * pct;
 
         public static float AdvanceFloat(this ref float self, float delta, float target)
         {
@@ -50,7 +59,13 @@ namespace KnightOfNights.Scripts.SharedLib
             }
         }
 
-        private static IEnumerable<AccelSegment> GetAccelerationPlan(float pos, float velocity, float maxSpeed, float accel, float target)
+        private static IEnumerable<AccelSegment> GetAccelerationPlan(
+            float pos,
+            float velocity,
+            float maxSpeed,
+            float accel,
+            float target
+        )
         {
             // Handle speed limit first.
             if (Mathf.Abs(velocity) > maxSpeed)
@@ -60,7 +75,7 @@ namespace KnightOfNights.Scripts.SharedLib
                     StartPos = pos,
                     StartVelocity = velocity,
                     Accel = -Mathf.Sign(velocity) * accel,
-                    Duration = (Mathf.Abs(velocity) - maxSpeed) / accel
+                    Duration = (Mathf.Abs(velocity) - maxSpeed) / accel,
                 };
                 yield return segment;
 
@@ -71,14 +86,17 @@ namespace KnightOfNights.Scripts.SharedLib
             // Slow to 0 if going too fast, or the wrong way.  d = a/2*t^2; t = sqrt(2d/a)
             float idealBrakeTime = Mathf.Sqrt(2 * Mathf.Abs(pos - target) / accel);
             float idealMaxSpeed = idealBrakeTime * accel;
-            if (Mathf.Sign(velocity) != Mathf.Sign(target - pos) || Mathf.Abs(velocity) > idealMaxSpeed)
+            if (
+                Mathf.Sign(velocity) != Mathf.Sign(target - pos)
+                || Mathf.Abs(velocity) > idealMaxSpeed
+            )
             {
                 var segment = new AccelSegment()
                 {
                     StartPos = pos,
                     StartVelocity = velocity,
                     Accel = -Mathf.Sign(velocity) * accel,
-                    Duration = Mathf.Abs(velocity) / accel
+                    Duration = Mathf.Abs(velocity) / accel,
                 };
                 yield return segment;
 
@@ -108,7 +126,7 @@ namespace KnightOfNights.Scripts.SharedLib
                     StartPos = pos,
                     StartVelocity = velocity,
                     Accel = sign * accel,
-                    Duration = t
+                    Duration = t,
                 };
                 yield return segment;
 
@@ -128,7 +146,7 @@ namespace KnightOfNights.Scripts.SharedLib
                     StartPos = pos,
                     StartVelocity = velocity,
                     Accel = 0,
-                    Duration = coast / Mathf.Abs(velocity)
+                    Duration = coast / Mathf.Abs(velocity),
                 };
                 yield return segment;
 
@@ -142,11 +160,18 @@ namespace KnightOfNights.Scripts.SharedLib
                 StartPos = pos,
                 StartVelocity = velocity,
                 Accel = -sign * accel,
-                Duration = Mathf.Abs(velocity) / accel
+                Duration = Mathf.Abs(velocity) / accel,
             };
         }
 
-        public static void SmoothAccelerate(this ref float pos, ref float velocity, float maxSpeed, float accel, float target, float deltaTime)
+        public static void SmoothAccelerate(
+            this ref float pos,
+            ref float velocity,
+            float maxSpeed,
+            float accel,
+            float target,
+            float deltaTime
+        )
         {
             var plan = GetAccelerationPlan(pos, velocity, maxSpeed, accel, target);
             foreach (var segment in plan)
@@ -164,13 +189,26 @@ namespace KnightOfNights.Scripts.SharedLib
             }
         }
 
-        public static void SmoothAccelerate(this ref Vector2 pos, ref Vector2 velocity, Vector2 maxSpeed, Vector2 accel, Vector2 target, float deltaTime)
+        public static void SmoothAccelerate(
+            this ref Vector2 pos,
+            ref Vector2 velocity,
+            Vector2 maxSpeed,
+            Vector2 accel,
+            Vector2 target,
+            float deltaTime
+        )
         {
             pos.x.SmoothAccelerate(ref velocity.x, maxSpeed.x, accel.x, target.x, deltaTime);
             pos.y.SmoothAccelerate(ref velocity.y, maxSpeed.y, accel.y, target.y, deltaTime);
         }
 
-        public static void SimpleAccelerate(this ref float pos, ref float velocity, float maxSpeed, float accel, float deltaTime)
+        public static void SimpleAccelerate(
+            this ref float pos,
+            ref float velocity,
+            float maxSpeed,
+            float accel,
+            float deltaTime
+        )
         {
             float aTime = 0;
             float vel2 = velocity;
@@ -193,10 +231,17 @@ namespace KnightOfNights.Scripts.SharedLib
             velocity = vel2;
             float rTime = deltaTime - aTime;
 
-            if (rTime > 0) pos += rTime * velocity;
+            if (rTime > 0)
+                pos += rTime * velocity;
         }
 
-        public static void SimpleDecelerate(this ref float pos, ref float velocity, float minSpeed, float decel, float deltaTime)
+        public static void SimpleDecelerate(
+            this ref float pos,
+            ref float velocity,
+            float minSpeed,
+            float decel,
+            float deltaTime
+        )
         {
             float dTime = 0;
             float vel2 = velocity;
@@ -219,15 +264,18 @@ namespace KnightOfNights.Scripts.SharedLib
             velocity = vel2;
             float rTime = deltaTime - dTime;
 
-            if (rTime > 0) pos += rTime * velocity;
+            if (rTime > 0)
+                pos += rTime * velocity;
         }
 
-        public static void AdvanceAngle(this ref float self, float delta) => self = ClampAngle(self + delta, 0, 360);
+        public static void AdvanceAngle(this ref float self, float delta) =>
+            self = ClampAngle(self + delta, 0, 360);
 
         public static float AdvanceFloatAbs(this ref float self, float delta, float target)
         {
             delta = Mathf.Abs(delta);
-            if (self == target) return 0;
+            if (self == target)
+                return 0;
             if (self < target)
             {
                 if (self + delta >= target)
@@ -256,20 +304,28 @@ namespace KnightOfNights.Scripts.SharedLib
             }
         }
 
-        public static Vector2 AdvanceVecAbs(this ref Vector2 self, Vector2 delta, Vector2 target) => new Vector2(
-            self.x.AdvanceFloatAbs(delta.x, target.x),
-            self.y.AdvanceFloatAbs(delta.y, target.y));
-        public static Vector2 AdvanceVecAbs(this ref Vector2 self, float delta, Vector2 target) => self.AdvanceVecAbs((target - self).normalized * delta, target);
+        public static Vector2 AdvanceVecAbs(this ref Vector2 self, Vector2 delta, Vector2 target) =>
+            new Vector2(
+                self.x.AdvanceFloatAbs(delta.x, target.x),
+                self.y.AdvanceFloatAbs(delta.y, target.y)
+            );
 
-        public static bool Contains(this Collider2D self, Vector2 point) => (point - self.ClosestPoint(point)).sqrMagnitude <= 0.1f;
+        public static Vector2 AdvanceVecAbs(this ref Vector2 self, float delta, Vector2 target) =>
+            self.AdvanceVecAbs((target - self).normalized * delta, target);
+
+        public static bool Contains(this Collider2D self, Vector2 point) =>
+            (point - self.ClosestPoint(point)).sqrMagnitude <= 0.1f;
 
         public static float Snap(float f, float epsilon) => epsilon * Mathf.Round(f / epsilon);
 
-        public static bool NeedsSnap(float f, float epsilon) => Mathf.Abs(f - Snap(f, epsilon)) > 1e-6f;
+        public static bool NeedsSnap(float f, float epsilon) =>
+            Mathf.Abs(f - Snap(f, epsilon)) > 1e-6f;
 
-        public static Vector3 Snap(Vector3 v, float epsilon) => new Vector3(Snap(v.x, epsilon), Snap(v.y, epsilon), Snap(v.z, epsilon));
+        public static Vector3 Snap(Vector3 v, float epsilon) =>
+            new Vector3(Snap(v.x, epsilon), Snap(v.y, epsilon), Snap(v.z, epsilon));
 
-        public static bool NeedsSnap(Vector3 v, float epsilon) => NeedsSnap(v.x, epsilon) || NeedsSnap(v.y, epsilon) || NeedsSnap(v.z, epsilon);
+        public static bool NeedsSnap(Vector3 v, float epsilon) =>
+            NeedsSnap(v.x, epsilon) || NeedsSnap(v.y, epsilon) || NeedsSnap(v.z, epsilon);
 
         public static (int, int) Order(int a, int b) => a < b ? (a, b) : (b, a);
 
@@ -278,12 +334,16 @@ namespace KnightOfNights.Scripts.SharedLib
         public static IEnumerable<int> Seq(int start, int limit, int step = 1)
         {
             (start, limit) = Order(start, limit);
-            if (step > 0) for (int i = start; i < limit; i += step) yield return i;
+            if (step > 0)
+                for (int i = start; i < limit; i += step)
+                    yield return i;
             else
             {
                 int max = start;
-                while (max + start < limit) max -= step;
-                for (int i = max; i >= start; i += step) yield return i;
+                while (max + start < limit)
+                    max -= step;
+                for (int i = max; i >= start; i += step)
+                    yield return i;
             }
         }
 
@@ -339,7 +399,8 @@ namespace KnightOfNights.Scripts.SharedLib
                     changed = true;
                     newPoints.Add(Snap(point, epsilon));
                 }
-                else newPoints.Add(point);
+                else
+                    newPoints.Add(point);
             }
 
             poly.points = newPoints.ToArray();
@@ -357,7 +418,8 @@ namespace KnightOfNights.Scripts.SharedLib
             transform.position = pos;
         }
 
-        public static void ResetZero(Transform transform) => ResetParentPosition(transform, Vector3.zero);
+        public static void ResetZero(Transform transform) =>
+            ResetParentPosition(transform, Vector3.zero);
 
         public static void ResetAverage(Transform transform)
         {
@@ -376,61 +438,72 @@ namespace KnightOfNights.Scripts.SharedLib
         public static bool UpdateLocalPosition(this Transform self, Vector3 pos)
         {
             var diff = pos - self.localPosition;
-            if (diff.sqrMagnitude < 1e-6f) return false;
+            if (diff.sqrMagnitude < 1e-6f)
+                return false;
 
             self.localPosition = pos;
             return true;
         }
 
-        public static bool UpdateLocalPosition(this GameObject self, Vector3 pos) => self.transform.UpdateLocalPosition(pos);
+        public static bool UpdateLocalPosition(this GameObject self, Vector3 pos) =>
+            self.transform.UpdateLocalPosition(pos);
 
         public static bool UpdatePosition(this Transform self, Vector3 pos)
         {
             var diff = pos - self.position;
-            if (diff.sqrMagnitude < 1e-6f) return false;
+            if (diff.sqrMagnitude < 1e-6f)
+                return false;
 
             self.position = pos;
             return true;
         }
 
-        public static bool UpdatePosition(this GameObject self, Vector3 pos) => self.transform.UpdatePosition(pos);
+        public static bool UpdatePosition(this GameObject self, Vector3 pos) =>
+            self.transform.UpdatePosition(pos);
 
         public static bool UpdateLocalScale(this Transform self, Vector3 scale)
         {
             var diff = scale - self.localScale;
-            if (diff.sqrMagnitude < 1e-6f) return false;
+            if (diff.sqrMagnitude < 1e-6f)
+                return false;
 
             self.localScale = scale;
             return true;
         }
 
-        public static bool UpdateLocalScale(this GameObject self, Vector3 scale) => self.transform.UpdateLocalScale(scale);
+        public static bool UpdateLocalScale(this GameObject self, Vector3 scale) =>
+            self.transform.UpdateLocalScale(scale);
 
         public static bool UpdateLocalRotation(this Transform self, Quaternion rotation)
         {
             var dist = self.localRotation * Quaternion.Inverse(rotation);
             var ea = dist.eulerAngles;
-            if (Mathf.Abs(ea.x) + Mathf.Abs(ea.y) + Mathf.Abs(ea.z) < 1) return false;
+            if (Mathf.Abs(ea.x) + Mathf.Abs(ea.y) + Mathf.Abs(ea.z) < 1)
+                return false;
 
             self.localRotation = rotation;
             return true;
         }
 
-        public static bool UpdateLocalRotation(this GameObject self, Quaternion rotation) => self.transform.UpdateLocalRotation(rotation);
+        public static bool UpdateLocalRotation(this GameObject self, Quaternion rotation) =>
+            self.transform.UpdateLocalRotation(rotation);
 
         public static bool UpdateRotation(this Transform self, Quaternion rotation)
         {
             var dist = self.rotation * Quaternion.Inverse(rotation);
             var ea = dist.eulerAngles;
-            if (Mathf.Abs(ea.x) + Mathf.Abs(ea.y) + Mathf.Abs(ea.z) < 1) return false;
+            if (Mathf.Abs(ea.x) + Mathf.Abs(ea.y) + Mathf.Abs(ea.z) < 1)
+                return false;
 
             self.rotation = rotation;
             return true;
         }
 
-        public static bool UpdateRotation(this GameObject self, Quaternion rotation) => self.transform.UpdateRotation(rotation);
+        public static bool UpdateRotation(this GameObject self, Quaternion rotation) =>
+            self.transform.UpdateRotation(rotation);
 
         private const float CAMERA_DEPTH = 38.1f;
+
         public static float CameraScale(float z) => CAMERA_DEPTH / (z + CAMERA_DEPTH);
 
         public static void DepthAdjust(this Transform self)
@@ -448,19 +521,23 @@ namespace KnightOfNights.Scripts.SharedLib
 
         public static bool CoinFlip() => UnityEngine.Random.Range(0, 2) == 0;
 
-        public static Vector2 Random(this Bounds bounds) => new Vector2(
-            UnityEngine.Random.Range(bounds.min.x, bounds.max.x),
-            UnityEngine.Random.Range(bounds.min.y, bounds.max.y));
+        public static Vector2 Random(this Bounds bounds) =>
+            new Vector2(
+                UnityEngine.Random.Range(bounds.min.x, bounds.max.x),
+                UnityEngine.Random.Range(bounds.min.y, bounds.max.y)
+            );
 
         public static bool UpdateFloat(this ref float self, float value)
         {
-            if (Mathf.Abs(self - value) <= 1e-6f) return false;
+            if (Mathf.Abs(self - value) <= 1e-6f)
+                return false;
 
             self = value;
             return true;
         }
 
-        public static Quaternion RadialToQuat(float x, float y, float degOffset) => (VecToAngle(x, y) + degOffset).AsAngleToQuat();
+        public static Quaternion RadialToQuat(float x, float y, float degOffset) =>
+            (VecToAngle(x, y) + degOffset).AsAngleToQuat();
 
         public static float ToAngle(this Quaternion q) => q.eulerAngles.z;
 
@@ -474,49 +551,72 @@ namespace KnightOfNights.Scripts.SharedLib
 
         public static Quaternion ToQuat(this Vector2 vec) => VecToQuat(vec);
 
-        public static float ZeroDevide(float num, float denom) => Mathf.Abs(denom) >= 0.000001f ? num / denom : Mathf.Infinity;
+        public static float ZeroDevide(float num, float denom) =>
+            Mathf.Abs(denom) >= 0.000001f ? num / denom : Mathf.Infinity;
 
-        public static Vector2 AsAngleToVec(this float angle) => new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+        public static Vector2 AsAngleToVec(this float angle) =>
+            new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
-        public static Quaternion AsAngleToQuat(this float angle) => Quaternion.AngleAxis(angle, Vector3.forward);
+        public static Quaternion AsAngleToQuat(this float angle) =>
+            Quaternion.AngleAxis(angle, Vector3.forward);
 
-        public static Quaternion AsAngleToQuat(this float angle, float degOffset) => (angle + degOffset).AsAngleToQuat();
+        public static Quaternion AsAngleToQuat(this float angle, float degOffset) =>
+            (angle + degOffset).AsAngleToQuat();
 
         public static Quaternion RadialToQuat(float x, float y) => RadialToQuat(x, y, 0);
 
         public static Quaternion RadialVecToQuat(Vector2 vec) => RadialToQuat(vec.x, vec.y);
 
-        public static Vector2 RadialVec(float dist, float angle) => new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad) * dist, Mathf.Sin(angle * Mathf.Deg2Rad) * dist);
+        public static Vector2 RadialVec(float dist, float angle) =>
+            new Vector2(
+                Mathf.Cos(angle * Mathf.Deg2Rad) * dist,
+                Mathf.Sin(angle * Mathf.Deg2Rad) * dist
+            );
 
-        public static Quaternion RadialVecToQuat(Vector2 vec, float degOffset) => RadialToQuat(vec.x, vec.y, degOffset);
+        public static Quaternion RadialVecToQuat(Vector2 vec, float degOffset) =>
+            RadialToQuat(vec.x, vec.y, degOffset);
 
-        public static bool IsBetween(float value, float min, float max) => value >= min && value <= max;
+        public static bool IsBetween(float value, float min, float max) =>
+            value >= min && value <= max;
 
-        public static float Clamp(float value, float min, float max) => value < min ? min : value > max ? max : value;
+        public static float Clamp(float value, float min, float max) =>
+            value < min ? min
+            : value > max ? max
+            : value;
 
         public static bool IsAngleBetween(float angle, float min, float max)
         {
-            while (angle < min) angle += 360;
-            while (angle > max) angle -= 360;
+            while (angle < min)
+                angle += 360;
+            while (angle > max)
+                angle -= 360;
             return angle >= min && angle <= max;
         }
 
         public static float ClampAngle(float angle, float min, float max)
         {
-            while (angle < min) angle += 360;
-            while (angle > max) angle -= 360;
-            if (angle < min - 180) return max;
-            else if (angle < min || angle > max + 180) return min;
-            else if (angle > max) return max;
-            else return angle;
+            while (angle < min)
+                angle += 360;
+            while (angle > max)
+                angle -= 360;
+            if (angle < min - 180)
+                return max;
+            else if (angle < min || angle > max + 180)
+                return min;
+            else if (angle > max)
+                return max;
+            else
+                return angle;
         }
 
         public static float ClampAngle(float angle) => ClampAngle(angle, 0, 360);
 
         public static float NormalizeAngle(float angle, float min, float max)
         {
-            while (angle < min) angle += 360;
-            while (angle > max) angle -= 360;
+            while (angle < min)
+                angle += 360;
+            while (angle > max)
+                angle -= 360;
             return angle;
         }
 
@@ -526,7 +626,8 @@ namespace KnightOfNights.Scripts.SharedLib
         {
             if (Mathf.Abs(b.x) <= Mathf.Epsilon)
             {
-                if (Mathf.Abs(a.x) <= Mathf.Epsilon) return (0, 0);
+                if (Mathf.Abs(a.x) <= Mathf.Epsilon)
+                    return (0, 0);
 
                 var (aPart, bPart) = self.Decompose(b, a);
                 return (bPart, aPart);
@@ -552,11 +653,13 @@ namespace KnightOfNights.Scripts.SharedLib
             return center + rAngle.AsAngleToVec() * rRadius;
         }
 
-        public static bool HasMinimumDistance(this RaycastHit2D hit, float distance) => hit.collider == null || hit.distance >= distance;
+        public static bool HasMinimumDistance(this RaycastHit2D hit, float distance) =>
+            hit.collider == null || hit.distance >= distance;
 
         public static bool CyclicFloatBetween(float test, float min, float max, float? cycle)
         {
-            if (cycle == null || min <= max) return test >= min && test <= max;
+            if (cycle == null || min <= max)
+                return test >= min && test <= max;
             test = test % cycle.Value;
             return test >= min || test <= max;
         }
@@ -577,9 +680,11 @@ namespace KnightOfNights.Scripts.SharedLib
             return (index, min);
         }
 
-        public static (int, T) SelectMin<T>(T item1, params T[] rest) => SelectMin(Comparer<T>.Default.Compare, item1, rest);
+        public static (int, T) SelectMin<T>(T item1, params T[] rest) =>
+            SelectMin(Comparer<T>.Default.Compare, item1, rest);
 
-        public static T SelectMin<T, C>(this IEnumerable<T> self, Func<T, C> keyExtractor) where C : IComparable<C>
+        public static T SelectMin<T, C>(this IEnumerable<T> self, Func<T, C> keyExtractor)
+            where C : IComparable<C>
         {
             var key = new InternalNullable<C>();
             var min = new InternalNullable<T>();
@@ -615,8 +720,10 @@ namespace KnightOfNights.Scripts.SharedLib
                     min.Value = elem;
                     max.Value = elem;
                 }
-                else if (Comparer<T>.Default.Compare(elem, min.Value) < 0) min.Value = elem;
-                else if (Comparer<T>.Default.Compare(elem, max.Value) > 0) max.Value = elem;
+                else if (Comparer<T>.Default.Compare(elem, min.Value) < 0)
+                    min.Value = elem;
+                else if (Comparer<T>.Default.Compare(elem, max.Value) > 0)
+                    max.Value = elem;
             }
 
             return (min.Value, max.Value);
@@ -627,8 +734,10 @@ namespace KnightOfNights.Scripts.SharedLib
         {
             // x = (-b +- sqrt(b^2 - 4ac)) / 2a
             float det = b * b - 4 * a * c;
-            if (Mathf.Abs(det) <= 1e-6f) yield return -b / (2 * a);
-            else if (det < 0) yield break;
+            if (Mathf.Abs(det) <= 1e-6f)
+                yield return -b / (2 * a);
+            else if (det < 0)
+                yield break;
             else
             {
                 float s = Mathf.Sqrt(det);
@@ -638,7 +747,12 @@ namespace KnightOfNights.Scripts.SharedLib
         }
 
         // Compute initial angle for a parabolic arc from arc->dest with gravity.  Null if impossible.
-        public static Vector2? SolveArc(Vector2 src, Vector2 dest, float velocity, float gravity = DEFAULT_GRAVITY)
+        public static Vector2? SolveArc(
+            Vector2 src,
+            Vector2 dest,
+            float velocity,
+            float gravity = DEFAULT_GRAVITY
+        )
         {
             var dx = dest.x - src.x;
             var dy = dest.y - src.y;
@@ -649,25 +763,33 @@ namespace KnightOfNights.Scripts.SharedLib
             var g2 = gravity * gravity;
 
             float det1 = v4 - 2 * dy * g * v2 - dx * dx * g2;
-            if (det1 < 0) return null;
+            if (det1 < 0)
+                return null;
 
             float p1 = v2 / g2 - dy / g;
             float p2 = Mathf.Sqrt(det1) / g2;
             float det2a = p1 - p2;
             float det2b = p1 + p2;
-            if (det2a < 0 && det2b < 0) return null;
+            if (det2a < 0 && det2b < 0)
+                return null;
 
             float det = det2a < 0 ? det2b : det2a;
             float t = Mathf.Sqrt(det * 2);
 
             float vx = dx / t;
-            if (vx > v) return null;
+            if (vx > v)
+                return null;
 
             float vy = Mathf.Sqrt(v2 - vx * vx);
             return new Vector2(vx, vy);
         }
 
-        public static void UpdateBuzzVelocity(this Rigidbody2D self, Vector2 target, float accel, float speedLimit)
+        public static void UpdateBuzzVelocity(
+            this Rigidbody2D self,
+            Vector2 target,
+            float accel,
+            float speedLimit
+        )
         {
             var delta = target.To3d() - self.gameObject.transform.position;
             var dist = delta.magnitude;
@@ -683,17 +805,22 @@ namespace KnightOfNights.Scripts.SharedLib
             var velocity = self.velocity;
 
             var accelDelta = accel * Time.deltaTime;
-            if ((targetVelocity - velocity).magnitude <= accelDelta) self.velocity = targetVelocity;
-            else self.velocity = velocity + (targetVelocity - velocity).normalized * accelDelta;
+            if ((targetVelocity - velocity).magnitude <= accelDelta)
+                self.velocity = targetVelocity;
+            else
+                self.velocity = velocity + (targetVelocity - velocity).normalized * accelDelta;
         }
 
         public static void Decellerate(this Rigidbody2D self, float change, float targetSpeed)
         {
             var v = self.velocity;
             var speed = v.magnitude;
-            if (speed <= targetSpeed) return;
-            if (speed - change <= targetSpeed) self.velocity = self.velocity.normalized * targetSpeed;
-            else self.velocity = self.velocity.normalized * (speed - change);
+            if (speed <= targetSpeed)
+                return;
+            if (speed - change <= targetSpeed)
+                self.velocity = self.velocity.normalized * targetSpeed;
+            else
+                self.velocity = self.velocity.normalized * (speed - change);
         }
 
         public static float DotProduct(Vector2 a, Vector2 b) => a.x * b.x + a.y * b.y;
@@ -707,7 +834,8 @@ namespace KnightOfNights.Scripts.SharedLib
             float dist2 = bt.sqrMagnitude;
             var ab = b - a;
             var segSq = ab.sqrMagnitude;
-            if (segSq < 1e-6f) return dist1 < dist2 ? (a, dist1) : (b, dist2);
+            if (segSq < 1e-6f)
+                return dist1 < dist2 ? (a, dist1) : (b, dist2);
 
             var unit = ab.normalized;
             var ap = DotProduct(at, unit) * unit;
@@ -723,7 +851,8 @@ namespace KnightOfNights.Scripts.SharedLib
 
         public static IEnumerable<float> EqualAngles(float start, int num)
         {
-            for (int i = 0; i < num; i++) yield return start + i * 360f / num;
+            for (int i = 0; i < num; i++)
+                yield return start + i * 360f / num;
         }
 
         public static IEnumerable<float> EqualAngles(int num) => EqualAngles(0, num);
@@ -731,11 +860,13 @@ namespace KnightOfNights.Scripts.SharedLib
         public static (int, int, int) SplitGeo(int geo)
         {
             int small = geo % 5;
-            if (small <= 1 && geo >= 5 + small) small += 5;
+            if (small <= 1 && geo >= 5 + small)
+                small += 5;
             geo -= small;
 
             int medium = (geo % 25) / 5;
-            if (medium <= 1 && geo >= 25 + 5 * medium) medium += 5;
+            if (medium <= 1 && geo >= 25 + 5 * medium)
+                medium += 5;
             geo -= medium * 5;
 
             int large = geo / 25;

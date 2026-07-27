@@ -4,6 +4,5 @@ namespace KnightOfNights.Scripts.InternalLib
     {
         public string Id;
         public UnityEngine.GameObject Prefab;
-        
     }
 }

@@ -7,6 +7,5 @@ namespace KnightOfNights.Scripts.InternalLib
         public float TransitionDuration;
         public float ActiveDistance;
         public float InactivateDistance;
-        
     }
 }

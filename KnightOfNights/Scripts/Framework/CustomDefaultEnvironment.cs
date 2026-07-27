@@ -6,7 +6,8 @@ namespace KnightOfNights.Scripts.Framework;
 [Shim]
 internal class CustomDefaultEnvironment : MonoBehaviour
 {
-    [ShimField] public CustomEnvironmentType EnvironmentType;
+    [ShimField]
+    public CustomEnvironmentType EnvironmentType;
 
     private bool localEnabled = false;
     private bool localLoaded = false;
@@ -19,12 +20,14 @@ internal class CustomDefaultEnvironment : MonoBehaviour
 
     private void Update()
     {
-        if (localEnabled) TryLoad();
+        if (localEnabled)
+            TryLoad();
     }
 
     private void TryLoad()
     {
-        if (localLoaded) return;
+        if (localLoaded)
+            return;
 
         bool any = false;
         foreach (var sceneManager in FindObjectsOfType<SceneManager>(false))
@@ -33,7 +36,8 @@ internal class CustomDefaultEnvironment : MonoBehaviour
             any = true;
         }
 
-        if (!any) return;
+        if (!any)
+            return;
         localLoaded = true;
 
         var pd = PlayerData.instance;

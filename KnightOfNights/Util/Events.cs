@@ -22,8 +22,14 @@ internal static class Events
 
             foreach (var action in cbs)
             {
-                try { action(scene); }
-                catch (Exception ex) { KnightOfNightsMod.LogError($"Error: {ex}"); }
+                try
+                {
+                    action(scene);
+                }
+                catch (Exception ex)
+                {
+                    KnightOfNightsMod.LogError($"Error: {ex}");
+                }
             }
         };
     }

@@ -1,7 +1,7 @@
-﻿using ItemChanger;
+﻿using System.Linq;
+using ItemChanger;
 using Modding;
 using SFCore;
-using System.Linq;
 
 namespace KnightOfNights.IC;
 
@@ -26,7 +26,8 @@ internal class WarriorsNotesModule : AbstractModule<WarriorsNotesModule>
 
     private static bool AcquiredLoc(string locName)
     {
-        if (!ItemChanger.Internal.Ref.Settings.Placements.TryGetValue(locName, out var p)) return false;
+        if (!ItemChanger.Internal.Ref.Settings.Placements.TryGetValue(locName, out var p))
+            return false;
         return p.Items.Any(i => i.WasEverObtained());
     }
 
@@ -37,7 +38,11 @@ internal class WarriorsNotesModule : AbstractModule<WarriorsNotesModule>
             case SceneNames.Abyss_05:
                 return "What a silly place, such noise and unnecessary extravagance. I don't think I shall visit it this day.";
             case SceneNames.Abyss_20:
-                if (!HasWings && !AcquiredLoc(LocationNames.Monarch_Wings) && !AcquiredLoc(LocationNames.Boss_Essence_Lost_Kin))
+                if (
+                    !HasWings
+                    && !AcquiredLoc(LocationNames.Monarch_Wings)
+                    && !AcquiredLoc(LocationNames.Boss_Essence_Lost_Kin)
+                )
                     return "I do not think I even need the assistance here, if I keep the fat one alive. If I dispatch them though, I can time my ascent from the platform with the crawlid upon the wall.";
                 break;
             case SceneNames.Crossroads_04:
@@ -65,8 +70,10 @@ internal class WarriorsNotesModule : AbstractModule<WarriorsNotesModule>
             case SceneNames.Fungus1_13:
                 if (!HasWings)
                 {
-                    if (!AcquiredLoc(LocationNames.Vessel_Fragment_Greenpath)) return "With light sacrifice, I can reach the last ledge, but the ascent beyond is slightly too high. Perhaps if I can coordinate with the mossy denizen on the wall, I can get enough extra height.";
-                    else if (!AcquiredLoc(LocationNames.Whispering_Root_Greenpath)) return "I must plan this carefully, I cannot use the warp so freely when I must first activate the root. I will surely need the mossy one's aide again.";
+                    if (!AcquiredLoc(LocationNames.Vessel_Fragment_Greenpath))
+                        return "With light sacrifice, I can reach the last ledge, but the ascent beyond is slightly too high. Perhaps if I can coordinate with the mossy denizen on the wall, I can get enough extra height.";
+                    else if (!AcquiredLoc(LocationNames.Whispering_Root_Greenpath))
+                        return "I must plan this carefully, I cannot use the warp so freely when I must first activate the root. I will surely need the mossy one's aide again.";
                 }
                 break;
             case SceneNames.Fungus1_35:
@@ -78,7 +85,10 @@ internal class WarriorsNotesModule : AbstractModule<WarriorsNotesModule>
                     return "If I hug the wall with dashes, I can parry thrice to achieve enough height. If I can only reach the lever from below, I can then enter from the outside...";
                 break;
             case SceneNames.Fungus2_04:
-                if (HasWings && !AcquiredLoc(LocationNames.Wanderers_Journal_Fungal_Wastes_Thorns_Gauntlet))
+                if (
+                    HasWings
+                    && !AcquiredLoc(LocationNames.Wanderers_Journal_Fungal_Wastes_Thorns_Gauntlet)
+                )
                     return "The thorns here are sparse, they do not quite eclipse the left corner. I think I need not that ground though, the platform is high enough for this climb.";
                 break;
             case SceneNames.Fungus2_15:
@@ -164,16 +174,21 @@ internal class WarriorsNotesModule : AbstractModule<WarriorsNotesModule>
     {
         var sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
 
-        var header = "A collection of inferences and observations collected by one known only as 'The Warrior'. They appear supernaturally localized, changing as the bearer moves from place to place.";
+        var header =
+            "A collection of inferences and observations collected by one known only as 'The Warrior'. They appear supernaturally localized, changing as the bearer moves from place to place.";
 
         var desc = FillDesc(sceneName);
-        if (desc.Length == 0) desc = "The notes for this room appear lacking, or at least, negligible. Perhaps in another room they may reveal more substantive knowledge.";
-        else desc = $"\"{desc}\"";
+        if (desc.Length == 0)
+            desc =
+                "The notes for this room appear lacking, or at least, negligible. Perhaps in another room they may reveal more substantive knowledge.";
+        else
+            desc = $"\"{desc}\"";
 
         value = $"{header}<br><br>{desc}";
     }
 
-    private bool HookHasWarriorsNotes(string name, bool orig) => name == nameof(HasWarriorsNotes) ? HasWarriorsNotes : orig;
+    private bool HookHasWarriorsNotes(string name, bool orig) =>
+        name == nameof(HasWarriorsNotes) ? HasWarriorsNotes : orig;
 
     protected override void InitializeInternal()
     {

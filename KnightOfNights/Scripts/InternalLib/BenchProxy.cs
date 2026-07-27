@@ -10,9 +10,14 @@ namespace KnightOfNights.Scripts.InternalLib;
 [Shim]
 internal class BenchProxy : MonoBehaviour
 {
-    [ShimField] public string AreaName = "";
-    [ShimField] public string MenuName = "";
-    [ShimField] public Vector3 AdjustVector;
+    [ShimField]
+    public string AreaName = "";
+
+    [ShimField]
+    public string MenuName = "";
+
+    [ShimField]
+    public Vector3 AdjustVector;
 
     private void Awake()
     {
@@ -31,7 +36,7 @@ internal class BenchProxy : MonoBehaviour
 
         var box = bench.GetComponent<BoxCollider2D>();
         box.offset = myBox.offset;
-        box.size  = myBox.size;
+        box.size = myBox.size;
 
         var lit = bench.FindChild("Lit")!;
         lit.transform.localPosition = Vector3.zero;
@@ -43,7 +48,8 @@ internal class BenchProxy : MonoBehaviour
         vars.GetFsmFloat("Tilt Amount").Value = 0;
         vars.GetFsmVector3("Adjust Vector").Value = AdjustVector;
 
-        fsm.GetState("Rest Burst").AddFirstAction(new Lambda(() => BenchesModule.Get()?.VisitBench(AreaName, MenuName)));
+        fsm.GetState("Rest Burst")
+            .AddFirstAction(new Lambda(() => BenchesModule.Get()?.VisitBench(AreaName, MenuName)));
         gameObject.SetActive(false);
     }
 }

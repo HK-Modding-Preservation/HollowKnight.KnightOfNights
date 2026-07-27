@@ -5,6 +5,5 @@ namespace KnightOfNights.Scripts.Proxy
         public string id;
         public string sceneName;
         public bool semiPersistent;
-        
     }
 }

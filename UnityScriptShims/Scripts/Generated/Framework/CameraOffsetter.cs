@@ -4,6 +4,5 @@ namespace KnightOfNights.Scripts.Framework
     {
         public UnityEngine.Vector2 Offset;
         public float OffsetSpeed;
-        
     }
 }

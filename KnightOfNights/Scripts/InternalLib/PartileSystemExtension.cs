@@ -1,7 +1,7 @@
-﻿using PurenailCore.SystemUtil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PurenailCore.SystemUtil;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -11,7 +11,10 @@ internal class PartileSystemExtension<T>(ParticleSystem system)
     private readonly ParticleSystem system = system;
     private readonly Dictionary<int, T> data = [];
 
-    internal class Session(PartileSystemExtension<T> parent, IEnumerable<(ParticleSystem.Particle, T)> data) : IDisposable
+    internal class Session(
+        PartileSystemExtension<T> parent,
+        IEnumerable<(ParticleSystem.Particle, T)> data
+    ) : IDisposable
     {
         private readonly PartileSystemExtension<T> parent = parent;
         private readonly List<(ParticleSystem.Particle, T)> data = [.. data];
@@ -20,7 +23,8 @@ internal class PartileSystemExtension<T>(ParticleSystem system)
 
         public (ParticleSystem.Particle, T) Get(int i) => data[i];
 
-        public void Set(int i, ParticleSystem.Particle particle, T value) => data[i] = (particle, value);
+        public void Set(int i, ParticleSystem.Particle particle, T value) =>
+            data[i] = (particle, value);
 
         public void Dispose()
         {
@@ -49,6 +53,12 @@ internal class PartileSystemExtension<T>(ParticleSystem system)
         system.GetCustomParticleData(customData, ParticleSystemCustomData.Custom1);
 
         List<(ParticleSystem.Particle, T)> sessionData = [];
-        return new(this, particles.Zip(customData, (p, d) => (p, data.GetOrDefault(Mathf.RoundToInt(d.x), () => factory(p)))));
+        return new(
+            this,
+            particles.Zip(
+                customData,
+                (p, d) => (p, data.GetOrDefault(Mathf.RoundToInt(d.x), () => factory(p)))
+            )
+        );
     }
 }

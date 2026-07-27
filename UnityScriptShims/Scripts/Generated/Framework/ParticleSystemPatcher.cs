@@ -1,7 +1,4 @@
 namespace KnightOfNights.Scripts.Framework
 {
-    public class ParticleSystemPatcher : UnityEngine.MonoBehaviour
-    {
-        
-    }
+    public class ParticleSystemPatcher : UnityEngine.MonoBehaviour { }
 }

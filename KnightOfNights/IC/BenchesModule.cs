@@ -1,8 +1,8 @@
-﻿using Benchwarp;
+﻿using System.Collections.Generic;
+using Benchwarp;
 using KnightOfNights.Scripts.SharedLib;
 using KnightOfNights.Scripts.SharedLib.Data;
 using PurenailCore.CollectionUtil;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.IC;
@@ -20,28 +20,34 @@ internal class BenchesModule : AbstractModule<BenchesModule>
         foreach (var area in MaybeVisitedCustomBenches.Keys)
         {
             var names = VisitedCustomBenches.GetOrAddNew(area);
-            foreach (var name in MaybeVisitedCustomBenches.Get(area)) changed |= names.Add(name);
+            foreach (var name in MaybeVisitedCustomBenches.Get(area))
+                changed |= names.Add(name);
         }
 
-        if (changed) UpdateBenchwarp();
+        if (changed)
+            UpdateBenchwarp();
     }
 
-    protected override void InitializeInternal() => SceneDataModule.GetDeferred().Do(InitializeInternal);
+    protected override void InitializeInternal() =>
+        SceneDataModule.GetDeferred().Do(InitializeInternal);
 
     private void InitializeInternal(SceneDataModule sceneData)
     {
         foreach (var (scene, data) in sceneData.GetForAllScenes<CustomBenchData>())
         {
             MaybeVisitedCustomBenches.Add(data.AreaName, data.MenuName);
-            CustomBenches.Add(new(
-                data.MenuName,
-                data.AreaName,
-                scene,
-                data.RespawnMarkerName,
-                1,
-                GlobalEnums.MapZone.PEAK,
-                "",
-                Vector3.zero));
+            CustomBenches.Add(
+                new(
+                    data.MenuName,
+                    data.AreaName,
+                    scene,
+                    data.RespawnMarkerName,
+                    1,
+                    GlobalEnums.MapZone.PEAK,
+                    "",
+                    Vector3.zero
+                )
+            );
         }
         CustomBenches.SortBy(b => b.name);
 
@@ -61,8 +67,10 @@ internal class BenchesModule : AbstractModule<BenchesModule>
 
     private bool HideUnvisitedBenches(Bench bench)
     {
-        if (!MaybeVisitedCustomBenches.Contains(bench.areaName, bench.name)) return false;
-        if (!VisitedCustomBenches.TryGetValue(bench.areaName, out var benches)) return true;
+        if (!MaybeVisitedCustomBenches.Contains(bench.areaName, bench.name))
+            return false;
+        if (!VisitedCustomBenches.TryGetValue(bench.areaName, out var benches))
+            return true;
         return !benches.Contains(bench.name);
     }
 
@@ -70,7 +78,8 @@ internal class BenchesModule : AbstractModule<BenchesModule>
 
     internal void VisitBench(string areaName, string menuName)
     {
-        if (!VisitedCustomBenches.GetOrAddNew(areaName).Add(menuName)) return;
+        if (!VisitedCustomBenches.GetOrAddNew(areaName).Add(menuName))
+            return;
         UpdateBenchwarp();
     }
 

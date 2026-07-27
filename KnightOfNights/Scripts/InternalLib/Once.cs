@@ -8,7 +8,8 @@ internal class Once(Action action)
 
     public void Invoke()
     {
-        if (done) return;
+        if (done)
+            return;
 
         done = true;
         action();

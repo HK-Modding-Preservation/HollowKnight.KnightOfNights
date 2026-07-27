@@ -1,12 +1,12 @@
-using KnightOfNights.Scripts.Lib;
-using KnightOfNights.Scripts.SharedLib;
 using System.Collections.Generic;
 using System.IO;
+using KnightOfNights.Scripts.Lib;
+using KnightOfNights.Scripts.SharedLib;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 internal class TilemapShiftPopup : EditorWindow
 {
@@ -26,7 +26,8 @@ internal class TilemapShiftPopup : EditorWindow
             Close();
         }
 
-        if (GUILayout.Button("Cancel")) Close();
+        if (GUILayout.Button("Cancel"))
+            Close();
     }
 }
 
@@ -44,7 +45,8 @@ internal class RenameScenePopup : EditorWindow
             Close();
         }
 
-        if (GUILayout.Button("Cancel")) Close();
+        if (GUILayout.Button("Cancel"))
+            Close();
     }
 }
 
@@ -62,7 +64,8 @@ internal class SearchScenesPopup : EditorWindow
             Close();
         }
 
-        if (GUILayout.Button("Cancel")) Close();
+        if (GUILayout.Button("Cancel"))
+            Close();
     }
 }
 
@@ -88,7 +91,10 @@ public class MainMenuExtensions
         foreach (var entry in sceneEdits)
         {
             var path = origPath.Replace(origName, entry.Key);
-            try { EditorSceneManager.OpenScene(path); }
+            try
+            {
+                EditorSceneManager.OpenScene(path);
+            }
             catch
             {
                 Debug.Log($"Couldn't fix transitions in scene '{path}'");
@@ -141,7 +147,8 @@ public class MainMenuExtensions
 
     internal static void ShiftTilemap(int dx, int dy)
     {
-        if (dx == 0 && dy == 0) return;
+        if (dx == 0 && dy == 0)
+            return;
 
         var tilemap = Object.FindObjectOfType<Tilemap>();
         var oSize = tilemap.size;
@@ -167,15 +174,19 @@ public class MainMenuExtensions
 
         // Move all game objects not at origin.
         var scene = SceneManager.GetActiveScene();
-        foreach (var obj in scene.GetRootGameObjects()) ShiftObject(obj, dx, dy);
+        foreach (var obj in scene.GetRootGameObjects())
+            ShiftObject(obj, dx, dy);
         EditorSceneManager.MarkSceneDirty(scene);
     }
 
     private static void ShiftObject(GameObject obj, int dx, int dy)
     {
         var pos = obj.transform.position;
-        if (pos.x == 0 && pos.y == 0) foreach (var child in obj.Children()) ShiftObject(child, dx, dy);
-        else obj.transform.position += new Vector3(dx, dy, 0);
+        if (pos.x == 0 && pos.y == 0)
+            foreach (var child in obj.Children())
+                ShiftObject(child, dx, dy);
+        else
+            obj.transform.position += new Vector3(dx, dy, 0);
     }
 
     [MenuItem("KnightOfNights/Scene/Optimize")]
@@ -186,10 +197,12 @@ public class MainMenuExtensions
         if (updates.Count > 0)
         {
             Debug.Log("Optimized scene");
-            foreach (var update in updates) Debug.Log(update);
+            foreach (var update in updates)
+                Debug.Log(update);
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         }
-        else Debug.Log("Scene already optimized");
+        else
+            Debug.Log("Scene already optimized");
         pack.Save();
     }
 
@@ -214,11 +227,13 @@ public class MainMenuExtensions
         }
 
         var results = new List<(int, string)>();
-        foreach (var entry in count) results.Add((entry.Value, entry.Key));
+        foreach (var entry in count)
+            results.Add((entry.Value, entry.Key));
         results.Sort();
         results.Reverse();
         var printed = new List<string>();
-        foreach (var (c, p) in results) printed.Add($"{p}: {c}");
+        foreach (var (c, p) in results)
+            printed.Add($"{p}: {c}");
 
         Debug.Log($"Search results:\n  {string.Join("\n  ", printed.ToArray())}");
     }
@@ -257,7 +272,8 @@ public class MainMenuExtensions
                     Debug.Log($"Updated {scene.name}: [{string.Join(", ", updates)}]");
                     ++scenesFixed;
                 }
-                else ++scenesUnfixed;
+                else
+                    ++scenesUnfixed;
             }
             catch (System.Exception ex)
             {
@@ -269,7 +285,9 @@ public class MainMenuExtensions
         AssetDatabase.RemoveUnusedAssetBundleNames();
         string packSaved = pack.Save() ? "Updated scene data; " : "";
 
-        Debug.Log($"Optimized {scenesFixed + scenesUnfixed + scenesErrored} scenes; {packSaved}updated {scenesFixed}, {scenesUnfixed} already optimal, {scenesErrored} errors");
+        Debug.Log(
+            $"Optimized {scenesFixed + scenesUnfixed + scenesErrored} scenes; {packSaved}updated {scenesFixed}, {scenesUnfixed} already optimal, {scenesErrored} errors"
+        );
         EditorSceneManager.OpenScene(origPath);
         EditorUtility.ClearProgressBar();
     }
@@ -281,7 +299,11 @@ public class MainMenuExtensions
         string[] guids = AssetDatabase.FindAssets("t:Scene");
         for (int i = 0; i < guids.Length; i++)
         {
-            EditorUtility.DisplayProgressBar("Processing Scenes", $"Processed {i} of {guids.Length} scenes...", i * 1f / guids.Length);
+            EditorUtility.DisplayProgressBar(
+                "Processing Scenes",
+                $"Processed {i} of {guids.Length} scenes...",
+                i * 1f / guids.Length
+            );
 
             var path = AssetDatabase.GUIDToAssetPath(guids[i]);
             EditorSceneManager.OpenScene(path);
@@ -297,14 +319,27 @@ public class MainMenuExtensions
     private enum RenamePhase
     {
         Copy,
-        Delete
+        Delete,
     }
 
-    private static bool RenameScript<B, A>(RenamePhase phase, GameObject obj, ScriptEditor<B, A> editor) where B : MonoBehaviour where A : MonoBehaviour
+    private static bool RenameScript<B, A>(
+        RenamePhase phase,
+        GameObject obj,
+        ScriptEditor<B, A> editor
+    )
+        where B : MonoBehaviour
+        where A : MonoBehaviour
     {
         bool changed = false;
         var before = obj.GetComponent<B>();
-        if (before != null && (!PrefabUtility.IsPartOfAnyPrefab(before.gameObject) || PrefabUtility.IsAddedGameObjectOverride(before.gameObject) || PrefabUtility.IsAddedComponentOverride(before)))
+        if (
+            before != null
+            && (
+                !PrefabUtility.IsPartOfAnyPrefab(before.gameObject)
+                || PrefabUtility.IsAddedGameObjectOverride(before.gameObject)
+                || PrefabUtility.IsAddedComponentOverride(before)
+            )
+        )
         {
             UnityEditorShims.MarkDirty(obj);
 
@@ -322,7 +357,8 @@ public class MainMenuExtensions
             changed = true;
         }
 
-        foreach (Transform child in obj.transform) changed |= RenameScript(phase, child.gameObject, editor);
+        foreach (Transform child in obj.transform)
+            changed |= RenameScript(phase, child.gameObject, editor);
         return changed;
     }
 
@@ -332,24 +368,35 @@ public class MainMenuExtensions
         var failures = new List<string>();
         for (int i = 0; i < guids.Length; i++)
         {
-            EditorUtility.DisplayProgressBar("Processing Prefabs", $"Processed {i} of {guids.Length} prefabs...", i * 1f / guids.Length);
+            EditorUtility.DisplayProgressBar(
+                "Processing Prefabs",
+                $"Processed {i} of {guids.Length} prefabs...",
+                i * 1f / guids.Length
+            );
 
             var assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
             var root = PrefabUtility.LoadPrefabContents(assetPath);
             if (edit(root))
             {
                 PrefabUtility.SaveAsPrefabAsset(root, assetPath, out var success);
-                if (!success) failures.Add(assetPath);
+                if (!success)
+                    failures.Add(assetPath);
             }
             PrefabUtility.UnloadPrefabContents(root);
         }
         EditorUtility.ClearProgressBar();
 
-        if (failures.Count > 0) Debug.Log($"Failed to edit {failures.Count} of {guids.Length} prefabs:\n  {string.Join("\n  ", failures)}");
-        else Debug.Log($"Successfully processed {guids.Length} prefabs.");
+        if (failures.Count > 0)
+            Debug.Log(
+                $"Failed to edit {failures.Count} of {guids.Length} prefabs:\n  {string.Join("\n  ", failures)}"
+            );
+        else
+            Debug.Log($"Successfully processed {guids.Length} prefabs.");
     }
 
-    private static void RenameScriptAllImpl<B, A>(RenamePhase phase, ScriptEditor<B, A> editor) where B : MonoBehaviour where A : MonoBehaviour
+    private static void RenameScriptAllImpl<B, A>(RenamePhase phase, ScriptEditor<B, A> editor)
+        where B : MonoBehaviour
+        where A : MonoBehaviour
     {
         ForEachPrefab(obj => RenameScript(phase, obj, editor));
 
@@ -358,7 +405,8 @@ public class MainMenuExtensions
             var sceneObj = SceneManager.GetActiveScene();
 
             bool changed = false;
-            foreach (var obj in sceneObj.GetRootGameObjects()) changed |= RenameScript(phase, obj, editor);
+            foreach (var obj in sceneObj.GetRootGameObjects())
+                changed |= RenameScript(phase, obj, editor);
 
             if (changed)
             {
@@ -368,28 +416,33 @@ public class MainMenuExtensions
         }
     }
 
-    private static void RenameScriptAll<B, A>(ScriptEditor<B, A> editor) where B : MonoBehaviour where A : MonoBehaviour
+    private static void RenameScriptAll<B, A>(ScriptEditor<B, A> editor)
+        where B : MonoBehaviour
+        where A : MonoBehaviour
     {
         RenameScriptAllImpl(RenamePhase.Copy, editor);
         RenameScriptAllImpl(RenamePhase.Delete, editor);
     }
 
     [MenuItem("KnightOfNights/Scene/Build")]
-    static void BuildSceneSpecificBundle() => BuildSceneSpecificBundle(BuildTarget.StandaloneWindows);
+    static void BuildSceneSpecificBundle() =>
+        BuildSceneSpecificBundle(BuildTarget.StandaloneWindows);
 
     [MenuItem("KnightOfNights/Scene/Build (Linux)")]
-    static void BuildSceneSpecificBundleLinux() => BuildSceneSpecificBundle(BuildTarget.StandaloneLinux64);
+    static void BuildSceneSpecificBundleLinux() =>
+        BuildSceneSpecificBundle(BuildTarget.StandaloneLinux64);
 
     [MenuItem("KnightOfNights/Objects Bundle/Build")]
-    static void BuildObjectsBundle() => BuildSpecificBundle("knightofnightsbundle", BuildTarget.StandaloneWindows);
+    static void BuildObjectsBundle() =>
+        BuildSpecificBundle("knightofnightsbundle", BuildTarget.StandaloneWindows);
 
     [MenuItem("KnightOfNights/Objects Bundle/Build (Linux)")]
-    static void BuildObjectsBundleLinux() => BuildSpecificBundle("knightofnightsbundle", BuildTarget.StandaloneLinux64);
+    static void BuildObjectsBundleLinux() =>
+        BuildSpecificBundle("knightofnightsbundle", BuildTarget.StandaloneLinux64);
 
     [MenuItem("KnightOfNights/All Scenes/Build")]
     static void BuildAllAssetBundles()
     {
-
         OptimizeAllScenes();
         BuildAllAssetBundles(BuildTarget.StandaloneWindows);
     }
@@ -412,15 +465,18 @@ public class MainMenuExtensions
     private static string AssetBundlesDir()
     {
         string assetBundleDirectory = "Assets/AssetBundles";
-        if (!Directory.Exists(assetBundleDirectory)) Directory.CreateDirectory(assetBundleDirectory);
+        if (!Directory.Exists(assetBundleDirectory))
+            Directory.CreateDirectory(assetBundleDirectory);
         return assetBundleDirectory;
     }
 
     private static void BuildAllAssetBundles(BuildTarget buildTarget)
     {
-        BuildPipeline.BuildAssetBundles(AssetBundlesDir(),
-                                        BuildAssetBundleOptions.None,
-                                        buildTarget);
+        BuildPipeline.BuildAssetBundles(
+            AssetBundlesDir(),
+            BuildAssetBundleOptions.None,
+            buildTarget
+        );
     }
 
     private static void BuildSceneSpecificBundle(BuildTarget buildTarget)
@@ -437,9 +493,14 @@ public class MainMenuExtensions
         var build = new AssetBundleBuild
         {
             assetBundleName = bundleName,
-            assetNames = AssetDatabase.GetAssetPathsFromAssetBundle(bundleName)
+            assetNames = AssetDatabase.GetAssetPathsFromAssetBundle(bundleName),
         };
 
-        BuildPipeline.BuildAssetBundles(AssetBundlesDir(), new AssetBundleBuild[] { build }, BuildAssetBundleOptions.None, buildTarget);
+        BuildPipeline.BuildAssetBundles(
+            AssetBundlesDir(),
+            new AssetBundleBuild[] { build },
+            BuildAssetBundleOptions.None,
+            buildTarget
+        );
     }
 }

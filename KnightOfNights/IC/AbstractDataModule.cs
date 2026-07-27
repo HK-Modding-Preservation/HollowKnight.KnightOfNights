@@ -1,12 +1,14 @@
-﻿using KnightOfNights.Build;
-using System;
+﻿using System;
 using System.IO;
+using KnightOfNights.Build;
 
 namespace KnightOfNights.IC;
 
 using JsonUtil = PurenailCore.SystemUtil.JsonUtil<KnightOfNightsMod>;
 
-internal abstract class AbstractDataModule<M, T> : AbstractModule<M> where M : AbstractDataModule<M, T>, new() where T : class
+internal abstract class AbstractDataModule<M, T> : AbstractModule<M>
+    where M : AbstractDataModule<M, T>, new()
+    where T : class
 {
     private T? _data;
     protected T Data
@@ -22,7 +24,9 @@ internal abstract class AbstractDataModule<M, T> : AbstractModule<M> where M : A
 
     private string RootPath(bool slash)
     {
-        string path = Unity() ? "KnightOfNights.Unity.Assets.Resources.Data" : "KnightOfNights.Resources.Data";
+        string path = Unity()
+            ? "KnightOfNights.Unity.Assets.Resources.Data"
+            : "KnightOfNights.Resources.Data";
         return slash ? path.Replace(".", "/") : path;
     }
 
@@ -34,7 +38,8 @@ internal abstract class AbstractDataModule<M, T> : AbstractModule<M> where M : A
 
     private void Load()
     {
-        if (_data != null) return;
+        if (_data != null)
+            return;
 
 #if DEBUG
         try

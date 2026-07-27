@@ -4,6 +4,5 @@ namespace KnightOfNights.Scripts.Summit
     {
         public UnityEngine.GameObject RespawnMarker;
         public KnightOfNights.Scripts.Proxy.HeroDetectorProxy Trigger;
-        
     }
 }

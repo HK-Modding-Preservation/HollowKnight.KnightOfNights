@@ -1,9 +1,9 @@
-﻿using KnightOfNights.Scripts.InternalLib;
+﻿using System.Collections.Generic;
+using System.Linq;
+using KnightOfNights.Scripts.InternalLib;
 using KnightOfNights.Scripts.SharedLib;
 using PurenailCore.CollectionUtil;
 using PurenailCore.ModUtil;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Framework;
@@ -21,16 +21,23 @@ internal enum WindFieldAggregator
 internal enum WindTargetType
 {
     Hero,
-    Particle
+    Particle,
 }
 
 [Shim]
 internal class WindField : MonoBehaviour
 {
-    [ShimField] public WindFieldAggregator Aggregator;
-    [ShimField] public float HeroWindAccel;
-    [ShimField] public float ParticleWindAccel;
-    [ShimField] public float ParticleTargetMultiplier;
+    [ShimField]
+    public WindFieldAggregator Aggregator;
+
+    [ShimField]
+    public float HeroWindAccel;
+
+    [ShimField]
+    public float ParticleWindAccel;
+
+    [ShimField]
+    public float ParticleTargetMultiplier;
 
     private readonly RectMultimap<WFZCallbackRecord> windZoneCallbacks = [];
 
@@ -38,7 +45,8 @@ internal class WindField : MonoBehaviour
 
     internal static IEnumerable<WindField> ActiveWindFields() => windFields;
 
-    internal static Vector2 ActiveWindEffects(Vector2 pos, WindTargetType windTargetType) => windFields.Select(w => w.WindSpeedAtPos(pos, windTargetType)).Sum();
+    internal static Vector2 ActiveWindEffects(Vector2 pos, WindTargetType windTargetType) =>
+        windFields.Select(w => w.WindSpeedAtPos(pos, windTargetType)).Sum();
 
     internal static Vector2 HeroWindEffects() => windFields.Select(w => w.heroWindEffect).Sum();
 
@@ -53,24 +61,33 @@ internal class WindField : MonoBehaviour
         List<Vector2> vectors = [];
         foreach (var cb in windZoneCallbacks.Get(p).OrderByDescending(c => c.Priority))
         {
-            if (cb.Priority < priority) break;
-            else if (cb.Priority > priority) vectors.Clear();
-            if (!cb.Callback(p, out var windSpeed)) continue;
+            if (cb.Priority < priority)
+                break;
+            else if (cb.Priority > priority)
+                vectors.Clear();
+            if (!cb.Callback(p, out var windSpeed))
+                continue;
 
             priority = cb.Priority;
             vectors.Add(windSpeed);
         }
 
-        if (vectors.Count == 0) return Vector2.zero;
+        if (vectors.Count == 0)
+            return Vector2.zero;
 
-        float multiplier = windTargetType switch { WindTargetType.Hero => 1, WindTargetType.Particle => ParticleTargetMultiplier, _ => throw windTargetType.InvalidEnum() };
-        return Aggregator switch
+        float multiplier = windTargetType switch
         {
-            WindFieldAggregator.Sum => vectors.Sum(),
-            WindFieldAggregator.Average => vectors.Sum() / vectors.Count,
-            WindFieldAggregator.MaxMagnitude => vectors.SelectMin(v => -v.sqrMagnitude),
-            _ => throw Aggregator.InvalidEnum()
-        } * multiplier;
+            WindTargetType.Hero => 1,
+            WindTargetType.Particle => ParticleTargetMultiplier,
+            _ => throw windTargetType.InvalidEnum(),
+        };
+        return Aggregator switch
+            {
+                WindFieldAggregator.Sum => vectors.Sum(),
+                WindFieldAggregator.Average => vectors.Sum() / vectors.Count,
+                WindFieldAggregator.MaxMagnitude => vectors.SelectMin(v => -v.sqrMagnitude),
+                _ => throw Aggregator.InvalidEnum(),
+            } * multiplier;
     }
 
     private void OnEnable()
@@ -78,8 +95,8 @@ internal class WindField : MonoBehaviour
         Id = idGen.Acquire();
         windFields.Add(this);
         foreach (var windZone in gameObject.GetComponentsInChildren<WindFieldZone>())
-            foreach (var (rect, cb) in windZone.GetCallbacks())
-                windZoneCallbacks.Add(rect, new WFZCallbackRecord(windZone.Priority, cb));
+        foreach (var (rect, cb) in windZone.GetCallbacks())
+            windZoneCallbacks.Add(rect, new WFZCallbackRecord(windZone.Priority, cb));
     }
 
     private void OnDisable()
@@ -93,22 +110,29 @@ internal class WindField : MonoBehaviour
 
     private void FixedUpdate()
     {
-        heroWindEffect.AdvanceVecAbs(HeroWindAccel * Time.fixedDeltaTime, WindSpeedAtPos(HeroController.instance.transform.position, WindTargetType.Hero));
+        heroWindEffect.AdvanceVecAbs(
+            HeroWindAccel * Time.fixedDeltaTime,
+            WindSpeedAtPos(HeroController.instance.transform.position, WindTargetType.Hero)
+        );
 
         var cState = HeroController.instance.cState;
-        if (cState.hazardRespawning || cState.dead) heroWindEffect = Vector2.zero;
+        if (cState.hazardRespawning || cState.dead)
+            heroWindEffect = Vector2.zero;
     }
 
     private static Vector2 ModifyHeroVelocity(Vector2 velocity)
     {
-        foreach (var windField in ActiveWindFields()) velocity += windField.heroWindEffect;
+        foreach (var windField in ActiveWindFields())
+            velocity += windField.heroWindEffect;
         return velocity;
     }
 
     private static bool loaded = false;
+
     internal static void Load()
     {
-        if (loaded) return;
+        if (loaded)
+            return;
 
         loaded = true;
         HeroVelocityModifier.AddModifier(0, ModifyHeroVelocity);

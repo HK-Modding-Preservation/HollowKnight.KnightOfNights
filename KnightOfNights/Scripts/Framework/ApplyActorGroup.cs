@@ -8,5 +8,6 @@ namespace KnightOfNights.Scripts.Framework;
 [RequireComponent(typeof(AudioSource))]
 internal class ApplyActorGroup : MonoBehaviour
 {
-    private void Awake() => this.GetComponent<AudioSource>()?.outputAudioMixerGroup = AudioMixerGroups.Actors();
+    private void Awake() =>
+        this.GetComponent<AudioSource>()?.outputAudioMixerGroup = AudioMixerGroups.Actors();
 }

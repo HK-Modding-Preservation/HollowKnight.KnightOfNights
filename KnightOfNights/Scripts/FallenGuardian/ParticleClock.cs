@@ -1,7 +1,7 @@
-﻿using KnightOfNights.Scripts.InternalLib;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.InternalLib;
 using KnightOfNights.Scripts.SharedLib;
 using PurenailCore.GOUtil;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.FallenGuardian;
@@ -9,18 +9,32 @@ namespace KnightOfNights.Scripts.FallenGuardian;
 [Shim]
 internal class ParticleClock : MonoBehaviour
 {
-    [ShimField] public List<GameObject> Prefabs = [];
-    [ShimField] public float ClockRadius;
-    [ShimField] public float SpokeRadius;
-    [ShimField] public float FadeSpeed;
-    [ShimField] public int NumSpokes;
+    [ShimField]
+    public List<GameObject> Prefabs = [];
+
+    [ShimField]
+    public float ClockRadius;
+
+    [ShimField]
+    public float SpokeRadius;
+
+    [ShimField]
+    public float FadeSpeed;
+
+    [ShimField]
+    public int NumSpokes;
 
     private Transform? parentTransform;
     private float animTime;
     private float circleTime;
     private float fadeTime;
 
-    internal static ParticleClock Spawn(Transform parentTransform, float animTime, float circleTime, float fadeTime)
+    internal static ParticleClock Spawn(
+        Transform parentTransform,
+        float animTime,
+        float circleTime,
+        float fadeTime
+    )
     {
         var prefab = KnightOfNightsBundleAPI.LoadPrefab<GameObject>("ParticleClock");
         prefab.SetActive(false);
@@ -41,7 +55,8 @@ internal class ParticleClock : MonoBehaviour
 
     private void Update()
     {
-        if (!tracking || parentTransform == null) return;
+        if (!tracking || parentTransform == null)
+            return;
         transform.position = parentTransform.position;
     }
 
@@ -64,13 +79,18 @@ internal class ParticleClock : MonoBehaviour
 
     private IEnumerator<CoroutineElement> Run()
     {
-        var oneof = Coroutines.OneOf(Coroutines.Sequence(RunImpl()), Coroutines.SleepUntil(() => cancelled));
+        var oneof = Coroutines.OneOf(
+            Coroutines.Sequence(RunImpl()),
+            Coroutines.SleepUntil(() => cancelled)
+        );
         yield return oneof;
 
-        if (oneof.Choice == 0) yield break;
-        
+        if (oneof.Choice == 0)
+            yield break;
+
         // Cancelled.
-        foreach (var spoke in spokes) spoke.AlphaFade = 1f / fadeTime;
+        foreach (var spoke in spokes)
+            spoke.AlphaFade = 1f / fadeTime;
         yield return Coroutines.Sequence(Finish());
     }
 
@@ -84,7 +104,10 @@ internal class ParticleClock : MonoBehaviour
         GameObject prefab = Prefabs.Choose();
         for (int i = 0; i < NumSpokes; i++)
         {
-            var pos = transform.position + Quaternion.Euler(0, 0, 90 - (i + 1) * circleAngleGap) * new Vector3(ClockRadius, 0, 0);
+            var pos =
+                transform.position
+                + Quaternion.Euler(0, 0, 90 - (i + 1) * circleAngleGap)
+                    * new Vector3(ClockRadius, 0, 0);
             var obj = prefab.Spawn(pos, Quaternion.identity);
             obj.transform.SetParent(transform, true);
             obj.transform.localScale = new(SpokeRadius, SpokeRadius, 1);
@@ -94,7 +117,8 @@ internal class ParticleClock : MonoBehaviour
             spokes.Add(spoke);
             obj.SetActive(true);
 
-            if (i != NumSpokes - 1) yield return Coroutines.SleepSeconds(circleTimeGap);
+            if (i != NumSpokes - 1)
+                yield return Coroutines.SleepSeconds(circleTimeGap);
         }
 
         yield return Coroutines.SleepSeconds(animTime);
@@ -102,7 +126,9 @@ internal class ParticleClock : MonoBehaviour
         {
             var spoke = spokes[i];
             spoke.AlphaFade = 1f / fadeTime;
-            spoke.Velocity = Quaternion.Euler(0, 0, 90 - (i + 1) * circleAngleGap) * new Vector3(FadeSpeed, 0, 0);
+            spoke.Velocity =
+                Quaternion.Euler(0, 0, 90 - (i + 1) * circleAngleGap)
+                * new Vector3(FadeSpeed, 0, 0);
         }
 
         yield return Coroutines.Sequence(Finish());
@@ -112,8 +138,11 @@ internal class ParticleClock : MonoBehaviour
 [Shim]
 internal class ParticleClockSpoke : MonoBehaviour
 {
-    [ShimField] public Animator? Animator;
-    [ShimField] public SpriteRenderer? spriteRenderer;
+    [ShimField]
+    public Animator? Animator;
+
+    [ShimField]
+    public SpriteRenderer? spriteRenderer;
 
     internal Vector2 Velocity;
     internal float AlphaFade;
@@ -152,7 +181,8 @@ internal class ParticleClockSpoke : MonoBehaviour
         if (AlphaFade > 0)
         {
             alpha -= Time.deltaTime * AlphaFade;
-            if (alpha < 0) alpha = 0;
+            if (alpha < 0)
+                alpha = 0;
         }
         spriteRenderer!.SetAlpha(alpha);
     }

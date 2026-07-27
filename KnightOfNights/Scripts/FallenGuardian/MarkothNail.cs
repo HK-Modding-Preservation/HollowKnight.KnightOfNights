@@ -17,12 +17,14 @@ internal class MarkothNail(PlayMakerFSM fsm)
         initState.ClearActions();
         initState.ClearTransitions();
         initState.AddTransition("FINISHED", "Antic Point");
-        initState.AddFirstAction(new Lambda(() =>
-        {
-            fsm.FsmVariables.GetFsmGameObject("Self").Value = fsm.gameObject;
-            fsm.gameObject.transform.position = SelectSpawn(stats, arena);
-            fsm.SendEvent("FINISHED");
-        }));
+        initState.AddFirstAction(
+            new Lambda(() =>
+            {
+                fsm.FsmVariables.GetFsmGameObject("Self").Value = fsm.gameObject;
+                fsm.gameObject.transform.position = SelectSpawn(stats, arena);
+                fsm.SendEvent("FINISHED");
+            })
+        );
 
         var recycleState = fsm.GetState("Recycle");
         recycleState.ClearActions();
@@ -50,7 +52,8 @@ internal class MarkothNail(PlayMakerFSM fsm)
         {
             Vector3 pos = new(Random.Range(minX, maxX), Random.Range(minY, maxY));
             var dist = (kPos - pos).magnitude;
-            if (dist < stats.DaggerMinDistance || dist > stats.DaggerMaxDistance) continue;
+            if (dist < stats.DaggerMinDistance || dist > stats.DaggerMaxDistance)
+                continue;
 
             return pos;
         }

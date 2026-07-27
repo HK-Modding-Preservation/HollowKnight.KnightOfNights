@@ -1,6 +1,6 @@
-﻿using PurenailCore.GOUtil;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using PurenailCore.GOUtil;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -18,22 +18,33 @@ internal static class GameObjectExtensions
 
     public static void FixSpawnBug(this GameObject self)
     {
-        if (!spawnBugFixed.Add(self)) return;
+        if (!spawnBugFixed.Add(self))
+            return;
 
         Vector3 pos = new(-1000, -1000);
         self.Spawn(pos).Recycle();
     }
 
-    public static void StartLibCoroutine(this MonoBehaviour self, CoroutineElement co) => self.StartCoroutine(EvaluateLibCoroutine(co));
+    public static void StartLibCoroutine(this MonoBehaviour self, CoroutineElement co) =>
+        self.StartCoroutine(EvaluateLibCoroutine(co));
 
-    public static void StartLibCoroutine(this MonoBehaviour self, IEnumerator<CoroutineElement> enumerator) => self.StartCoroutine(EvaluateLibCoroutine(CoroutineSequence.Create(enumerator)));
+    public static void StartLibCoroutine(
+        this MonoBehaviour self,
+        IEnumerator<CoroutineElement> enumerator
+    ) => self.StartCoroutine(EvaluateLibCoroutine(CoroutineSequence.Create(enumerator)));
 
     private static IEnumerator EvaluateLibCoroutine(CoroutineElement co)
     {
-        while (!co.Update(Time.deltaTime).done) yield return 0;
+        while (!co.Update(Time.deltaTime).done)
+            yield return 0;
     }
 
-    public static void PlayAtPosition(this AudioClip self, Vector2 pos, float pitch = 1f, float volume = 1f)
+    public static void PlayAtPosition(
+        this AudioClip self,
+        Vector2 pos,
+        float pitch = 1f,
+        float volume = 1f
+    )
     {
         var obj = new GameObject();
         obj.transform.position = pos;

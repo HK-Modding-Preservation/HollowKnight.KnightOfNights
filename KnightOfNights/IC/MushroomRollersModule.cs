@@ -12,9 +12,11 @@ internal class MushroomRollersModule : AbstractModule<MushroomRollersModule>
 {
     protected override MushroomRollersModule Self() => this;
 
-    protected override void InitializeInternal() => Events.AddSceneChangeEdit(SceneNames.Fungus2_23, MakeConsistentRollers);
+    protected override void InitializeInternal() =>
+        Events.AddSceneChangeEdit(SceneNames.Fungus2_23, MakeConsistentRollers);
 
-    protected override void UnloadInternal() => Events.RemoveSceneChangeEdit(SceneNames.Fungus2_23, MakeConsistentRollers);
+    protected override void UnloadInternal() =>
+        Events.RemoveSceneChangeEdit(SceneNames.Fungus2_23, MakeConsistentRollers);
 
     private void MakeConsistent(GameObject roller, bool jumpFirst)
     {
@@ -24,13 +26,15 @@ internal class MushroomRollersModule : AbstractModule<MushroomRollersModule>
 
         var attackState = fsm.GetState("Attack Choice");
         attackState.RemoveActionsOfType<SendRandomEventV2>();
-        attackState.AddLastAction(new Lambda(() =>
-        {
-            bool jumpNow = jump.Value;
-            jump.Value = !jumpNow;
+        attackState.AddLastAction(
+            new Lambda(() =>
+            {
+                bool jumpNow = jump.Value;
+                jump.Value = !jumpNow;
 
-            fsm.SendEvent(jumpNow ? "JUMP" : "ROLL");
-        }));
+                fsm.SendEvent(jumpNow ? "JUMP" : "ROLL");
+            })
+        );
     }
 
     private void MakeConsistentRollers(Scene scene)

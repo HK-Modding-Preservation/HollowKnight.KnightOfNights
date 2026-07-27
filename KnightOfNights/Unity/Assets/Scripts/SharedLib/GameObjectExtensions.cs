@@ -42,25 +42,29 @@ namespace KnightOfNights.Scripts.SharedLib
 
             var bounds = self.bounds;
 
-            foreach (var o in inactive) o.SetActive(false);
+            foreach (var o in inactive)
+                o.SetActive(false);
             self.enabled = enabled;
 
             return bounds;
         }
 
-        public static void SetParent(this GameObject self, GameObject parent) => self.transform.SetParent(parent.transform);
+        public static void SetParent(this GameObject self, GameObject parent) =>
+            self.transform.SetParent(parent.transform);
 
         public static void Unparent(this GameObject self) => self.transform.parent = null;
 
         public static GameObject Parent(this GameObject self) => self.transform.parent?.gameObject;
 
-        public static T FindParent<T>(this GameObject self) where T : Component
+        public static T FindParent<T>(this GameObject self)
+            where T : Component
         {
             var obj = self.transform.parent?.gameObject;
             while (obj != null)
             {
                 var component = obj.GetComponent<T>();
-                if (component != null) return component;
+                if (component != null)
+                    return component;
 
                 obj = obj.transform.parent?.gameObject;
             }
@@ -69,11 +73,17 @@ namespace KnightOfNights.Scripts.SharedLib
 
         public static void OffsetParent(this GameObject self, Vector3 offset)
         {
-            foreach (var child in self.Children()) child.transform.position -= offset;
+            foreach (var child in self.Children())
+                child.transform.position -= offset;
             self.transform.position += offset;
         }
 
-        public static bool Contains(this BoxCollider2D self, Vector2 vec, float xBuffer = 0, float yBuffer = 0)
+        public static bool Contains(
+            this BoxCollider2D self,
+            Vector2 vec,
+            float xBuffer = 0,
+            float yBuffer = 0
+        )
         {
             var b = self.bounds;
             var x1 = b.min.x - xBuffer;
@@ -99,57 +109,101 @@ namespace KnightOfNights.Scripts.SharedLib
                 yield return TPCoord(-size.x / 2, -size.y / 2);
                 yield return TPCoord(size.x / 2, -size.y / 2);
             }
-            else if (self is EdgeCollider2D edge) foreach (var p in edge.points) yield return TP(p);
-            else if (self is PolygonCollider2D polygon) foreach (var p in polygon.points) yield return TP(p);
+            else if (self is EdgeCollider2D edge)
+                foreach (var p in edge.points)
+                    yield return TP(p);
+            else if (self is PolygonCollider2D polygon)
+                foreach (var p in polygon.points)
+                    yield return TP(p);
             else if (self is CircleCollider2D circle)
             {
                 var scale = self.gameObject.transform.localScale;
-                int resolution = Mathf.CeilToInt(circle.radius * 2 * Mathf.PI * (Mathf.Abs(scale.x) + Mathf.Abs(scale.y)) / CIRCLE_RESOLUTION);
+                int resolution = Mathf.CeilToInt(
+                    circle.radius
+                        * 2
+                        * Mathf.PI
+                        * (Mathf.Abs(scale.x) + Mathf.Abs(scale.y))
+                        / CIRCLE_RESOLUTION
+                );
                 for (int i = 0; i < resolution; i++)
                 {
                     var angle = i * 360f / resolution;
                     yield return TP(angle.AsAngleToVec() * circle.radius);
                 }
             }
-            else throw new ArgumentException($"Unknown collider type: {self.GetType()}");
+            else
+                throw new ArgumentException($"Unknown collider type: {self.GetType()}");
         }
 
-        public static T GetOrAddComponent<T>(this GameObject self) where T : Component => self.GetComponent<T>() ?? self.AddComponent<T>();
-        public static T GetOrAddComponentSharedLib<T>(this GameObject self) where T : Component => self.GetOrAddComponent<T>();
+        public static T GetOrAddComponent<T>(this GameObject self)
+            where T : Component => self.GetComponent<T>() ?? self.AddComponent<T>();
 
-        public static IEnumerable<T> GetComponentsInChildren<T>(this Scene self, bool inactive = false) where T : Component
+        public static T GetOrAddComponentSharedLib<T>(this GameObject self)
+            where T : Component => self.GetOrAddComponent<T>();
+
+        public static IEnumerable<T> GetComponentsInChildren<T>(
+            this Scene self,
+            bool inactive = false
+        )
+            where T : Component
         {
-            foreach (var obj in self.GetRootGameObjects()) foreach (var t in obj.GetComponentsInChildren<T>(inactive)) yield return t;
+            foreach (var obj in self.GetRootGameObjects())
+            foreach (var t in obj.GetComponentsInChildren<T>(inactive))
+                yield return t;
         }
 
-        public static IEnumerable<T> GetComponentsInScene<T>(bool inactive = false) where T : Component => UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetComponentsInChildren<T>(inactive);
+        public static IEnumerable<T> GetComponentsInScene<T>(bool inactive = false)
+            where T : Component =>
+            UnityEngine
+                .SceneManagement.SceneManager.GetActiveScene()
+                .GetComponentsInChildren<T>(inactive);
 
-        public static IEnumerable<T> FindInterfacesRecursive<T>(this GameObject self, bool inactive = false)
+        public static IEnumerable<T> FindInterfacesRecursive<T>(
+            this GameObject self,
+            bool inactive = false
+        )
         {
-            foreach (var component in self.GetComponentsInChildren<Component>(inactive)) if (component is T t) yield return t;
+            foreach (var component in self.GetComponentsInChildren<Component>(inactive))
+                if (component is T t)
+                    yield return t;
         }
 
-        public static IEnumerable<T> FindInterfacesRecursive<T>(this Scene self, bool inactive = false)
+        public static IEnumerable<T> FindInterfacesRecursive<T>(
+            this Scene self,
+            bool inactive = false
+        )
         {
-            foreach (var obj in self.GetRootGameObjects()) foreach (var component in obj.FindInterfacesRecursive<T>(inactive)) yield return component;
+            foreach (var obj in self.GetRootGameObjects())
+            foreach (var component in obj.FindInterfacesRecursive<T>(inactive))
+                yield return component;
         }
 
-        public static IEnumerable<T> FindInterfacesInScene<T>(bool inactive = false) => UnityEngine.SceneManagement.SceneManager.GetActiveScene().FindInterfacesRecursive<T>(inactive);
+        public static IEnumerable<T> FindInterfacesInScene<T>(bool inactive = false) =>
+            UnityEngine
+                .SceneManagement.SceneManager.GetActiveScene()
+                .FindInterfacesRecursive<T>(inactive);
 
         public static GameObject SharedFindChild(this GameObject self, string name)
         {
-            foreach (Transform child in self.transform) if (child.gameObject.name == name) return child.gameObject;
+            foreach (Transform child in self.transform)
+                if (child.gameObject.name == name)
+                    return child.gameObject;
             return null;
         }
 
         public static IEnumerable<GameObject> Children(this GameObject self)
         {
-            foreach (Transform child in self.transform) yield return child.gameObject;
+            foreach (Transform child in self.transform)
+                yield return child.gameObject;
         }
 
-        public static IEnumerable<GameObject> RecursiveChildren(this GameObject self, Func<GameObject, bool> filter = null)
+        public static IEnumerable<GameObject> RecursiveChildren(
+            this GameObject self,
+            Func<GameObject, bool> filter = null
+        )
         {
-            if (filter != null && !filter(self)) yield break;
+            if (filter != null && !filter(self))
+                yield break;
 
             var queue = new Queue<GameObject>();
             queue.Enqueue(self);
@@ -158,25 +212,38 @@ namespace KnightOfNights.Scripts.SharedLib
                 var obj = queue.Dequeue();
                 yield return obj;
 
-                foreach (var child in obj.Children()) if (filter == null || filter(child)) queue.Enqueue(child);
+                foreach (var child in obj.Children())
+                    if (filter == null || filter(child))
+                        queue.Enqueue(child);
             }
         }
 
-        public static IEnumerable<GameObject> AllGameObjects(this Scene scene, Func<GameObject, bool> filter = null)
+        public static IEnumerable<GameObject> AllGameObjects(
+            this Scene scene,
+            Func<GameObject, bool> filter = null
+        )
         {
-            foreach (var root in scene.GetRootGameObjects()) foreach (var obj in root.RecursiveChildren(filter)) yield return obj;
+            foreach (var root in scene.GetRootGameObjects())
+            foreach (var obj in root.RecursiveChildren(filter))
+                yield return obj;
         }
 
-        public static void DestroyChildrenImmediate(this GameObject self, Func<GameObject, bool> filter = null)
+        public static void DestroyChildrenImmediate(
+            this GameObject self,
+            Func<GameObject, bool> filter = null
+        )
         {
             var children = new List<GameObject>(self.Children());
-            foreach (var child in children) if (filter == null || filter(child)) UnityEngine.Object.DestroyImmediate(child, true);
+            foreach (var child in children)
+                if (filter == null || filter(child))
+                    UnityEngine.Object.DestroyImmediate(child, true);
         }
 
         public static GameObject ResetCompiled(this GameObject self, string name = "Compiled")
         {
             var compiled = self.SharedFindChild(name);
-            if (compiled != null) UnityEngine.Object.DestroyImmediate(compiled);
+            if (compiled != null)
+                UnityEngine.Object.DestroyImmediate(compiled);
 
             compiled = new GameObject(name);
             compiled.SetParent(self);

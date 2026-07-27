@@ -1,5 +1,5 @@
-﻿using KnightOfNights.Scripts.InternalLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.InternalLib;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.FallenGuardian;
@@ -11,7 +11,10 @@ internal abstract class SlashAttackSequence
     public abstract float Tail();
 
     // Returns a cancellation callback.
-    public System.Action Play(FallenGuardianController controller, System.Action<SlashAttackResult> callback)
+    public System.Action Play(
+        FallenGuardianController controller,
+        System.Action<SlashAttackResult> callback
+    )
     {
         GameObject obj = new();
         var b = obj.AddComponent<SlashAttackSequenceBehaviour>();
@@ -22,7 +25,8 @@ internal abstract class SlashAttackSequence
     }
 }
 
-internal class FlippableSlashAttackSequence(List<(float, SlashAttackSpec)> specs, float tail = 0) : SlashAttackSequence
+internal class FlippableSlashAttackSequence(List<(float, SlashAttackSpec)> specs, float tail = 0)
+    : SlashAttackSequence
 {
     private bool flipped = Random.Range(0, 2) == 0;
 
@@ -33,7 +37,8 @@ internal class FlippableSlashAttackSequence(List<(float, SlashAttackSpec)> specs
         foreach (var (time, s) in specs)
         {
             SlashAttackSpec spec = s;
-            if (flipped) spec = spec.Flipped();
+            if (flipped)
+                spec = spec.Flipped();
 
             total += time;
             yield return (total, spec);
@@ -62,7 +67,8 @@ internal class SlashAttackSequenceBehaviour : MonoBehaviour
         for (int i = launchedAttacks; i < Attacks.Count; i++)
         {
             var (time, spec) = Attacks[i];
-            if (currentWait < time) break;
+            if (currentWait < time)
+                break;
             else
             {
                 ++launchedAttacks;
@@ -103,7 +109,8 @@ internal class SlashAttackSequenceBehaviour : MonoBehaviour
 
     internal void Cancel()
     {
-        if (cancelled) return;
+        if (cancelled)
+            return;
 
         Callback?.Invoke(SlashAttackResult.NOT_PARRIED);
         Callback = null;

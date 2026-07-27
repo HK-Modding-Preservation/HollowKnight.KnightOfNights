@@ -6,7 +6,10 @@ namespace KnightOfNights.Util;
 
 internal static class PolygonUtil
 {
-    internal static Func<Vector2, bool> QuantizedContainmentTest(this Collider2D collider, float unit = 1)
+    internal static Func<Vector2, bool> QuantizedContainmentTest(
+        this Collider2D collider,
+        float unit = 1
+    )
     {
         PurenailCore.CollectionUtil.Rect bounds = new(collider.bounds);
         int minX = Mathf.FloorToInt(bounds.MinX / unit);
@@ -23,7 +26,8 @@ internal static class PolygonUtil
                 Vector2 center = new((x + minX + 0.5f) * unit, (y + minY + 0.5f) * unit);
                 grid[x, y] = p =>
                 {
-                    if (result.Count == 0) result.Add((collider.ClosestPoint(center) - center).sqrMagnitude <= 0.04f);
+                    if (result.Count == 0)
+                        result.Add((collider.ClosestPoint(center) - center).sqrMagnitude <= 0.04f);
                     return result[0];
                 };
             }

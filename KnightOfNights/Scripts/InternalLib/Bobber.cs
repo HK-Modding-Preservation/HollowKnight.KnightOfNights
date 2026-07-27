@@ -22,7 +22,8 @@ internal class Bobber : MonoBehaviour
         enabled = true;
     }
 
-    internal void ResetRandom(float radius, float period) => Reset(radius, period, MathExt.CoinFlip());
+    internal void ResetRandom(float radius, float period) =>
+        Reset(radius, period, MathExt.CoinFlip());
 
     private void Update()
     {

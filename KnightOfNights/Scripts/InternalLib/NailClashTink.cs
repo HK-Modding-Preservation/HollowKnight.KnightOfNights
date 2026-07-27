@@ -1,9 +1,9 @@
-﻿using HutongGames.PlayMaker.Actions;
+﻿using System.Collections.Generic;
+using HutongGames.PlayMaker.Actions;
 using ItemChanger.Extensions;
 using KnightOfNights.Scripts.Framework;
 using KnightOfNights.Scripts.SharedLib;
 using PurenailCore.ModUtil;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -14,21 +14,31 @@ internal class NailParrySingleton : SceneSingleton<NailParrySingleton>
 
     internal void DoParry(GameObject src, Collider2D collider, IParryResponder? parryResponder)
     {
-        if (collider.gameObject.layer != 16) return;
-        if (nailParryActive) return;
+        if (collider.gameObject.layer != 16)
+            return;
+        if (nailParryActive)
+            return;
 
         nailParryActive = true;
         this.StartLibCoroutine(DoParryImpl(src, collider, parryResponder));
     }
 
-    private IEnumerator<CoroutineElement> DoParryImpl(GameObject src, Collider2D collider, IParryResponder? parryResponder)
+    private IEnumerator<CoroutineElement> DoParryImpl(
+        GameObject src,
+        Collider2D collider,
+        IParryResponder? parryResponder
+    )
     {
         GameManager.instance.FreezeMoment(3);
 
         var hc = HeroController.instance;
         hc.NailParry();
 
-        var attackDir = collider.gameObject.Parent().LocateMyFSM("damages_enemy").FsmVariables.GetFsmFloat("direction").Value;
+        var attackDir = collider
+            .gameObject.Parent()
+            .LocateMyFSM("damages_enemy")
+            .FsmVariables.GetFsmFloat("direction")
+            .Value;
         attackDir = MathExt.ClampAngle(attackDir, -45, 315);
         GameCameras.instance.cameraShakeFSM.SendEvent("EnemyKillShake");
 
@@ -36,7 +46,9 @@ internal class NailParrySingleton : SceneSingleton<NailParrySingleton>
         audio.pitch = Random.Range(0.85f, 1.15f);
 
         var fsm = KnightOfNightsPreloader.Instance.NailClashTinkFSM!;
-        audio.PlayOneShot(fsm.GetState("Blocked Hit").GetFirstActionOfType<AudioPlayerOneShot>().audioClips[0]);
+        audio.PlayOneShot(
+            fsm.GetState("Blocked Hit").GetFirstActionOfType<AudioPlayerOneShot>().audioClips[0]
+        );
 
         Vector3 offset;
         if (attackDir <= 45)
@@ -65,7 +77,9 @@ internal class NailParrySingleton : SceneSingleton<NailParrySingleton>
         }
 
         var pos = hc.transform.position + offset;
-        fsm.GetState("No Box Right").GetFirstActionOfType<SpawnObjectFromGlobalPool>().gameObject.Value.Spawn(pos);
+        fsm.GetState("No Box Right")
+            .GetFirstActionOfType<SpawnObjectFromGlobalPool>()
+            .gameObject.Value.Spawn(pos);
 
         yield return Coroutines.SleepSeconds(0.1f);
 
@@ -79,10 +93,13 @@ internal class NailParrySingleton : SceneSingleton<NailParrySingleton>
 [Shim]
 internal class NailClashTink : MonoBehaviour
 {
-    [ShimField] public GameObject? ParryResponder;
+    [ShimField]
+    public GameObject? ParryResponder;
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        NailParrySingleton.Get()?.DoParry(gameObject, collider, ParryResponder?.GetComponent<IParryResponder>());
+        NailParrySingleton
+            .Get()
+            ?.DoParry(gameObject, collider, ParryResponder?.GetComponent<IParryResponder>());
     }
 }

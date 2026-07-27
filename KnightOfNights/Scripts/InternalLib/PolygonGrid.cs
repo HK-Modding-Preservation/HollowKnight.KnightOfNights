@@ -1,5 +1,3 @@
 ﻿namespace KnightOfNights.Scripts.InternalLib;
 
-internal class PolygonTester
-{
-}
+internal class PolygonTester { }

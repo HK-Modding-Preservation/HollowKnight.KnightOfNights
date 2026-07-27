@@ -1,5 +1,5 @@
-﻿using KnightOfNights.Scripts.SharedLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.SharedLib;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -7,11 +7,20 @@ namespace KnightOfNights.Scripts.InternalLib;
 [Shim]
 internal class ProximityFader : MonoBehaviour
 {
-    [ShimField] public Color ActiveColor;
-    [ShimField] public Color InactiveColor;
-    [ShimField] public float TransitionDuration;
-    [ShimField] public float ActiveDistance;
-    [ShimField] public float InactivateDistance;
+    [ShimField]
+    public Color ActiveColor;
+
+    [ShimField]
+    public Color InactiveColor;
+
+    [ShimField]
+    public float TransitionDuration;
+
+    [ShimField]
+    public float ActiveDistance;
+
+    [ShimField]
+    public float InactivateDistance;
 
     private SpriteRenderer? renderer;
     private float fadeProgress;
@@ -24,7 +33,8 @@ internal class ProximityFader : MonoBehaviour
 
     private void Update()
     {
-        if (renderer == null) return;
+        if (renderer == null)
+            return;
 
         fadeProgress.AdvanceFloatAbs(Time.deltaTime / TransitionDuration, show ? 1 : 0);
         renderer.color = Color.Lerp(InactiveColor, ActiveColor, fadeProgress);
@@ -40,10 +50,14 @@ internal class ProximityFader : MonoBehaviour
         while (true)
         {
             show = false;
-            yield return Coroutines.SleepUntil(() => (heroTransform.position - transform.position).sqrMagnitude <= activeSquared);
+            yield return Coroutines.SleepUntil(() =>
+                (heroTransform.position - transform.position).sqrMagnitude <= activeSquared
+            );
 
             show = true;
-            yield return Coroutines.SleepUntil(() => (heroTransform.position - transform.position).sqrMagnitude > inactiveSquared);
+            yield return Coroutines.SleepUntil(() =>
+                (heroTransform.position - transform.position).sqrMagnitude > inactiveSquared
+            );
         }
     }
 }

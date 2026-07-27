@@ -1,6 +1,6 @@
-﻿using KnightOfNights.Scripts.SharedLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using KnightOfNights.Scripts.SharedLib;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -14,15 +14,18 @@ internal class LifecycleOnceHelper : MonoBehaviour
     {
         add
         {
-            if (invoked) value();
-            else actions.Add(value);
+            if (invoked)
+                value();
+            else
+                actions.Add(value);
         }
         remove => actions.Remove(value);
     }
 
     protected void Invoke()
     {
-        if (invoked) return;
+        if (invoked)
+            return;
 
         invoked = true;
         actions.ForEach(a => a.Invoke());

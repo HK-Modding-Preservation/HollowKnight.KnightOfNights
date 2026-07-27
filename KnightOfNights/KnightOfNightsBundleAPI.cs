@@ -1,8 +1,8 @@
-﻿using KnightOfNights.Scripts.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using KnightOfNights.Scripts.Framework;
 using UnityEngine;
 
 namespace KnightOfNights;
@@ -15,22 +15,28 @@ public static class KnightOfNightsBundleAPI
     static KnightOfNightsBundleAPI() => Load();
 
     private static bool loaded = false;
+
     internal static void Load()
     {
-        if (loaded) return;
+        if (loaded)
+            return;
         loaded = true;
 
         shared = LoadCoreBundle();
         foreach (var obj in shared.LoadAllAssets())
         {
             prefabs[obj.name] = obj;
-            if (obj is GameObject go) foreach (var i in go.GetComponents<Component>().OfType<IOnAssetLoad>()) i.OnAssetLoad();
+            if (obj is GameObject go)
+                foreach (var i in go.GetComponents<Component>().OfType<IOnAssetLoad>())
+                    i.OnAssetLoad();
         }
     }
 
-    public static T LoadPrefab<T>(string name) where T : UnityEngine.Object
+    public static T LoadPrefab<T>(string name)
+        where T : UnityEngine.Object
     {
-        if (prefabs.TryGetValue(name, out var obj) && obj is T typed) return typed;
+        if (prefabs.TryGetValue(name, out var obj) && obj is T typed)
+            return typed;
         throw new ArgumentException($"Unknown Prefab: {name}");
     }
 
@@ -43,15 +49,25 @@ public static class KnightOfNightsBundleAPI
         try
         {
             KnightOfNightsMod.Log($"Loading {BUNDLE_NAME} from disk");
-            var debugData = PurenailCore.SystemUtil.JsonUtil<KnightOfNightsMod>.DeserializeEmbedded<Build.DebugData>("KnightOfNights.Resources.Data.debug.json");
-            var bundle = AssetBundle.LoadFromFile($"{debugData.LocalAssetBundlesPath}/{BUNDLE_NAME}");
+            var debugData =
+                PurenailCore.SystemUtil.JsonUtil<KnightOfNightsMod>.DeserializeEmbedded<Build.DebugData>(
+                    "KnightOfNights.Resources.Data.debug.json"
+                );
+            var bundle = AssetBundle.LoadFromFile(
+                $"{debugData.LocalAssetBundlesPath}/{BUNDLE_NAME}"
+            );
             KnightOfNightsMod.Log($"Loading {BUNDLE_NAME} from disk: success!");
             return bundle;
         }
-        catch (Exception e) { KnightOfNightsMod.BUG($"Failed to load {BUNDLE_NAME} from local assets: {e}"); }
+        catch (Exception e)
+        {
+            KnightOfNightsMod.BUG($"Failed to load {BUNDLE_NAME} from local assets: {e}");
+        }
 #endif
 
-        using StreamReader sr = new(typeof(KnightOfNightsBundleAPI).Assembly.GetManifestResourceStream(BUNDLE_PATH));
+        using StreamReader sr = new(
+            typeof(KnightOfNightsBundleAPI).Assembly.GetManifestResourceStream(BUNDLE_PATH)
+        );
         return AssetBundle.LoadFromStream(sr.BaseStream);
     }
 }

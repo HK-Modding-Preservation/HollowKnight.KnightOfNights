@@ -1,7 +1,7 @@
-﻿using ItemChanger;
+﻿using System.Collections.Generic;
+using ItemChanger;
 using ItemChanger.Extensions;
 using PurenailCore.ModUtil;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -32,7 +32,8 @@ internal class KnightOfNightsPreloader : Preloader
     [PrefabPreload(SceneNames.Fungus1_35, "DreamFight")]
     public MusicCue? DreamFightMusicCue { get; private set; }
 
-    public AudioClip? DreamFightMusicClip => DreamFightMusicCue?.GetChannelInfo(MusicChannels.Main).Clip;
+    public AudioClip? DreamFightMusicClip =>
+        DreamFightMusicCue?.GetChannelInfo(MusicChannels.Main).Clip;
 
     [Preload(SceneNames.Fungus2_32, "Ring Holder/1")]
     public GameObject? ElderHuPancake { get; private set; }
@@ -62,7 +63,7 @@ internal class KnightOfNightsPreloader : Preloader
     public AudioClip? MageShotClip { get; private set; }
 
     [PrefabPreload(SceneNames.Ruins1_24_boss, "mage_lord_strike_impact")]
-    public AudioClip? MageStrikeImpactClip {  get; private set; }
+    public AudioClip? MageStrikeImpactClip { get; private set; }
 
     [PrefabPreload(SceneNames.Tutorial_01, "mage_knight_teleport")]
     public AudioClip? MageTeleportClip { get; private set; }
@@ -101,7 +102,8 @@ internal class KnightOfNightsPreloader : Preloader
     [PrefabPreload(SceneNames.Room_Colosseum_02, "Col_miner_attack_04")]
     public AudioClip? RevekAttackClip3 { get; private set; }
 
-    public List<AudioClip> RevekAttackClips => [RevekAttackClip1!, RevekAttackClip2!, RevekAttackClip3!];
+    public List<AudioClip> RevekAttackClips =>
+        [RevekAttackClip1!, RevekAttackClip2!, RevekAttackClip3!];
 
     [PrefabPreload(SceneNames.Crossroads_10_boss, "Shockwave Wave")]
     public GameObject? Shockwave { get; private set; }
@@ -127,5 +129,6 @@ internal class KnightOfNightsPreloader : Preloader
     [Preload(SceneNames.RestingGrounds_02_boss, "Warrior/Ghost Warrior Xero/Sword 1")]
     public GameObject? XeroNail { get; private set; }
 
-    public PhysicsMaterial2D? TerrainMaterial => SmallPlatform?.GetComponent<Collider2D>()?.sharedMaterial;
+    public PhysicsMaterial2D? TerrainMaterial =>
+        SmallPlatform?.GetComponent<Collider2D>()?.sharedMaterial;
 }

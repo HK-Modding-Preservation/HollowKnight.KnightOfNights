@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
 namespace KnightOfNights.Scripts.Lib
 {
@@ -8,9 +8,13 @@ namespace KnightOfNights.Scripts.Lib
     {
         private const string PATH = "Assets/Resources/Data/scene_data.json";
 
-        private SortedDictionary<string, List<object>> data = new SortedDictionary<string, List<object>>();
+        private SortedDictionary<string, List<object>> data =
+            new SortedDictionary<string, List<object>>();
 
-        public SceneDataPack() { Dirty = true;  }
+        public SceneDataPack()
+        {
+            Dirty = true;
+        }
 
         public static SceneDataPack Load()
         {
@@ -22,7 +26,10 @@ namespace KnightOfNights.Scripts.Lib
                 var sr = new System.IO.StreamReader(fr);
                 pack.data = Deserialize<SortedDictionary<string, List<object>>>(sr.ReadToEnd());
             }
-            finally { fr.Close(); }
+            finally
+            {
+                fr.Close();
+            }
 
             pack.Dirty = false;
             return pack;
@@ -30,7 +37,8 @@ namespace KnightOfNights.Scripts.Lib
 
         public bool Save()
         {
-            if (!Dirty) return false;
+            if (!Dirty)
+                return false;
 
             var fw = System.IO.File.Open(PATH, System.IO.FileMode.Truncate);
             try
@@ -39,7 +47,10 @@ namespace KnightOfNights.Scripts.Lib
                 sw.Write(Serialize(data));
                 sw.Flush();
             }
-            finally { fw.Close(); }
+            finally
+            {
+                fw.Close();
+            }
 
             Dirty = false;
             return true;
@@ -67,7 +78,8 @@ namespace KnightOfNights.Scripts.Lib
                 {
                     var prevStr = Serialize(prev);
                     var newStr = Serialize(objects);
-                    if (prevStr == newStr) return false;
+                    if (prevStr == newStr)
+                        return false;
 
                     data[scene] = objects;
                     Dirty = true;
@@ -75,7 +87,8 @@ namespace KnightOfNights.Scripts.Lib
                 }
             }
 
-            if (objects.Count == 0) return false;
+            if (objects.Count == 0)
+                return false;
 
             data[scene] = objects;
             Dirty = true;
@@ -88,8 +101,10 @@ namespace KnightOfNights.Scripts.Lib
             var type = parts[0];
             var isSharedLib = type.StartsWith("KnightOfNights") && type.Contains("SharedLib.Data");
 
-            if (forMod) return isSharedLib ? $"{type}, KnightOfNights" : typeString;
-            else return isSharedLib ? $"{type}, Assembly-CSharp" : typeString;
+            if (forMod)
+                return isSharedLib ? $"{type}, KnightOfNights" : typeString;
+            else
+                return isSharedLib ? $"{type}, Assembly-CSharp" : typeString;
         }
 
         private static void FixTypes(JToken token, bool forMod)
@@ -97,23 +112,25 @@ namespace KnightOfNights.Scripts.Lib
             switch (token.Type)
             {
                 case JTokenType.Object:
+                {
+                    foreach (var prop in ((JObject)token).Properties())
                     {
-                        foreach (var prop in ((JObject)token).Properties())
+                        if (prop.Name == "$type")
                         {
-                            if (prop.Name == "$type")
-                            {
-                                var stringToken = (JValue)prop.Value;
-                                stringToken.Value = FixType((string)stringToken.Value, forMod);
-                            }
-                            else FixTypes(prop.Value, forMod);
+                            var stringToken = (JValue)prop.Value;
+                            stringToken.Value = FixType((string)stringToken.Value, forMod);
                         }
-                        break;
+                        else
+                            FixTypes(prop.Value, forMod);
                     }
+                    break;
+                }
                 case JTokenType.Array:
-                    {
-                        foreach (var item in (JArray)token) FixTypes(item, forMod);
-                        break;
-                    }
+                {
+                    foreach (var item in (JArray)token)
+                        FixTypes(item, forMod);
+                    break;
+                }
                 default:
                     break;
             }
@@ -123,7 +140,7 @@ namespace KnightOfNights.Scripts.Lib
         {
             JsonSerializer serializer = new JsonSerializer
             {
-                TypeNameHandling = TypeNameHandling.Auto
+                TypeNameHandling = TypeNameHandling.Auto,
             };
             var stringWriter = new System.IO.StringWriter();
             serializer.Serialize(stringWriter, obj, typeof(T));
@@ -139,10 +156,10 @@ namespace KnightOfNights.Scripts.Lib
             var token = JToken.Parse(json);
             FixTypes(token, false);
 
-            return JsonConvert.DeserializeObject<T>(token.ToString(Formatting.None), new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            });
+            return JsonConvert.DeserializeObject<T>(
+                token.ToString(Formatting.None),
+                new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto }
+            );
         }
     }
 }

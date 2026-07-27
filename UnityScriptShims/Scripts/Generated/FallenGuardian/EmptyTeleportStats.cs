@@ -10,6 +10,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float WaitToTeleOutMax;
         public float WaitToTeleOutMin;
         public float XBuffer;
-        
     }
 }

@@ -5,6 +5,5 @@ namespace KnightOfNights.Scripts.InternalLib
         public KnightOfNights.Scripts.Proxy.HeroDetectorProxy Trigger;
         public string Id;
         public UnityEngine.GameObject Prefab;
-        
     }
 }

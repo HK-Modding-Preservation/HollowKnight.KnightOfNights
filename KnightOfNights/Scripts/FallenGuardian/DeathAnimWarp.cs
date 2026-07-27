@@ -1,8 +1,8 @@
-﻿using GlobalEnums;
+﻿using System.Collections;
+using GlobalEnums;
 using ItemChanger;
 using KnightOfNights.IC;
 using KnightOfNights.Scripts.SharedLib;
-using System.Collections;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.FallenGuardian;
@@ -72,15 +72,17 @@ internal class DeathAnimWarp : MonoBehaviour
     private static void StartRespawn(string scene)
     {
         GameManager.instance.RespawningHero = true;
-        GameManager.instance.BeginSceneTransition(new()
-        {
-            PreventCameraFadeOut = true,
-            WaitForSceneTransitionCameraFade = false,
-            EntryGateName = "",
-            SceneName = scene,
-            Visualization = GameManager.SceneLoadVisualizations.Dream,
-            AlwaysUnloadUnusedAssets = true,
-            IsFirstLevelForPlayer = false
-        });
+        GameManager.instance.BeginSceneTransition(
+            new()
+            {
+                PreventCameraFadeOut = true,
+                WaitForSceneTransitionCameraFade = false,
+                EntryGateName = "",
+                SceneName = scene,
+                Visualization = GameManager.SceneLoadVisualizations.Dream,
+                AlwaysUnloadUnusedAssets = true,
+                IsFirstLevelForPlayer = false,
+            }
+        );
     }
 }

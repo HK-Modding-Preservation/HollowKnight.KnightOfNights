@@ -15,7 +15,8 @@ internal class GalienAxe : MonoBehaviour
 
     internal void Despawn()
     {
-        if (destroyed) return;
+        if (destroyed)
+            return;
 
         destroyed = true;
         Destroy(gameObject);
@@ -23,11 +24,18 @@ internal class GalienAxe : MonoBehaviour
 
     internal static GalienAxe Spawn(AxeHopscotchStats stats, BoxCollider2D arena, Vector2 pos)
     {
-        var obj = Instantiate(KnightOfNightsPreloader.Instance.GalienAxe!, pos, Quaternion.identity);
+        var obj = Instantiate(
+            KnightOfNightsPreloader.Instance.GalienAxe!,
+            pos,
+            Quaternion.identity
+        );
         var bounds = arena.bounds;
 
         var ctrl = obj.LocateMyFSM("Control");
-        ctrl.FsmVariables.GetFsmVector3("Float Vector").Value = new(0, bounds.min.y + stats.AxeFloatHeight);
+        ctrl.FsmVariables.GetFsmVector3("Float Vector").Value = new(
+            0,
+            bounds.min.y + stats.AxeFloatHeight
+        );
 
         var emergeState = ctrl.GetState("Emerge");
         emergeState.GetFirstActionOfType<iTweenRotateTo>().time = stats.AxeEmergeTime;
@@ -67,10 +75,34 @@ internal class GalienAxe : MonoBehaviour
 
         var floorBounceState = attack.GetState("Floor Bounce");
         floorBounceState.RemoveActionsOfType<RandomFloat>();
-        floorBounceState.AddFirstAction(new Lambda(() => SpawnPrefab(stats.SnowImpactPrefab!, new(obj.transform.position.x, bounds.min.y))));
+        floorBounceState.AddFirstAction(
+            new Lambda(() =>
+                SpawnPrefab(stats.SnowImpactPrefab!, new(obj.transform.position.x, bounds.min.y))
+            )
+        );
 
-        attack.GetState("Wall L").AddFirstAction(new Lambda(() => SpawnPrefab(stats.WallImpactLPrefab!, new(bounds.min.x, obj.transform.position.y), 1f)));
-        attack.GetState("Wall R").AddFirstAction(new Lambda(() => SpawnPrefab(stats.WallImpactLPrefab!, new(bounds.max.x, obj.transform.position.y), -1f)));
+        attack
+            .GetState("Wall L")
+            .AddFirstAction(
+                new Lambda(() =>
+                    SpawnPrefab(
+                        stats.WallImpactLPrefab!,
+                        new(bounds.min.x, obj.transform.position.y),
+                        1f
+                    )
+                )
+            );
+        attack
+            .GetState("Wall R")
+            .AddFirstAction(
+                new Lambda(() =>
+                    SpawnPrefab(
+                        stats.WallImpactLPrefab!,
+                        new(bounds.max.x, obj.transform.position.y),
+                        -1f
+                    )
+                )
+            );
         attack.GetState("Wall Y").ClearActions();
 
         var decelState = attack.GetState("Decel");
@@ -108,10 +140,13 @@ internal class GalienAxe : MonoBehaviour
 
     private void Update()
     {
-        if (ctrl!.ActiveStateName == "Init") ctrl.SendEvent("READY");
+        if (ctrl!.ActiveStateName == "Init")
+            ctrl.SendEvent("READY");
 
-        if (timeToAntic <= 0) return;
+        if (timeToAntic <= 0)
+            return;
         timeToAntic -= Time.deltaTime;
-        if (timeToAntic <= 0) attack!.SendEvent("HAMMER ATTACK");
+        if (timeToAntic <= 0)
+            attack!.SendEvent("HAMMER ATTACK");
     }
 }

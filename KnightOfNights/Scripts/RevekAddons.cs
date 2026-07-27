@@ -1,9 +1,9 @@
-﻿using HutongGames.PlayMaker.Actions;
+﻿using System.Collections.Generic;
+using HutongGames.PlayMaker.Actions;
 using ItemChanger.Extensions;
 using ItemChanger.Internal;
 using KnightOfNights.Scripts.InternalLib;
 using KnightOfNights.Scripts.SharedLib;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts;
@@ -29,19 +29,28 @@ internal class RevekAddons : MonoBehaviour, IHitResponder
         renderer!.sortingOrder = 1;
     }
 
-    private static readonly HashSet<string> VULNERABLE_STATES = ["Slash Idle", "Slash Antic", "Slash"];
+    private static readonly HashSet<string> VULNERABLE_STATES =
+    [
+        "Slash Idle",
+        "Slash Antic",
+        "Slash",
+    ];
 
     public void Hit(HitInstance damageInstance)
     {
-        if (damageInstance.DamageDealt <= 0) return;
-        if (fsm == null || !VULNERABLE_STATES.Contains(fsm.ActiveStateName)) return;
-        if (!DirectionFilter(damageInstance.Direction)) return;
+        if (damageInstance.DamageDealt <= 0)
+            return;
+        if (fsm == null || !VULNERABLE_STATES.Contains(fsm.ActiveStateName))
+            return;
+        if (!DirectionFilter(damageInstance.Direction))
+            return;
 
         switch (damageInstance.AttackType)
         {
             case AttackTypes.Nail:
             case AttackTypes.Spell:
-                if (damageInstance.AttackType == AttackTypes.Nail && HealOnNailParry) SpawnSoul(transform);
+                if (damageInstance.AttackType == AttackTypes.Nail && HealOnNailParry)
+                    SpawnSoul(transform);
 
                 OnParry?.Invoke(damageInstance);
                 fsm.SetState("Hit");
@@ -88,7 +97,15 @@ internal class RevekAddons : MonoBehaviour, IHitResponder
         SpawnSoul(obj.transform);
     }
 
-    private static readonly Lazy<List<AudioClip>> hurtClips = new(() => [.. KnightOfNightsPreloader.Instance.Revek.LocateMyFSM("Control").GetState("Hit").GetFirstActionOfType<AudioPlayerOneShot>().audioClips]);
+    private static readonly Lazy<List<AudioClip>> hurtClips = new(() =>
+        [
+            .. KnightOfNightsPreloader
+                .Instance.Revek.LocateMyFSM("Control")
+                .GetState("Hit")
+                .GetFirstActionOfType<AudioPlayerOneShot>()
+                .audioClips,
+        ]
+    );
 
     internal static AudioClip GetHurtClip() => hurtClips.Get().Choose();
 }

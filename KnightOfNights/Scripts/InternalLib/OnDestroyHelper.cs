@@ -1,5 +1,5 @@
-﻿using ItemChanger.Extensions;
-using System;
+﻿using System;
+using ItemChanger.Extensions;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.InternalLib;
@@ -11,7 +11,9 @@ internal class OnDestroyHelper : LifecycleOnceHelper
 
 internal static class OnDestroyHelperExtensions
 {
-    internal static void DoOnDestroy(this GameObject self, Action action) => self.GetOrAddComponent<OnDestroyHelper>().OnEvent += action;
+    internal static void DoOnDestroy(this GameObject self, Action action) =>
+        self.GetOrAddComponent<OnDestroyHelper>().OnEvent += action;
 
-    internal static void DoOnDestroy(this MonoBehaviour self, Action action) => self.gameObject.DoOnDestroy(action);
+    internal static void DoOnDestroy(this MonoBehaviour self, Action action) =>
+        self.gameObject.DoOnDestroy(action);
 }

@@ -6,8 +6,11 @@ namespace KnightOfNights.Scripts.Framework;
 [Shim]
 internal class Spawner : MonoBehaviour
 {
-    [ShimField] public GameObject? Prefab;
-    [ShimField] public Vector3 Offset;
+    [ShimField]
+    public GameObject? Prefab;
+
+    [ShimField]
+    public Vector3 Offset;
 
     private float delay;
 
@@ -20,6 +23,7 @@ internal class Spawner : MonoBehaviour
     private void Update()
     {
         delay += Time.deltaTime;
-        if (delay > 10f) gameObject.Recycle();
+        if (delay > 10f)
+            gameObject.Recycle();
     }
 }

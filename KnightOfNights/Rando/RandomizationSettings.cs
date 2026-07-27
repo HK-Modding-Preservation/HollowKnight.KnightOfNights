@@ -7,7 +7,7 @@ public enum RevekSongRandoMode
     Disabled,
     Start,
     Vanilla,
-    Randomized
+    Randomized,
 }
 
 public class RandomizationSettings

@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace KnightOfNights.Scripts.SharedLib
 {
-
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum | AttributeTargets.Interface)]
     internal class Shim : Attribute
     {

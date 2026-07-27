@@ -1,7 +1,4 @@
 namespace KnightOfNights.Scripts.InternalLib
 {
-    public class CustomSpriteFlash : UnityEngine.MonoBehaviour
-    {
-        
-    }
+    public class CustomSpriteFlash : UnityEngine.MonoBehaviour { }
 }

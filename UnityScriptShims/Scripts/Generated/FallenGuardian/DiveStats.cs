@@ -10,6 +10,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float ShockwaveYScale;
         public float ShockwaveSpeed;
         public float TallShockwaveSpeed;
-        
     }
 }

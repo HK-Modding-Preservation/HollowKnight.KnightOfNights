@@ -6,6 +6,5 @@ namespace KnightOfNights.Scripts.Framework
         public float HeroWindAccel;
         public float ParticleWindAccel;
         public float ParticleTargetMultiplier;
-        
     }
 }

@@ -19,7 +19,8 @@ internal class YFixer : MonoBehaviour
     private void FixedUpdate()
     {
         var target = targetY;
-        if (gameObject.TryGetComponent<Bobber>(out var bobber) && bobber.enabled) target += bobber.OffsetY();
+        if (gameObject.TryGetComponent<Bobber>(out var bobber) && bobber.enabled)
+            target += bobber.OffsetY();
 
         var pos = transform.position;
         pos.y += (target - pos.y) * ratioPerSecond * Time.fixedDeltaTime;

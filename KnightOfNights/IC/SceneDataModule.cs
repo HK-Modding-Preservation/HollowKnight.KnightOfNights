@@ -4,9 +4,11 @@ using System.Linq;
 
 namespace KnightOfNights.IC;
 
-internal class SceneDataModule : AbstractDataModule<SceneDataModule, SortedDictionary<string, List<object>>>
+internal class SceneDataModule
+    : AbstractDataModule<SceneDataModule, SortedDictionary<string, List<object>>>
 {
-    public IEnumerable<T> GetForScene<T>(string sceneName) => Data.TryGetValue(sceneName, out var values) ? values.OfType<T>() : [];
+    public IEnumerable<T> GetForScene<T>(string sceneName) =>
+        Data.TryGetValue(sceneName, out var values) ? values.OfType<T>() : [];
 
     public IEnumerable<T> GetForActiveScene<T>() => GetForScene<T>(GameManager.instance.sceneName);
 
@@ -17,7 +19,8 @@ internal class SceneDataModule : AbstractDataModule<SceneDataModule, SortedDicti
         {
             value = iter.Current;
 
-            if (iter.MoveNext()) throw new ArgumentException($"Multiple {typeof(T)} in {sceneName}");
+            if (iter.MoveNext())
+                throw new ArgumentException($"Multiple {typeof(T)} in {sceneName}");
             return true;
         }
 
@@ -27,13 +30,17 @@ internal class SceneDataModule : AbstractDataModule<SceneDataModule, SortedDicti
         return false;
     }
 
-    public bool TryGetSingleActive<T>(out T value) => TryGetSingle(GameManager.instance.sceneName, out value);
+    public bool TryGetSingleActive<T>(out T value) =>
+        TryGetSingle(GameManager.instance.sceneName, out value);
 
-    public T? GetSingleOrDefault<T>(string sceneName) => TryGetSingle<T>(sceneName, out var value) ? value : default;
+    public T? GetSingleOrDefault<T>(string sceneName) =>
+        TryGetSingle<T>(sceneName, out var value) ? value : default;
 
-    public T? GetSingleOrDefaultActive<T>() => GetSingleOrDefault<T>(GameManager.instance.sceneName);
+    public T? GetSingleOrDefaultActive<T>() =>
+        GetSingleOrDefault<T>(GameManager.instance.sceneName);
 
-    public IEnumerable<(string, T)> GetForAllScenes<T>() => Data.SelectMany(e => e.Value.OfType<T>().Select(v => (e.Key, v)));
+    public IEnumerable<(string, T)> GetForAllScenes<T>() =>
+        Data.SelectMany(e => e.Value.OfType<T>().Select(v => (e.Key, v)));
 
     protected override bool Unity() => true;
 

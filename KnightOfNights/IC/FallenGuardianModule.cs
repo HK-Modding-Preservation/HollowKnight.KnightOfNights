@@ -1,14 +1,14 @@
-﻿using ItemChanger;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using ItemChanger;
 using KnightOfNights.Build;
 using KnightOfNights.Scripts.FallenGuardian;
 using KnightOfNights.Scripts.SharedLib;
 using Modding;
 using Newtonsoft.Json;
 using PurenailCore.ICUtil;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,7 +17,10 @@ namespace KnightOfNights.IC;
 internal class CrownTransition : ITransition
 {
     [JsonIgnore]
-    public string SceneName => (FallenGuardianModule.Get()?.DefeatedBoss ?? false) ? SceneNames.Mines_34 : SummitSceneNames.Summit_EntryHall;
+    public string SceneName =>
+        (FallenGuardianModule.Get()?.DefeatedBoss ?? false)
+            ? SceneNames.Mines_34
+            : SummitSceneNames.Summit_EntryHall;
 
     [JsonIgnore]
     public string GateName => "bot1";
@@ -38,7 +41,10 @@ internal class FallenGuardianModule : AbstractModule<FallenGuardianModule>
 
     protected override void InitializeInternal()
     {
-        ItemChangerMod.AddTransitionOverride(new(SceneNames.Mines_25, "top1"), new CrownTransition());
+        ItemChangerMod.AddTransitionOverride(
+            new(SceneNames.Mines_25, "top1"),
+            new CrownTransition()
+        );
         Events.AddSceneChangeEdit(SceneNames.Mines_34, SpawnRespawnMarker);
         ModHooks.LanguageGetHook += LanguageGetHook;
         ModHooks.GetPlayerBoolHook += GetVisitedSummit;
@@ -46,9 +52,11 @@ internal class FallenGuardianModule : AbstractModule<FallenGuardianModule>
 
         foreach (var str in typeof(FallenGuardianModule).Assembly.GetManifestResourceNames())
         {
-            if (!str.StartsWith(PREFIX) || str.EndsWith(".manifest") || str.EndsWith("meta")) continue;
+            if (!str.StartsWith(PREFIX) || str.EndsWith(".manifest") || str.EndsWith("meta"))
+                continue;
             string name = str.Substring(PREFIX.Length);
-            if (name == "AssetBundles" || name == "scenes") continue;
+            if (name == "AssetBundles" || name == "scenes")
+                continue;
 
             sceneBundles[name] = null;
         }
@@ -81,28 +89,31 @@ internal class FallenGuardianModule : AbstractModule<FallenGuardianModule>
     internal const string REVEK_KEY = "REVEK_BOSS";
     internal const string SUMMIT_KEY = "SUMMIT_AREA";
 
-    private string LanguageGetHook(string key, string sheetTitle, string orig) => key switch
-    {
-        $"{REVEK_KEY}_SUPER" => "Fallen Guardian",
-        $"{REVEK_KEY}_MAIN" => "Revek",
-        $"{REVEK_KEY}_SUB" => "",
-        $"{SUMMIT_KEY}_SUPER" => "",
-        $"{SUMMIT_KEY}_MAIN" => "The Summit",
-        $"{SUMMIT_KEY}_SUB" => "",
-        _ => orig
-    };
+    private string LanguageGetHook(string key, string sheetTitle, string orig) =>
+        key switch
+        {
+            $"{REVEK_KEY}_SUPER" => "Fallen Guardian",
+            $"{REVEK_KEY}_MAIN" => "Revek",
+            $"{REVEK_KEY}_SUB" => "",
+            $"{SUMMIT_KEY}_SUPER" => "",
+            $"{SUMMIT_KEY}_MAIN" => "The Summit",
+            $"{SUMMIT_KEY}_SUB" => "",
+            _ => orig,
+        };
 
-    private bool GetVisitedSummit(string name, bool orig) => name switch
-    {
-        nameof(VisitedSummit) => VisitedSummit,
-        _ => orig
-    };
+    private bool GetVisitedSummit(string name, bool orig) =>
+        name switch
+        {
+            nameof(VisitedSummit) => VisitedSummit,
+            _ => orig,
+        };
 
-    private bool SetVisitedSummit(string name, bool value) => name switch
-    {
-        nameof(VisitedSummit) => VisitedSummit = value,
-        _ => value
-    };
+    private bool SetVisitedSummit(string name, bool value) =>
+        name switch
+        {
+            nameof(VisitedSummit) => VisitedSummit = value,
+            _ => value,
+        };
 
     private void OnBeforeSceneLoad(string sceneName, Action cb)
     {
@@ -118,7 +129,8 @@ internal class FallenGuardianModule : AbstractModule<FallenGuardianModule>
 
     private void OnUnloadScene(string prevSceneName, string nextSceneName)
     {
-        if (nextSceneName == prevSceneName) return;
+        if (nextSceneName == prevSceneName)
+            return;
 
         var assetBundleName = AssetBundleName(prevSceneName);
         if (sceneBundles.TryGetValue(assetBundleName, out var assetBundle))
@@ -137,10 +149,15 @@ internal class FallenGuardianModule : AbstractModule<FallenGuardianModule>
             var debugData = DebugData.Get();
             return AssetBundle.LoadFromFileAsync($"{debugData.LocalAssetBundlesPath}/{name}");
         }
-        catch (Exception e) { Console.WriteLine($"Failed to load {name} from local assets: {e}"); }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Failed to load {name} from local assets: {e}");
+        }
 #endif
 
-        StreamReader sr = new(typeof(KnightOfNightsMod).Assembly.GetManifestResourceStream($"{PREFIX}{name}"));
+        StreamReader sr = new(
+            typeof(KnightOfNightsMod).Assembly.GetManifestResourceStream($"{PREFIX}{name}")
+        );
         return AssetBundle.LoadFromStreamAsync(sr.BaseStream);
     }
 

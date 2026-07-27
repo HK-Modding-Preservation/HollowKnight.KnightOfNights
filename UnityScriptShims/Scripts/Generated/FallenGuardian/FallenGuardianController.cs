@@ -1,6 +1,8 @@
 namespace KnightOfNights.Scripts.FallenGuardian
 {
-    public class FallenGuardianController : UnityEngine.MonoBehaviour, KnightOfNights.Scripts.InternalLib.IParryResponder
+    public class FallenGuardianController
+        : UnityEngine.MonoBehaviour,
+            KnightOfNights.Scripts.InternalLib.IParryResponder
     {
         public FallenGuardianContainer Container;
         public float SequenceDelay;
@@ -34,14 +36,21 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public UnityEngine.RuntimeAnimatorController TeleportOutController;
         public UnityEngine.RuntimeAnimatorController ToSlashAnticLoopController;
         public System.Collections.Generic.List<FallenGuardianPhaseStats> PhaseStats;
+
         public void BigSlashFollowup() { }
+
         public void BigSlashMove() { }
+
         public void BigSlashPrepare() { }
+
         public void CastSpellEvent() { }
+
         public void DiveEvent() { }
+
         public void TeleportIn() { }
+
         public void TeleportOut() { }
+
         public void TeleportOutEvent() { }
-        
     }
 }

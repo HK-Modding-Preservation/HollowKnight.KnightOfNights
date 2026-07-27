@@ -8,6 +8,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public int InitialCooldown;
         public float WeightIncrease;
         public System.Collections.Generic.List<AttackChoice> ForbiddenPredecessors;
-        
     }
 }

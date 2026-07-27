@@ -4,7 +4,7 @@ namespace KnightOfNights.Scripts.Summit
     {
         public UnityEngine.RuntimeAnimatorController FadeIn;
         public UnityEngine.RuntimeAnimatorController FadeOut;
+
         public void RelocateCamera() { }
-        
     }
 }

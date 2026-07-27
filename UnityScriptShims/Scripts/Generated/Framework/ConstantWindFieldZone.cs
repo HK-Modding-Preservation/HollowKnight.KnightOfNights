@@ -5,6 +5,5 @@ namespace KnightOfNights.Scripts.Framework
     {
         public UnityEngine.Vector2 WindSpeed;
         public int Priority;
-        
     }
 }

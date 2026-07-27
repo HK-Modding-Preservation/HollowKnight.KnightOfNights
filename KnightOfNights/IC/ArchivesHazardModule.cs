@@ -9,9 +9,11 @@ internal class ArchivesHazardModule : AbstractModule<ArchivesHazardModule>
 {
     protected override ArchivesHazardModule Self() => this;
 
-    protected override void InitializeInternal() => Events.AddSceneChangeEdit(SceneNames.Fungus3_archive_02, AddHazard);
+    protected override void InitializeInternal() =>
+        Events.AddSceneChangeEdit(SceneNames.Fungus3_archive_02, AddHazard);
 
-    protected override void UnloadInternal() => Events.RemoveSceneChangeEdit(SceneNames.Fungus3_archive_02, AddHazard);
+    protected override void UnloadInternal() =>
+        Events.RemoveSceneChangeEdit(SceneNames.Fungus3_archive_02, AddHazard);
 
     private void AddHazard(Scene scene)
     {

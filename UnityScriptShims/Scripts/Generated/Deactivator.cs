@@ -1,7 +1,4 @@
 namespace KnightOfNights.Scripts
 {
-    public class Deactivator : UnityEngine.MonoBehaviour
-    {
-        
-    }
+    public class Deactivator : UnityEngine.MonoBehaviour { }
 }

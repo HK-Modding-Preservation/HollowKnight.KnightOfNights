@@ -7,6 +7,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public float SpokeRadius;
         public float FadeSpeed;
         public int NumSpokes;
-        
     }
 }

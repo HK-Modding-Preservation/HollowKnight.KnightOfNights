@@ -59,6 +59,8 @@ internal static class CharmIds
     internal static bool EquippedAnyCharmsBesidesVoidHeart()
     {
         var pd = PlayerData.instance;
-        return pd.equippedCharms.Any(id => id != VoidHeart.Id || pd.GetInt(nameof(pd.royalCharmState)) == 3);
+        return pd.equippedCharms.Any(id =>
+            id != VoidHeart.Id || pd.GetInt(nameof(pd.royalCharmState)) == 3
+        );
     }
 }

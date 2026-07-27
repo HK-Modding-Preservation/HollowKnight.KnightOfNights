@@ -1,4 +1,6 @@
-﻿using ItemChanger;
+﻿using System;
+using System.IO;
+using ItemChanger;
 using KnightOfNights.IC;
 using Modding;
 using Newtonsoft.Json;
@@ -9,8 +11,6 @@ using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
 using RandomizerMod.Settings;
 using RandoPlus.GhostEssence;
-using System;
-using System.IO;
 
 namespace KnightOfNights.Rando;
 
@@ -32,23 +32,28 @@ internal static class RandoInterop
 
     private static void DefineRefs(GenerationSettings gs, LogicManagerBuilder lmb)
     {
-        if (!KnightOfNightsMod.RS.IsEnabled) return;
+        if (!KnightOfNightsMod.RS.IsEnabled)
+            return;
 
         lmb.AddItem(new EmptyItem(RevekSongItem.ITEM_NAME));
     }
 
     private static void MaybeAddRevekSong(RequestBuilder rb)
     {
-        rb.EditItemRequest(RevekSongItem.ITEM_NAME, info =>
-        {
-            info.getItemDef = () => new()
+        rb.EditItemRequest(
+            RevekSongItem.ITEM_NAME,
+            info =>
             {
-                Name = RevekSongItem.ITEM_NAME,
-                Pool = PoolNames.Skill,
-                MajorItem = false,
-                PriceCap = 1000
-            };
-        });
+                info.getItemDef = () =>
+                    new()
+                    {
+                        Name = RevekSongItem.ITEM_NAME,
+                        Pool = PoolNames.Skill,
+                        MajorItem = false,
+                        PriceCap = 1000,
+                    };
+            }
+        );
 
         switch (KnightOfNightsMod.RS.RevekSong)
         {
@@ -56,7 +61,10 @@ internal static class RandoInterop
                 rb.AddToStart(RevekSongItem.ITEM_NAME);
                 break;
             case RevekSongRandoMode.Vanilla:
-                if (ModHooks.GetMod("RandoPlus") is not Mod) throw new ArgumentException("Must install RandoPlus to place RevekSong at VANILLA");
+                if (ModHooks.GetMod("RandoPlus") is not Mod)
+                    throw new ArgumentException(
+                        "Must install RandoPlus to place RevekSong at VANILLA"
+                    );
                 rb.RemoveLocationByName(GhostNames.Ghost_Essence_Revek);
                 break;
             case RevekSongRandoMode.Randomized:
@@ -69,7 +77,8 @@ internal static class RandoInterop
 
     private static void OnExportCompleted(RandoController rc)
     {
-        if (!KnightOfNightsMod.RS.IsEnabled) return;
+        if (!KnightOfNightsMod.RS.IsEnabled)
+            return;
 
         ItemChangerMod.Modules.GetOrAdd<RevekSongModule>();
 
@@ -81,7 +90,8 @@ internal static class RandoInterop
         }
     }
 
-    private static int ModifyHash(RandoController rc, int hash) => KnightOfNightsMod.RS.RevekSong == RevekSongRandoMode.Vanilla ? 666 : 0;
+    private static int ModifyHash(RandoController rc, int hash) =>
+        KnightOfNightsMod.RS.RevekSong == RevekSongRandoMode.Vanilla ? 666 : 0;
 
     private static void LogKnightOfNightsSettings(LogArguments args, TextWriter tw)
     {

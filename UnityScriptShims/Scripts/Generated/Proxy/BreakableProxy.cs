@@ -10,6 +10,5 @@ namespace KnightOfNights.Scripts.Proxy
         public UnityEngine.Vector3 EffectOffset;
         public float FlingSpeedMin;
         public float FlingSpeedMax;
-        
     }
 }

@@ -16,6 +16,5 @@ namespace KnightOfNights.Scripts.FallenGuardian
         public StaggerStats StaggerStats;
         public UltraInstinctStats UltraInstinctStats;
         public XeroArmadaStats XeroArmadaStats;
-        
     }
 }

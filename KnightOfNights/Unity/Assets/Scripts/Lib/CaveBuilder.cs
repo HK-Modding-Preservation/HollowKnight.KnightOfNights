@@ -1,8 +1,8 @@
-﻿using KnightOfNights.Scripts.SharedLib;
+﻿using System.Collections.Generic;
+using System.Linq;
+using KnightOfNights.Scripts.SharedLib;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Lib
@@ -43,9 +43,11 @@ namespace KnightOfNights.Scripts.Lib
             }
             Hash.Update(ref hash, nodeHash);
 
-            foreach (var point in gameObject.GetComponent<PolygonCollider2D>().EnumeratePoints()) Hash.Update(ref hash, point);
+            foreach (var point in gameObject.GetComponent<PolygonCollider2D>().EnumeratePoints())
+                Hash.Update(ref hash, point);
 
-            if (CompiledHash == hash) return false;
+            if (CompiledHash == hash)
+                return false;
 
             var random = new System.Random();
             BuildCave(gameObject.ResetCompiled(), new System.Random());
@@ -58,17 +60,21 @@ namespace KnightOfNights.Scripts.Lib
         {
 #if UNITY_EDITOR
             var nodes = gameObject.GetComponentsInChildren<CaveBuilderNode>();
-            if (nodes.Length == 0) return;
+            if (nodes.Length == 0)
+                return;
 
             float ComputeDepth(Vector2 pos)
             {
-                if (nodes.Length == 1) return nodes[0].Depth;
+                if (nodes.Length == 1)
+                    return nodes[0].Depth;
 
-                var ordered = nodes.OrderBy(n =>
-                {
-                    Vector2 np = n.transform.position;
-                    return (pos - np).sqrMagnitude;
-                }).ToList();
+                var ordered = nodes
+                    .OrderBy(n =>
+                    {
+                        Vector2 np = n.transform.position;
+                        return (pos - np).sqrMagnitude;
+                    })
+                    .ToList();
 
                 var p1 = ordered[0].transform.position;
                 var p2 = ordered[1].transform.position;
@@ -101,7 +107,9 @@ namespace KnightOfNights.Scripts.Lib
                     var p = new Vector2Int(x, y);
                     var rect = CreateNTSRect(p);
                     var intersection = polygon.Intersection(rect);
-                    float avgDepth = ComputeDepth(new Vector2((x + 0.5f) * Granularity, (y + 0.5f) * Granularity));
+                    float avgDepth = ComputeDepth(
+                        new Vector2((x + 0.5f) * Granularity, (y + 0.5f) * Granularity)
+                    );
 
                     cellWeights.Add((p, (float)intersection.Area * (1 + avgDepth / 38.1f)));
                 }
@@ -128,18 +136,22 @@ namespace KnightOfNights.Scripts.Lib
                 var pos = new Vector2(x, y);
                 obj.transform.position = new Vector3(x, y, ComputeDepth(pos));
 
-                if (placements.TryGetValue(cell, out var values)) values.Add(pos);
-                else placements.Add(cell, new List<Vector2> { pos });
+                if (placements.TryGetValue(cell, out var values))
+                    values.Add(pos);
+                else
+                    placements.Add(cell, new List<Vector2> { pos });
             }
 
-            for (int i = 0; i < count; i++) Place(cellDistribution.Choose(r));
+            for (int i = 0; i < count; i++)
+                Place(cellDistribution.Choose(r));
 
             var shuffled = new List<Vector2Int>(cellDistribution.Elements);
             r.Shuffle(shuffled);
 
             IEnumerable<Vector2Int> NeighborCells(Vector2Int center)
             {
-                bool IsValid(Vector2Int cell) => cell.x >= min.x && cell.y >= min.y && cell.x <= max.x && cell.y <= max.y;
+                bool IsValid(Vector2Int cell) =>
+                    cell.x >= min.x && cell.y >= min.y && cell.x <= max.x && cell.y <= max.y;
 
                 int radius = 0;
                 while (true)
@@ -176,8 +188,10 @@ namespace KnightOfNights.Scripts.Lib
                         }
                     }
 
-                    if (!any) yield break;
-                    else ++radius;
+                    if (!any)
+                        yield break;
+                    else
+                        ++radius;
                 }
             }
 
@@ -187,7 +201,8 @@ namespace KnightOfNights.Scripts.Lib
                 {
                     if (placements.TryGetValue(cell, out var values))
                     {
-                        foreach (var value in values) yield return value;
+                        foreach (var value in values)
+                            yield return value;
                     }
                 }
             }
@@ -198,8 +213,10 @@ namespace KnightOfNights.Scripts.Lib
                 foreach (var p in NeighborPlacements(cell))
                 {
                     var d = (pos - p).magnitude;
-                    if (d <= MaxGap / 2) return false;
-                    if (d >= MaxGap) return true;
+                    if (d <= MaxGap / 2)
+                        return false;
+                    if (d >= MaxGap)
+                        return true;
                 }
 
                 return true;
@@ -207,7 +224,8 @@ namespace KnightOfNights.Scripts.Lib
 
             foreach (var cell in shuffled)
             {
-                if (HasGap(cell)) Place(cell);
+                if (HasGap(cell))
+                    Place(cell);
             }
 #endif
         }
@@ -215,10 +233,13 @@ namespace KnightOfNights.Scripts.Lib
         private static Geometry CreateNTSPolygon(PolygonCollider2D collider)
         {
             List<Coordinate> coords = new List<Coordinate>();
-            foreach (var p in collider.EnumeratePoints()) coords.Add(new Coordinate(p.x, p.y));
+            foreach (var p in collider.EnumeratePoints())
+                coords.Add(new Coordinate(p.x, p.y));
             coords.Add(coords[0]);
 
-            return NtsGeometryServices.Instance.CreateGeometryFactory().CreatePolygon(coords.ToArray());
+            return NtsGeometryServices
+                .Instance.CreateGeometryFactory()
+                .CreatePolygon(coords.ToArray());
         }
 
         private Geometry CreateNTSRect(Vector2Int cell)
@@ -246,7 +267,8 @@ namespace KnightOfNights.Scripts.Lib
                 new PrecisionModel(PrecisionModels.FloatingSingle),
                 srid: -1,
                 GeometryOverlay.NG,
-                new CoordinateEqualityComparer());
+                new CoordinateEqualityComparer()
+            );
         }
 
 #if UNITY_EDITOR

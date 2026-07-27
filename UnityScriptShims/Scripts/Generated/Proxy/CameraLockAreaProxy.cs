@@ -6,6 +6,5 @@ namespace KnightOfNights.Scripts.Proxy
         public bool preventLookDown;
         public bool maxPriority;
         public bool Snap = true;
-        
     }
 }

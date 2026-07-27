@@ -47,18 +47,22 @@ internal class ShadelessModule : AbstractModule<ShadelessModule>
 
         var setShadeState = fsm.GetState("Set Shade");
         setShadeState.AddTransition("SKIP", "Save");
-        setShadeState.AddFirstAction(new Lambda(() =>
-        {
-            fsm.FsmVariables.GetFsmGameObject("Self").Value = fsm.gameObject;
-            fsm.SendEvent("SKIP");
-        }));
+        setShadeState.AddFirstAction(
+            new Lambda(() =>
+            {
+                fsm.FsmVariables.GetFsmGameObject("Self").Value = fsm.gameObject;
+                fsm.SendEvent("SKIP");
+            })
+        );
 
         fsm.GetState("End").RemoveFirstActionOfType<SendMessage>();
     }
 
     private static void FillName(ref string value) => value = "Shadeless";
 
-    private static void FillDesc(ref string value) => value = "In this world, the Knight leaves no shade. No geo is dropped upon death.";
+    private static void FillDesc(ref string value) =>
+        value = "In this world, the Knight leaves no shade. No geo is dropped upon death.";
 
-    private bool HookIsShadeless(string name, bool orig) => name == nameof(IsShadeless) ? IsShadeless : orig;
+    private bool HookIsShadeless(string name, bool orig) =>
+        name == nameof(IsShadeless) ? IsShadeless : orig;
 }

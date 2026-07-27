@@ -6,6 +6,5 @@ namespace KnightOfNights.Scripts.Framework
         SemiDark = 1,
         Dark = 2,
         Undark = -1,
-        
     }
 }

@@ -1,7 +1,4 @@
 namespace KnightOfNights.Scripts.Summit
 {
-    public class SuperSoulTotemProxy : UnityEngine.MonoBehaviour
-    {
-        
-    }
+    public class SuperSoulTotemProxy : UnityEngine.MonoBehaviour { }
 }

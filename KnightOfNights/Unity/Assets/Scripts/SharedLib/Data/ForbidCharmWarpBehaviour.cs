@@ -1,5 +1,5 @@
-﻿using KnightOfNights.Scripts.InternalLib;
-using System;
+﻿using System;
+using KnightOfNights.Scripts.InternalLib;
 
 namespace KnightOfNights.Scripts.SharedLib.Data
 {

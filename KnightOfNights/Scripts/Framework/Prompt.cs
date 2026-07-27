@@ -10,14 +10,19 @@ internal class Prompt(PlayMakerFSM fsm)
         get => field;
         set
         {
-            if (field != value) fsm.SendEvent(value ? "UP" : "DOWN");
+            if (field != value)
+                fsm.SendEvent(value ? "UP" : "DOWN");
             field = value;
         }
     } = false;
 
     public static Prompt Create(Vector3 pos, PromptType type)
     {
-        var obj = Object.Instantiate(KnightOfNightsPreloader.Instance.ArrowPrompt, pos, Quaternion.identity);
+        var obj = Object.Instantiate(
+            KnightOfNightsPreloader.Instance.ArrowPrompt,
+            pos,
+            Quaternion.identity
+        );
         var fsm = obj.LocateMyFSM("Prompt Control");
         fsm.FsmVariables.GetFsmString("Prompt Name").Value = type.PromptName();
 
@@ -27,10 +32,15 @@ internal class Prompt(PlayMakerFSM fsm)
 
 internal enum PromptType
 {
-    Inspect
+    Inspect,
 }
 
 internal static class PromptTypeExtensions
 {
-    internal static string PromptName(this PromptType self) => self switch { PromptType.Inspect => "Inspect", _ => throw self.InvalidEnum() };
+    internal static string PromptName(this PromptType self) =>
+        self switch
+        {
+            PromptType.Inspect => "Inspect",
+            _ => throw self.InvalidEnum(),
+        };
 }

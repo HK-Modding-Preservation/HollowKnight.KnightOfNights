@@ -1,6 +1,6 @@
-﻿using KnightOfNights.Scripts.SharedLib;
+﻿using System.Collections.Generic;
+using KnightOfNights.Scripts.SharedLib;
 using KnightOfNights.Util;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Framework;
@@ -9,9 +9,13 @@ internal delegate bool WindFieldZoneCallback(Vector2 pos, out Vector2 windSpeed)
 
 internal abstract class WindFieldZone : MonoBehaviour
 {
-    [ShimField] public int Priority;
+    [ShimField]
+    public int Priority;
 
-    internal abstract IEnumerable<(PurenailCore.CollectionUtil.Rect, WindFieldZoneCallback)> GetCallbacks();    
+    internal abstract IEnumerable<(
+        PurenailCore.CollectionUtil.Rect,
+        WindFieldZoneCallback
+    )> GetCallbacks();
 }
 
 [RequireComponent(typeof(Collider2D))]
@@ -19,7 +23,10 @@ internal abstract class ColliderWindFieldZone : WindFieldZone
 {
     protected abstract bool GetWindSpeed(Vector2 pos, out Vector2 windSpeed);
 
-    internal override IEnumerable<(PurenailCore.CollectionUtil.Rect, WindFieldZoneCallback)> GetCallbacks()
+    internal override IEnumerable<(
+        PurenailCore.CollectionUtil.Rect,
+        WindFieldZoneCallback
+    )> GetCallbacks()
     {
         foreach (var collider in GetComponentsInChildren<Collider2D>())
         {
@@ -38,7 +45,8 @@ internal abstract class ColliderWindFieldZone : WindFieldZone
 [Shim]
 internal class ConstantWindFieldZone : ColliderWindFieldZone
 {
-    [ShimField] public Vector2 WindSpeed;
+    [ShimField]
+    public Vector2 WindSpeed;
 
     protected override bool GetWindSpeed(Vector2 pos, out Vector2 windSpeed)
     {
@@ -50,10 +58,17 @@ internal class ConstantWindFieldZone : ColliderWindFieldZone
 [Shim]
 internal class GradientWindFieldZone : ColliderWindFieldZone
 {
-    [ShimField] public Transform? PointA;
-    [ShimField] public Vector2 SpeedA;
-    [ShimField] public Transform? PointB;
-    [ShimField] public Vector2 SpeedB;
+    [ShimField]
+    public Transform? PointA;
+
+    [ShimField]
+    public Vector2 SpeedA;
+
+    [ShimField]
+    public Transform? PointB;
+
+    [ShimField]
+    public Vector2 SpeedB;
 
     protected override bool GetWindSpeed(Vector2 pos, out Vector2 windSpeed)
     {
@@ -63,7 +78,11 @@ internal class GradientWindFieldZone : ColliderWindFieldZone
             return false;
         }
 
-        windSpeed = Vector2.Lerp(SpeedA, SpeedB, MathExt.ILerp(pos, PointA.position, PointB.position));
+        windSpeed = Vector2.Lerp(
+            SpeedA,
+            SpeedB,
+            MathExt.ILerp(pos, PointA.position, PointB.position)
+        );
         return true;
     }
 }

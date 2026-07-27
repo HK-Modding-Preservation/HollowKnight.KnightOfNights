@@ -56,10 +56,14 @@ internal class SlashAttack(SlashAttackSpec spec, PlayMakerFSM fsm)
         revekAddons.DirectionFilter = dir =>
         {
             dir = MathExt.ClampAngle(dir, -45, 315);
-            if (dir <= 45) return spec.AllowedHits.Contains("RIGHT");
-            else if (dir <= 135) return spec.AllowedHits.Contains("UP");
-            else if (dir <= 225) return spec.AllowedHits.Contains("LEFT");
-            else return spec.AllowedHits.Contains("DOWN");
+            if (dir <= 45)
+                return spec.AllowedHits.Contains("RIGHT");
+            else if (dir <= 135)
+                return spec.AllowedHits.Contains("UP");
+            else if (dir <= 225)
+                return spec.AllowedHits.Contains("LEFT");
+            else
+                return spec.AllowedHits.Contains("DOWN");
         };
         revekAddons.OnParry += hit =>
         {
@@ -76,8 +80,14 @@ internal class SlashAttack(SlashAttackSpec spec, PlayMakerFSM fsm)
 
         void SpawnClock()
         {
-            if (cancelled) return;
-            clock = ParticleClock.Spawn(revek.transform, compress.Value * ANIM_TIME, compress.Value * CIRCLE_TIME, compress.Value * FADE_TIME);
+            if (cancelled)
+                return;
+            clock = ParticleClock.Spawn(
+                revek.transform,
+                compress.Value * ANIM_TIME,
+                compress.Value * CIRCLE_TIME,
+                compress.Value * FADE_TIME
+            );
         }
 
         if (clockDuration >= timeToStrike)
@@ -85,10 +95,12 @@ internal class SlashAttack(SlashAttackSpec spec, PlayMakerFSM fsm)
             compress.Value = timeToStrike / clockDuration;
             SpawnClock();
         }
-        else revek.DoOnAwake(() => revek.DoAfter(SpawnClock, timeToStrike - clockDuration));
+        else
+            revek.DoOnAwake(() => revek.DoAfter(SpawnClock, timeToStrike - clockDuration));
 
         fsm.Fsm.GlobalTransitions = [];
-        foreach (var state in fsm.FsmStates) state.RemoveTransitionsOn("TAKE DAMAGE");
+        foreach (var state in fsm.FsmStates)
+            state.RemoveTransitionsOn("TAKE DAMAGE");
 
         var slashTeleInState = fsm.GetState("Slash Tele In");
 
@@ -100,12 +112,14 @@ internal class SlashAttack(SlashAttackSpec spec, PlayMakerFSM fsm)
         audioSrc.transform.parent = HeroController.instance.transform;
         slashTeleInState.GetFirstActionOfType<AudioPlayerOneShotSingle>().spawnPoint = audioSrc;
 
-        slashTeleInState.AddFirstAction(new Lambda(() =>
-        {
-            audioSrc.transform.localPosition = spec.SpawnOffset;
-            fsm.FsmVariables.GetFsmFloat("X Distance").Value = spec.SpawnOffset.x;
-            fsm.FsmVariables.GetFsmFloat("Y Distance").Value = spec.SpawnOffset.y;
-        }));
+        slashTeleInState.AddFirstAction(
+            new Lambda(() =>
+            {
+                audioSrc.transform.localPosition = spec.SpawnOffset;
+                fsm.FsmVariables.GetFsmFloat("X Distance").Value = spec.SpawnOffset.x;
+                fsm.FsmVariables.GetFsmFloat("Y Distance").Value = spec.SpawnOffset.y;
+            })
+        );
 
         var idleWait = fsm.GetState("Slash Idle").GetFirstActionOfType<WaitRandom>();
         idleWait.timeMin = spec.Telegraph;
@@ -120,21 +134,34 @@ internal class SlashAttack(SlashAttackSpec spec, PlayMakerFSM fsm)
 
             // Move freeze moment and Nail parry calls to after direction validation.
             var actions = blockedHitState.Actions;
-            (actions[0], actions[1], actions[2], actions[3]) = (actions[2], actions[3], actions[0], actions[1]);
-            actions[2].Enabled = false;  // Disable FreezeMoment.
+            (actions[0], actions[1], actions[2], actions[3]) = (
+                actions[2],
+                actions[3],
+                actions[0],
+                actions[1]
+            );
+            actions[2].Enabled = false; // Disable FreezeMoment.
             // Prevent parries from disallowed directions.
-            blockedHitState.InsertAction(new Lambda(() =>
-            {
-                var dir = tink.FsmVariables.GetFsmFloat("Attack Direction").Value;
-                if (!revekAddons.DirectionFilter(dir)) tink.SendEvent("ABORT");
-                else
+            blockedHitState.InsertAction(
+                new Lambda(() =>
                 {
-                    var damagesEnemy = tink.FsmVariables.GetFsmGameObject("Slash").Value.LocateMyFSM("damages_enemy");
-                    DamageDealt = damagesEnemy.FsmVariables.GetFsmInt("damageDealt").Value;
-                    DamageDirection = damagesEnemy.FsmVariables.GetFsmFloat("direction").Value;
-                    MagnitudeMultiplier = damagesEnemy.FsmVariables.GetFsmFloat("magnitudeMult").Value;
-                }
-            }), 2);
+                    var dir = tink.FsmVariables.GetFsmFloat("Attack Direction").Value;
+                    if (!revekAddons.DirectionFilter(dir))
+                        tink.SendEvent("ABORT");
+                    else
+                    {
+                        var damagesEnemy = tink
+                            .FsmVariables.GetFsmGameObject("Slash")
+                            .Value.LocateMyFSM("damages_enemy");
+                        DamageDealt = damagesEnemy.FsmVariables.GetFsmInt("damageDealt").Value;
+                        DamageDirection = damagesEnemy.FsmVariables.GetFsmFloat("direction").Value;
+                        MagnitudeMultiplier = damagesEnemy
+                            .FsmVariables.GetFsmFloat("magnitudeMult")
+                            .Value;
+                    }
+                }),
+                2
+            );
         });
 
         var slashState = fsm.GetState("Slash");
@@ -142,8 +169,10 @@ internal class SlashAttack(SlashAttackSpec spec, PlayMakerFSM fsm)
         slashState.GetFirstActionOfType<FireAtTarget>().position.Value = spec.TargetOffset;
         slashState.GetFirstActionOfType<DecelerateV2>().deceleration.Value = spec.Deceleration;
 
-        fsm.GetState("Slash Tele Out").AddFirstAction(new Lambda(() => SetResult(SlashAttackResult.NOT_PARRIED)));
-        fsm.GetState("Damaged Pause").AddFirstAction(new Lambda(() => fsm.gameObject.DestroyAfter(3f)));
+        fsm.GetState("Slash Tele Out")
+            .AddFirstAction(new Lambda(() => SetResult(SlashAttackResult.NOT_PARRIED)));
+        fsm.GetState("Damaged Pause")
+            .AddFirstAction(new Lambda(() => fsm.gameObject.DestroyAfter(3f)));
 
         var attackPause = fsm.GetState("Attack Pause");
         var attackWait = attackPause.GetFirstActionOfType<WaitRandom>();
@@ -152,11 +181,13 @@ internal class SlashAttack(SlashAttackSpec spec, PlayMakerFSM fsm)
         attackPause.AddFirstAction(new Lambda(() => fsm.gameObject.DestroyAfter(3f)));
 
         var hitState = fsm.GetState("Hit");
-        hitState.AddFirstAction(new Lambda(() =>
-        {
-            ParryPos = fsm.gameObject.transform.position;
-            SetResult(SlashAttackResult.PARRIED);
-        }));
+        hitState.AddFirstAction(
+            new Lambda(() =>
+            {
+                ParryPos = fsm.gameObject.transform.position;
+                SetResult(SlashAttackResult.PARRIED);
+            })
+        );
         hitState.GetFirstActionOfType<AudioPlayerOneShot>().Enabled = false;
 
         revek.SetActive(true);
@@ -171,25 +202,35 @@ internal class SlashAttack(SlashAttackSpec spec, PlayMakerFSM fsm)
             clock?.Cancel();
             cancelled = true;
 
-            fsm.GetState("Slash Tele Out").AddLastAction(new LambdaEveryFrame(() =>
-            {
-                // Fix clip fighting.
-                var animator = fsm.gameObject.GetComponent<tk2dSpriteAnimator>();
-                if (animator.CurrentClip.name != "Tele Out") animator.Play("Tele Out");
-            }));
+            fsm.GetState("Slash Tele Out")
+                .AddLastAction(
+                    new LambdaEveryFrame(() =>
+                    {
+                        // Fix clip fighting.
+                        var animator = fsm.gameObject.GetComponent<tk2dSpriteAnimator>();
+                        if (animator.CurrentClip.name != "Tele Out")
+                            animator.Play("Tele Out");
+                    })
+                );
             fsm.SetState("Slash Tele Out");
 
-            var emission = fsm.FsmVariables.GetFsmGameObject("Idle Pt").Value.GetComponent<ParticleSystem>().emission;
+            var emission = fsm
+                .FsmVariables.GetFsmGameObject("Idle Pt")
+                .Value.GetComponent<ParticleSystem>()
+                .emission;
             emission.enabled = false;
         }
 
-        if (fsm.ActiveStateName == "Slash Idle" || fsm.ActiveStateName == "Slash Antic") TeleOut();
-        else fsm.GetState("Slash Idle").AddFirstAction(new Lambda(TeleOut));
+        if (fsm.ActiveStateName == "Slash Idle" || fsm.ActiveStateName == "Slash Antic")
+            TeleOut();
+        else
+            fsm.GetState("Slash Idle").AddFirstAction(new Lambda(TeleOut));
     }
 
     private void SetResult(SlashAttackResult result)
     {
-        if (Result.HasValue) return;
+        if (Result.HasValue)
+            return;
 
         Result = result;
         OnResult?.Invoke(result);

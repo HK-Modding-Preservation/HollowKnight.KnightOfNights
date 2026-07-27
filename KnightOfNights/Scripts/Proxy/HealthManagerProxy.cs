@@ -1,5 +1,5 @@
-﻿using KnightOfNights.Scripts.InternalLib;
-using System;
+﻿using System;
+using KnightOfNights.Scripts.InternalLib;
 
 namespace KnightOfNights.Scripts.Proxy;
 
@@ -10,8 +10,8 @@ public class HealthManagerProxy : HealthManager
     public event Action? OnDamageTaken;
     public event Action? CustomOnDeath;
 
-    private static readonly MonobehaviourPatcher<HealthManager> Patcher = new(() =>
-        KnightOfNightsPreloader.Instance.CrystalCrawler!.GetComponent<HealthManager>(),
+    private static readonly MonobehaviourPatcher<HealthManager> Patcher = new(
+        () => KnightOfNightsPreloader.Instance.CrystalCrawler!.GetComponent<HealthManager>(),
         "audioPlayerPrefab",
         "regularInvincibleAudio",
         "blockHitPrefab",
@@ -24,7 +24,8 @@ public class HealthManagerProxy : HealthManager
         "enemyDamageAudio",
         "smallGeoPrefab",
         "mediumGeoPrefab",
-        "largeGeoPrefab");
+        "largeGeoPrefab"
+    );
 
     private bool triggeredCustomDeath = false;
 
@@ -49,17 +50,20 @@ public class HealthManagerProxy : HealthManager
     {
         base.Update();
 
-        if (prevHp == null) prevHp = hp;
+        if (prevHp == null)
+            prevHp = hp;
         else if (prevHp.Value != hp)
         {
-            if (prevHp.Value > hp) OnDamageTaken?.Invoke();
+            if (prevHp.Value > hp)
+                OnDamageTaken?.Invoke();
             prevHp = hp;
         }
     }
 
     public void TriggerDeath()
     {
-        if (triggeredCustomDeath) return;
+        if (triggeredCustomDeath)
+            return;
 
         triggeredCustomDeath = true;
         isDead = true;

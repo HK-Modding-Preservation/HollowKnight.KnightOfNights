@@ -1,7 +1,4 @@
 namespace KnightOfNights.Scripts.InternalLib
 {
-    public interface IParryResponder
-    {
-        
-    }
+    public interface IParryResponder { }
 }

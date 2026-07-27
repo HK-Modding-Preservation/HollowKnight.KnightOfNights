@@ -1,5 +1,5 @@
-﻿using KnightOfNights.Scripts.SharedLib;
-using System;
+﻿using System;
+using KnightOfNights.Scripts.SharedLib;
 using UnityEngine;
 
 namespace KnightOfNights.Scripts.Proxy;
@@ -21,7 +21,8 @@ internal class HeroDetectorProxy : MonoBehaviour
 
     private void OnDisable()
     {
-        if (!prevDetected) return;
+        if (!prevDetected)
+            return;
 
         detections = 0;
         Update();
@@ -29,13 +30,15 @@ internal class HeroDetectorProxy : MonoBehaviour
 
     public void OnDetected(Action action)
     {
-        if (Detected()) action();
+        if (Detected())
+            action();
         OnDetectedEvent += action;
     }
 
     public void Listen(Action detect, Action undetect)
     {
-        if (Detected()) detect.Invoke();
+        if (Detected())
+            detect.Invoke();
 
         OnDetectedEvent += detect;
         OnUndetectedEvent += undetect;
@@ -46,8 +49,10 @@ internal class HeroDetectorProxy : MonoBehaviour
         bool newDetected = Detected();
         if (newDetected != prevDetected)
         {
-            if (newDetected) OnDetectedEvent?.Invoke();
-            else OnUndetectedEvent?.Invoke();
+            if (newDetected)
+                OnDetectedEvent?.Invoke();
+            else
+                OnUndetectedEvent?.Invoke();
 
             prevDetected = newDetected;
         }

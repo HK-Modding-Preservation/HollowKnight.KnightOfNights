@@ -11,6 +11,5 @@ namespace KnightOfNights.Scripts.Proxy
         public float SwayAmountVariance;
         public float SwaySpeed;
         public float SwaySpeedVariance;
-        
     }
 }

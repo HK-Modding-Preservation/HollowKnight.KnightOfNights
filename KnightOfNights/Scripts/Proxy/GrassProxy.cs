@@ -8,19 +8,37 @@ namespace KnightOfNights.Scripts.Proxy;
 [RequireComponent(typeof(BoxCollider2D))]
 internal class GrassProxy : MonoBehaviour
 {
-    [ShimField] public SpriteRenderer? GrassPreview;
-    [ShimField] public Material? GrassParticles;
-    [ShimField("25")] public int NumParticles;
+    [ShimField]
+    public SpriteRenderer? GrassPreview;
 
-    [ShimField] public float HeightOffset;
-    [ShimField] public float SwayAmount;
-    [ShimField] public float SwayAmountVariance;
-    [ShimField] public float SwaySpeed;
-    [ShimField] public float SwaySpeedVariance;
+    [ShimField]
+    public Material? GrassParticles;
+
+    [ShimField("25")]
+    public int NumParticles;
+
+    [ShimField]
+    public float HeightOffset;
+
+    [ShimField]
+    public float SwayAmount;
+
+    [ShimField]
+    public float SwayAmountVariance;
+
+    [ShimField]
+    public float SwaySpeed;
+
+    [ShimField]
+    public float SwaySpeedVariance;
 
     private void Awake()
     {
-        var obj = Instantiate(KnightOfNightsPreloader.Instance.Grass, transform.position, transform.rotation)!;
+        var obj = Instantiate(
+            KnightOfNightsPreloader.Instance.Grass,
+            transform.position,
+            transform.rotation
+        )!;
         obj.transform.localScale = transform.localScale;
         obj.SetActive(true);
 
@@ -44,8 +62,14 @@ internal class GrassProxy : MonoBehaviour
         MaterialPropertyBlock block = new();
         renderer.GetPropertyBlock(block);
         block.SetFloat("_HeightOffset", HeightOffset);
-        block.SetFloat("_SwayAmount", SwayAmount + Random.Range(-SwayAmountVariance, SwayAmountVariance));
-        block.SetFloat("_SwaySpeed", SwaySpeed + Random.Range(-SwaySpeedVariance, SwaySpeedVariance));
+        block.SetFloat(
+            "_SwayAmount",
+            SwayAmount + Random.Range(-SwayAmountVariance, SwayAmountVariance)
+        );
+        block.SetFloat(
+            "_SwaySpeed",
+            SwaySpeed + Random.Range(-SwaySpeedVariance, SwaySpeedVariance)
+        );
         renderer.SetPropertyBlock(block);
 
         obj.FindChild("grass_03_death")!.GetComponent<SpriteRenderer>().sprite = null;

@@ -14,9 +14,11 @@ class PrefabReplacementTool : EditorTool
 
     public override bool IsAvailable() => true;
 
-    public override void OnActivated() => EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
+    public override void OnActivated() =>
+        EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
 
-    public override void OnWillBeDeactivated() => EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
+    public override void OnWillBeDeactivated() =>
+        EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
 
     public override void OnToolGUI(EditorWindow window) => HandleKeyEvent();
 
@@ -30,33 +32,34 @@ class PrefabReplacementTool : EditorTool
         switch (e.type)
         {
             case EventType.KeyDown:
+            {
+                if (e.keyCode == KeyCode.P)
                 {
-                    if (e.keyCode == KeyCode.P)
+                    var objects = Selection.gameObjects.ToList();
+                    List<Transform> next = new List<Transform>();
+                    foreach (var obj in objects)
                     {
-                        var objects = Selection.gameObjects.ToList();
-                        List<Transform> next = new List<Transform>();
-                        foreach (var obj in objects)
-                        {
-                            var replacement = (GameObject)PrefabUtility.InstantiatePrefab(prefab, obj.transform.parent);
-                            replacement.transform.localPosition = obj.transform.localPosition;
-                            replacement.transform.localScale = obj.transform.localScale;
-                            replacement.transform.localRotation = obj.transform.localRotation;
-                            replacement.name = obj.name;
+                        var replacement = (GameObject)
+                            PrefabUtility.InstantiatePrefab(prefab, obj.transform.parent);
+                        replacement.transform.localPosition = obj.transform.localPosition;
+                        replacement.transform.localScale = obj.transform.localScale;
+                        replacement.transform.localRotation = obj.transform.localRotation;
+                        replacement.name = obj.name;
 
-                            DestroyImmediate(obj);
-                            next.Add(replacement.transform);
-                        }
+                        DestroyImmediate(obj);
+                        next.Add(replacement.transform);
+                    }
 
-                        Selection.activeTransform = next[0];
-                        e.Use();
-                    }
-                    else if (e.keyCode == KeyCode.Escape)
-                    {
-                        Deactivate();
-                        e.Use();
-                    }
-                    break;
+                    Selection.activeTransform = next[0];
+                    e.Use();
                 }
+                else if (e.keyCode == KeyCode.Escape)
+                {
+                    Deactivate();
+                    e.Use();
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -66,8 +69,10 @@ class PrefabReplacementTool : EditorTool
 
     private static void Deactivate()
     {
-        if (previousToolType != null) ToolManager.SetActiveTool(previousToolType);
-        else ToolManager.RestorePreviousPersistentTool();
+        if (previousToolType != null)
+            ToolManager.SetActiveTool(previousToolType);
+        else
+            ToolManager.RestorePreviousPersistentTool();
     }
 
     [Shortcut("Prefab Replacement Shortcut", KeyCode.O)]
@@ -79,7 +84,9 @@ class PrefabReplacementTool : EditorTool
             return;
         }
 
-        var filtered = Selection.gameObjects.Where(go => PrefabUtility.IsAnyPrefabInstanceRoot(go)).ToList();
+        var filtered = Selection
+            .gameObjects.Where(go => PrefabUtility.IsAnyPrefabInstanceRoot(go))
+            .ToList();
         if (filtered.Count == 1)
         {
             prefab = PrefabUtility.GetCorrespondingObjectFromSource(filtered[0]);

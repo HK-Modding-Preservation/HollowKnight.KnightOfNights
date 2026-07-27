@@ -13,5 +13,4 @@ internal static class SummitSceneNames
     public const string Summit_Tunnels = "Summit_Tunnels";
     public const string Summit_WindCliffs = "Summit_WindCliffs";
     public const string Summit_WindHops = "Summit_WindHops";
-    
 }
