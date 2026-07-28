@@ -7,9 +7,8 @@ internal class RevekSongItem : AbstractItem
 {
     internal const string ITEM_NAME = "RevekSong";
 
-    internal RevekSongItem()
+    private void SetUIDef()
     {
-        name = ITEM_NAME;
         UIDef = new BigUIDef()
         {
             bigSprite = new EmbeddedSprite("reveksong_big"),
@@ -26,6 +25,18 @@ internal class RevekSongItem : AbstractItem
             shopDesc = new BoxedString("Revek Song"),
             sprite = new EmbeddedSprite("reveksong"),
         };
+    }
+
+    internal RevekSongItem()
+    {
+        name = ITEM_NAME;
+        SetUIDef();
+    }
+
+    public override void ResolveItem(GiveEventArgs args)
+    {
+        base.ResolveItem(args);
+        SetUIDef();
     }
 
     public override void GiveImmediate(GiveInfo info)
