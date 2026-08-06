@@ -1,7 +1,4 @@
-﻿using CSharpier.Core.CSharp;
-using KnightOfNights.Scripts.SharedLib;
-using PurenailCore.CollectionUtil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +6,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
+using CSharpier.Core.CSharp;
+using KnightOfNights.Scripts.SharedLib;
+using PurenailCore.CollectionUtil;
 using UnityEngine;
 using JsonUtil = PurenailCore.SystemUtil.JsonUtil<KnightOfNights.KnightOfNightsMod>;
 

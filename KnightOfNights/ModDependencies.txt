@@ -10,3 +10,5 @@ RandoPlus
 RandoSettingsManager
 Satchel
 SFCore
+
+ConnectionSettingsRando

@@ -41,9 +41,20 @@ public class KnightOfNightsMod : Mod, IGlobalSettings<GlobalSettings>
     private static void SetupRando()
     {
         RandoInterop.Setup();
+
+        if (ModHooks.GetMod("ConnectionSettingsRando") is Mod)
+            SetupCSR();
+
         if (ModHooks.GetMod("RandoSettingsManager") is Mod)
             SetupRSM();
     }
+
+    private static void SetupCSR() =>
+        ConnectionSettingsRando.CSR.Register(
+            "KnightOfNights",
+            () => RS,
+            s => ConnectionMenu.Instance!.ApplySettings(s)
+        );
 
     private static void SetupRSM() => SettingsProxy.Setup();
 
