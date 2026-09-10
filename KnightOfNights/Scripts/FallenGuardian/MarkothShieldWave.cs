@@ -73,7 +73,16 @@ internal class MarkothShieldWave : MonoBehaviour
             Despawn();
     }
 
-    internal void Despawn() => Destroy(gameObject);
+    private bool despawned = false;
+
+    internal void Despawn()
+    {
+        if (despawned)
+            return;
+
+        despawned = true;
+        Destroy(gameObject);
+    }
 
     private void SetPositions()
     {
