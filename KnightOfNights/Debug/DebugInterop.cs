@@ -20,23 +20,20 @@ internal static class DebugInterop
     }
 
     [BindableMethod(name = "Give Revek Song", category = CATEGORY)]
-    public static void GiveRevekSong() => ItemChangerMod.Modules.GetOrAdd<RevekSongModule>().HasRevekSong = true;
-
-    [BindableMethod(name = "Take Revek Song", category = CATEGORY)]
-    public static void TakeRevekSong()
+    public static void ToggleRevekSong()
     {
-        if (!GetModule<RevekSongModule>(out var mod)) return;
-        mod.HasRevekSong = false;
+        var mod = ItemChangerMod.Modules.GetOrAdd<RevekSongModule>();
+        mod.HasRevekSong = !mod.HasRevekSong;
+        Console.AddLine(mod.HasRevekSong ? "Gave Revek Song." : "Removed Revek Song.");
     }
 
-    [BindableMethod(name = "Give Warriors Notes", category = CATEGORY)]
-    public static void GiveWarriorsNotes() => ItemChangerMod.Modules.GetOrAdd<WarriorsNotesModule>().HasWarriorsNotes = true;
-
-    [BindableMethod(name = "Take Warriors Notes", category = CATEGORY)]
-    public static void TakeWarriorsNotes()
+    [BindableMethod(name = "Toggle Warriors Notes", category = CATEGORY)]
+    public static void ToggleWarriorsNotes ()
     {
-        if (!GetModule<WarriorsNotesModule>(out var mod)) return;
-        mod.HasWarriorsNotes = false;
+        var mod = ItemChangerMod.Modules.GetOrAdd<WarriorsNotesModule>();
+        mod.HasWarriorsNotes = !mod.HasWarriorsNotes;
+
+        Console.AddLine(mod.HasWarriorsNotes ? "Gave Warrior's Notes." : "Removed Warrior's Notes.");
     }
 
     [BindableMethod(name = "Reveal Benches", category = CATEGORY)]
@@ -45,7 +42,26 @@ internal static class DebugInterop
     [BindableMethod(name = "Toggle Summit", category = CATEGORY)]
     public static void ToggleSummit()
     {
-        if (!GetModule<FallenGuardianModule>(out var mod)) return;
+        if (!GetModule<FallenGuardianModule>(out var mod))
+        {
+            Console.AddLine($"{nameof(FallenGuardianModule)} not present.");
+            return;
+        }
+
         mod.DefeatedBoss = !mod.DefeatedBoss;
+        Console.AddLine(mod.DefeatedBoss ? "Summit closed off." : "Summit re-opened.");
+    }
+
+    [BindableMethod(name = "Toggle Boss Intro", category = CATEGORY)]
+    public static void ToggleBossIntro()
+    {
+        if (!GetModule<FallenGuardianModule>(out var mod))
+        {
+            Console.AddLine($"{nameof(FallenGuardianModule)} not present.");
+            return;
+        }
+
+        mod.CompletedBossIntro = !mod.CompletedBossIntro;
+        Console.AddLine(mod.CompletedBossIntro ? "Boss intro marked incomplete." : "Boss intro marked complete.");
     }
 }
